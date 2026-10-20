@@ -18,15 +18,23 @@ object ApiFactory {
         explicitNulls = false
     }
 
+    /**
+     * Interceptor order matters: headers first, then the offline fallback wraps
+     * the session recovery so a failed bootstrap still ends in a cache lookup.
+     * Rate limiting and cache stamping are network interceptors, so cache hits
+     * cost no tokens.
+     */
     fun okHttp(cookies: PersistentCookieJar, cacheDir: File?, debug: Boolean): OkHttpClient {
         val b = OkHttpClient.Builder()
             .cookieJar(cookies)
             .connectTimeout(20, TimeUnit.SECONDS)
             .readTimeout(30, TimeUnit.SECONDS)
             .addInterceptor(SessionInterceptor())
+            .addInterceptor(OfflineFallbackInterceptor())
             .addInterceptor(SessionRecoveryInterceptor(cookies))
-            .addInterceptor(RateLimitInterceptor())
-        if (cacheDir != null) b.cache(Cache(File(cacheDir, "http"), 64L * 1024 * 1024))
+            .addNetworkInterceptor(RateLimitInterceptor())
+            .addNetworkInterceptor(CacheHeaderInterceptor())
+        if (cacheDir != null) b.cache(Cache(File(cacheDir, "http"), 128L * 1024 * 1024))
         if (debug) b.addInterceptor(HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BASIC })
         return b.build()
     }

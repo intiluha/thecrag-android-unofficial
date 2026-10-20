@@ -128,3 +128,13 @@ Not available anonymously: `/api/index/summary|detail` (bulk sync), `/api/facet/
 4. Topo polyline smoothing needs visual comparison with the site (coordinate space is verified).
 5. Where `poipath` (approach paths) has data; whether any anonweb `show=` exposes photos.
 6. Whether `cookieAuth=1` works for `ascent/create`, and whether a custom-scheme `oauth_callback` is accepted.
+
+## Caching (checked 2026-10-20)
+
+API (`/api/node/...`, `/api/map/...`) and node page responses carry no
+`Cache-Control`, `ETag` or `Expires`; only `Vary: Accept-Encoding` and
+`cf-cache-status: DYNAMIC` (pages: `HIT`, with `Last-Modified`). Images on
+`image.thecrag.com` send `cache-control: max-age=172800`. The app therefore
+stamps `Cache-Control: public, max-age=3600` on successful GETs in a network
+interceptor so OkHttp's disk cache keeps them, and retries with
+`only-if-cached, max-stale=90d` when the network fails.

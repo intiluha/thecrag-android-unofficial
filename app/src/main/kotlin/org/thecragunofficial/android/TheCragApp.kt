@@ -16,6 +16,7 @@ import org.thecragunofficial.android.data.remote.TheCragApi
 import org.thecragunofficial.android.data.html.TopoHtmlParser
 import org.thecragunofficial.android.data.repo.MapRepository
 import org.thecragunofficial.android.data.repo.NodeRepository
+import org.thecragunofficial.android.data.repo.RecentStore
 import org.thecragunofficial.android.data.repo.TopoRepository
 
 /** Hand-rolled dependency graph; small enough not to need a DI framework. */
@@ -31,6 +32,14 @@ class AppGraph(app: Application) {
     val nodes = NodeRepository(api)
     val topos = TopoRepository(api, TopoHtmlParser(ApiFactory.json))
     val map = MapRepository(api, ApiFactory.json)
+    val recents = RecentStore(store, ApiFactory.json)
+
+    /** Drops everything fetched from theCrag: in-memory copies and the HTTP disk cache. Blocking; call off the main thread. */
+    fun clearCaches() {
+        nodes.clear()
+        topos.clear()
+        okHttp.cache?.evictAll()
+    }
 }
 
 class TheCragApp : Application(), SingletonImageLoader.Factory {

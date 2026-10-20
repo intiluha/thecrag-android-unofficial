@@ -3,6 +3,7 @@ package org.thecragunofficial.android.data.remote
 import okhttp3.Interceptor
 import okhttp3.Request
 import okhttp3.Response
+import java.io.IOException
 
 const val THECRAG_BASE = "https://www.thecrag.com/"
 const val IMAGE_BASE = "https://image.thecrag.com/"
@@ -30,14 +31,15 @@ class SessionInterceptor : Interceptor {
  * The API answers HTTP 400 `insufficient-api-permissions` when the session cookie
  * is missing or expired. This interceptor fetches `/home` to get a fresh cookie
  * and retries the call once. It also bootstraps proactively on the very first
- * API call when no session cookie is stored yet.
+ * API call when no session cookie is stored yet. A failed bootstrap (no network)
+ * is ignored so the call itself can still be answered from the cache.
  */
 class SessionRecoveryInterceptor(private val cookies: PersistentCookieJar) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()
         if (!isApiCall(request)) return chain.proceed(request)
 
-        if (!cookies.hasSession()) bootstrap(chain)
+        if (!cookies.hasSession() && !request.cacheControl.onlyIfCached) bootstrap(chain)
 
         val first = chain.proceed(request)
         if (first.code != 400 || !first.isPermissionError()) return first
@@ -50,7 +52,11 @@ class SessionRecoveryInterceptor(private val cookies: PersistentCookieJar) : Int
 
     private fun bootstrap(chain: Interceptor.Chain) {
         val home = Request.Builder().url(THECRAG_BASE + "home").get().build()
-        chain.proceed(home).use { }
+        try {
+            chain.proceed(home).use { }
+        } catch (e: IOException) {
+            // Offline: let the real request fall through to the cache.
+        }
     }
 
     private fun Response.isPermissionError(): Boolean {

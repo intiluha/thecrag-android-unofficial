@@ -1,5 +1,6 @@
 package org.thecragunofficial.android.ui
 
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -11,6 +12,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import org.thecragunofficial.android.domain.WORLD_ID
+import org.thecragunofficial.android.ui.about.AboutScreen
 import org.thecragunofficial.android.ui.browse.AreaScreen
 import org.thecragunofficial.android.ui.map.MapScreen
 import org.thecragunofficial.android.ui.route.RouteScreen
@@ -35,10 +37,11 @@ fun AppNav() {
                 areaId = id,
                 onOpenArea = { nav.navigate("area/$it") },
                 onOpenRoute = { nav.navigate("route/$it") },
-                onSearch = { nav.navigate("search") },
+                onSearch = { ancestor, name -> nav.navigate("search?ancestor=$ancestor&name=${Uri.encode(name)}") },
                 onOpenMap = { loc, zoom ->
                     nav.navigate("map/${loc?.lat ?: 20.0}/${loc?.lon ?: 0.0}/${if (loc == null) 1 else zoom}")
                 },
+                onAbout = { nav.navigate("about") },
                 onBack = if (nav.previousBackStackEntry != null) ({ nav.popBackStack() }) else null,
             )
         }
@@ -68,12 +71,21 @@ fun AppNav() {
                 onBack = { nav.popBackStack() },
             )
         }
-        composable("search") {
+        composable(
+            "search?ancestor={ancestor}&name={name}",
+            arguments = listOf(
+                navArgument("ancestor") { type = NavType.LongType; defaultValue = WORLD_ID },
+                navArgument("name") { type = NavType.StringType; nullable = true; defaultValue = null },
+            ),
+        ) { entry ->
             SearchScreen(
+                scopeId = entry.arguments?.getLong("ancestor") ?: WORLD_ID,
+                scopeName = entry.arguments?.getString("name"),
                 onOpenArea = { nav.navigate("area/$it") },
                 onOpenRoute = { nav.navigate("route/$it") },
                 onBack = { nav.popBackStack() },
             )
         }
+        composable("about") { AboutScreen(onBack = { nav.popBackStack() }) }
     }
 }

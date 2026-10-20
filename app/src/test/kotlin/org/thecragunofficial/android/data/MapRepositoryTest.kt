@@ -22,12 +22,12 @@ class MapRepositoryTest {
         listOf(File("../docs/api-samples/$name"), File("docs/api-samples/$name")).first { it.exists() }.readText()
 
     private class FakeApi(val tree: MapBboxDto, val seen: MutableList<Pair<String, String>> = ArrayList()) : TheCragApi {
-        override suspend fun node(id: Long, show: List<String>, markupType: String?): DataObj<NodeDto> = throw UnsupportedOperationException()
-        override suspend fun childAreas(id: Long): DataList<NodeDto> = throw UnsupportedOperationException()
-        override suspend fun childRoutes(id: Long): DataList<NodeDto> = throw UnsupportedOperationException()
+        override suspend fun node(id: Long, show: List<String>, markupType: String?, cacheControl: String?): DataObj<NodeDto> = throw UnsupportedOperationException()
+        override suspend fun childAreas(id: Long, cacheControl: String?): DataList<NodeDto> = throw UnsupportedOperationException()
+        override suspend fun childRoutes(id: Long, cacheControl: String?): DataList<NodeDto> = throw UnsupportedOperationException()
         override suspend fun lookup(search: String, ancestor: Long, pageSize: Int): DataList<LookupDto> = throw UnsupportedOperationException()
         override suspend fun mapBbox(s: String, v: String, f: String): DataObj<MapBboxDto> { seen += s to v; return DataObj(tree) }
-        override suspend fun page(kind: String, id: Long): ResponseBody = throw UnsupportedOperationException()
+        override suspend fun page(kind: String, id: Long, cacheControl: String?): ResponseBody = throw UnsupportedOperationException()
         override suspend fun home(): Response<okhttp3.ResponseBody> = throw UnsupportedOperationException()
     }
 

@@ -1,8 +1,23 @@
 <resources>
     <string name="app_name">theCrag unofficial</string>
     <string name="attribution">Data © theCrag contributors, CC BY-NC-SA</string>
+    <string name="map_attribution">Map © OpenFreeMap · © OpenMapTiles · © OpenStreetMap contributors</string>
     <string name="open_on_thecrag">Open on theCrag</string>
     <string name="search">Search</string>
+    <string name="search_hint">Crag or route name</string>
+    <string name="search_in">In %1$s</string>
+    <string name="clear">Clear</string>
+    <string name="no_matches">No matches</string>
+    <string name="recent">Recent</string>
     <string name="retry">Retry</string>
+    <string name="refresh">Refresh</string>
+    <string name="more">More</string>
+    <string name="about">About</string>
     <string name="world">World</string>
+    <string name="topos">Topos</string>
+    <string name="topos_failed">Topos could not be loaded: %1$s</string>
+    <string name="about_blurb">An unofficial, personal client for thecrag.com. Not affiliated with theCrag. Everything shown comes live from thecrag.com; nothing is bundled with the app.</string>
+    <string name="about_storage">Pages, topos and images you have opened stay cached on this device and are shown again when the network is unreachable.</string>
+    <string name="clear_cache">Clear cached data</string>
+    <string name="cache_cleared">Cache cleared</string>
 </resources>

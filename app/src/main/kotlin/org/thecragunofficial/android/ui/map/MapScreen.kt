@@ -1,6 +1,7 @@
 package org.thecragunofficial.android.ui.map
 
 import android.content.Context
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -8,6 +9,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -20,6 +22,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -50,6 +53,7 @@ import org.maplibre.geojson.Feature
 import org.maplibre.geojson.FeatureCollection
 import org.maplibre.geojson.Point
 import org.maplibre.geojson.Polygon
+import org.thecragunofficial.android.R
 import org.thecragunofficial.android.TheCragApp
 import org.thecragunofficial.android.data.repo.MapRepository
 import org.thecragunofficial.android.domain.MapMarker
@@ -96,7 +100,10 @@ fun MapScreen(lat: Double, lon: Double, zoom: Double, onOpenArea: (Long) -> Unit
     ) { padding ->
         Box(Modifier.fillMaxSize().padding(padding)) {
             MapLibreView(lat, lon, zoom, markers, onViewport = vm::viewportChanged, onOpenArea = onOpenArea)
-            Box(Modifier.align(Alignment.BottomStart)) { Attribution() }
+            Box(
+                Modifier.align(Alignment.BottomEnd).padding(bottom = 4.dp)
+                    .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.75f), MaterialTheme.shapes.small),
+            ) { Attribution(extra = stringResource(R.string.map_attribution)) }
             error?.let { Text(it, Modifier.align(Alignment.TopCenter).padding(8.dp)) }
         }
     }
@@ -161,6 +168,7 @@ private class MapController(
         mapView.onCreate(null)
         mapView.getMapAsync { m ->
             map = m
+            m.uiSettings.isLogoEnabled = false
             m.cameraPosition = CameraPosition.Builder().target(LatLng(lat, lon)).zoom(zoom).build()
             m.setStyle(Style.Builder().fromUri(MAP_STYLE_URL)) { style -> onStyleReady(m, style) }
             m.addOnCameraIdleListener { reportViewport(m) }

@@ -1,6 +1,6 @@
 # theCrag Android client: plan
 
-Status: Stage 1 in progress. M1 skeleton, M2 API client, M3 browse/route/search, and first cuts of M4 topos and M5 map build and pass unit tests (2026-10-20); none of it has run on a device yet. M6 polish is next. Research is in `research/api.md`; sample
+Status: Stage 1 feature-complete (2026-10-20). M1–M5 run on a phone (browse, routes, search, topos, map). M6 polish added recent items, a disk-cache offline fallback, scoped search, an About screen and a minified release build; the release build has not run on a device yet. Next: Stage 2 (login, logbook, ticks). Research is in `research/api.md`; sample
 payloads in `api-samples/`.
 
 ## 1. Decisions (settled 2026-10-20)
@@ -76,8 +76,11 @@ OkHttp 4, kotlinx.serialization, Room 2.7, Coil 3, jsoup, MapLibre Native Androi
    website on three topos (Arapiles, a Fontainebleau boulder, an alpine multi-pitch).
 5. **M5 map**: MapLibre screen, bbox hierarchy loading on viewport change with debounce,
    polygons for leaf crags, markers with route counts, "map" button on an area screen.
-6. **M6 search + polish**: lookup search, recent items, error/offline states, attribution
-   screen, F-Droid metadata (`fastlane/`), release build.
+6. **M6 search + polish** (done): search scoped to the current area, recent items, offline
+   fallback from the OkHttp disk cache (theCrag sends no cache headers, so the app stamps
+   a 1 h max-age and serves stale copies when the network fails), About screen with
+   attribution and cache clearing, minified release build signed with the debug key.
+   Skipped: F-Droid metadata (`fastlane/`), since no release is planned.
 
 ### Stage 2: account, logbook, ticks
 - Login in a WebView on `/processmap/login`; capture `ApacheSessionID` from the
