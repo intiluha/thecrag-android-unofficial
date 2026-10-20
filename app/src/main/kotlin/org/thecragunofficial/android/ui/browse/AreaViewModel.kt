@@ -6,13 +6,22 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import org.thecragunofficial.android.data.repo.NodeRepository
+import org.thecragunofficial.android.data.repo.TopoRepository
 import org.thecragunofficial.android.domain.AreaDetail
+import org.thecragunofficial.android.domain.NodeKind
+import org.thecragunofficial.android.domain.Topo
 import org.thecragunofficial.android.ui.common.UiState
 import org.thecragunofficial.android.ui.common.describe
 
-class AreaViewModel(private val repo: NodeRepository, private val id: Long) : ViewModel() {
+class AreaViewModel(
+    private val repo: NodeRepository,
+    private val topoRepo: TopoRepository,
+    private val id: Long,
+) : ViewModel() {
     private val _state = MutableStateFlow<UiState<AreaDetail>>(UiState.Loading)
     val state: StateFlow<UiState<AreaDetail>> = _state
+    private val _topos = MutableStateFlow<List<Topo>>(emptyList())
+    val topos: StateFlow<List<Topo>> = _topos
 
     init { load(force = false) }
 
@@ -21,10 +30,14 @@ class AreaViewModel(private val repo: NodeRepository, private val id: Long) : Vi
     private fun load(force: Boolean) {
         _state.value = UiState.Loading
         viewModelScope.launch {
-            _state.value = try {
-                UiState.Ready(repo.area(id, force))
+            val area = try {
+                repo.area(id, force)
             } catch (e: Exception) {
-                UiState.Error(e.describe())
+                _state.value = UiState.Error(e.describe()); return@launch
+            }
+            _state.value = UiState.Ready(area)
+            if (area.numberTopos > 0) {
+                _topos.value = try { topoRepo.toposFor(NodeKind.AREA, id, force) } catch (e: Exception) { emptyList() }
             }
         }
     }

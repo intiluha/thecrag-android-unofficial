@@ -9,14 +9,15 @@ Status: Stage 1 (anonymous online guide) in progress. See `docs/PLAN.md` and
 
 ## Build
 
-Needs JDK 17 and an Android SDK with platform 35 / build-tools 35.0.0.
-In the dev container both come from nix (`docs/build-env.nix`):
+Recipes live in the `Justfile`; `shell.nix` provides JDK 17, Gradle and a lean
+Android SDK (platform 35, build-tools 35.0.0) through nix.
 
 ```sh
-NIXPKGS_ALLOW_UNFREE=1 NIXPKGS_ACCEPT_ANDROID_SDK_LICENSE=1 \
-  nix build --impure --expr 'import ./docs/build-env.nix' -o /tmp/android-sdk
-export ANDROID_HOME=/tmp/android-sdk/libexec/android-sdk
-nix shell nixpkgs#jdk17_headless -c ./gradlew assembleDebug testDebugUnitTest
+just build     # debug APK -> app/build/outputs/apk/debug/app-debug.apk
+just test      # unit tests
+just install   # adb install + launch on a connected phone
+just clean
 ```
 
-The debug APK lands in `app/build/outputs/apk/debug/`.
+Without `just`: `nix-shell --run 'gradle --no-daemon assembleDebug'`.
+The Gradle wrapper (`./gradlew`) also works if you bring your own JDK and SDK.

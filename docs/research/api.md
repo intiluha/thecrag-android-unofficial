@@ -64,7 +64,7 @@ Not available anonymously: `/api/index/summary|detail` (bulk sync), `/api/facet/
 - Area fields: `name, asciiName, type:"area", subType (Region|Area|Crag|Cliff|Sector|Boulder…), urlStub, urlAncestorStub, parentID, depth, childIDs, subAreaCount, numberRoutes, numberTopos, numberPhotos, ascentCount, hasTopo, averageHeight [27,"m"], seasonality[12], gbRoutes[6]/gbAscents[6] (per grade band), priceCategory, isTLC/tlc (top level crag), altNames, unique (blurb), siblingLabel (number in the guide)`.
 - Route fields: `grade, gradeInContext, context ("AU"), gradeBand (0-5), gradeStyle, rawGrade, gradeAtom, systems{systemId:[grade]}, style (Sport|Trad|Boulder|…), styleStub, flags, stars (0-3), qualityScore, popularity, ascentCount, bolts, height ["18","m"], pitches, siblingLabel, history[{type:"First Ascent", climbers, date}], beta[], topos[]`.
 - `beta[]` entries carry `copyrightID`/`publisherID` when the text comes from a third-party publisher (e.g. ACA Route Register) → must be attributed.
-- Web page URLs: `/en/climbing/{urlStub}`; nodes without a stub use `/en/climbing/{urlAncestorStub}/{slug}/route/{id}` or `/area/{id}`.
+- Web page URLs: `/en/climbing/{urlStub}`; nodes without a stub use `/en/climbing/{urlAncestorStub}/{slug}/route/{id}` or `/area/{id}`. The server resolves pages by id regardless of the path, so `/en/climbing/world/area/{id}` and `/en/climbing/world/route/{id}` return the page directly (HTTP 200, no redirect); the app uses these.
 
 ## 4. Topos
 
@@ -88,7 +88,7 @@ Not available anonymously: `/api/index/summary|detail` (bulk sync), `/api/facet/
   with `<img src="https://image.thecrag.com/240x320/…" data-big="…/1200x1600/…">`.
   Sample: `../api-samples/topodata_html_sample.json`. `data-topodata` route entries: `{id,type:"route",num,grade,class:"gb2",zindex,name,stars:"★",style,order,url,points:"46 268,45 224,79 193 lower"}`.
   `points` is a comma list of `x y [type]`; types: `label, endarrow, draw, bolt, piton, thread, lower, anchor, belay, belayfixed, belaynatural, belaysemi, belayhanging, crux, warning, jumpoff`, trailing `hidden`. The site smooths the polyline in SVG (`static.thecrag.com/cids/phototopo-1.1.65.js`). The coordinate space is `data-width/data-view-scale`, which equals the API topo `width`/`height` (verified: 349/0.6345 = 550 for topo 119694216, present in both sources with the same id). Point smoothing (the site curves the polyline in SVG) still needs visual comparison.
-  The main node pages are Cloudflare-cached and need no cookie, so one HTML GET per crag gives all its topos' route lines.
+  The main node pages are Cloudflare-cached and need no cookie, so one HTML GET per crag gives all its topos' route lines. The JSON `topos[]` ids for a node and the `data-tid`s on its page were identical for the two nodes compared (11962579, 11764567).
 - Image URL: `https://image.thecrag.com/{W}x{H}/{h[0:2]}/{h[2:4]}/{hashID}`; the server
   scales to fit, keeps aspect, may answer webp or jpeg. Without the size segment it
   returns the original. No auth; needs the realistic UA.

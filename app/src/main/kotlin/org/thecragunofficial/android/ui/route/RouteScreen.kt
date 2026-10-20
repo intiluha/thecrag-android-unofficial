@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.OpenInNew
@@ -35,7 +36,10 @@ import kotlinx.coroutines.launch
 import org.thecragunofficial.android.R
 import org.thecragunofficial.android.TheCragApp
 import org.thecragunofficial.android.data.repo.NodeRepository
+import org.thecragunofficial.android.data.repo.TopoRepository
+import org.thecragunofficial.android.domain.NodeKind
 import org.thecragunofficial.android.domain.RouteDetail
+import org.thecragunofficial.android.domain.Topo
 import org.thecragunofficial.android.ui.common.Attribution
 import org.thecragunofficial.android.ui.common.Breadcrumbs
 import org.thecragunofficial.android.ui.common.GradeChip
@@ -43,25 +47,41 @@ import org.thecragunofficial.android.ui.common.Stars
 import org.thecragunofficial.android.ui.common.StateBox
 import org.thecragunofficial.android.ui.common.UiState
 import org.thecragunofficial.android.ui.common.describe
+import org.thecragunofficial.android.ui.topo.TopoView
 
-class RouteViewModel(private val repo: NodeRepository, private val id: Long) : ViewModel() {
+class RouteViewModel(
+    private val repo: NodeRepository,
+    private val topoRepo: TopoRepository,
+    private val id: Long,
+) : ViewModel() {
     val state = MutableStateFlow<UiState<RouteDetail>>(UiState.Loading)
+    val topos = MutableStateFlow<List<Topo>>(emptyList())
+
     init { load(false) }
+
     fun reload() = load(true)
+
     private fun load(force: Boolean) {
         state.value = UiState.Loading
         viewModelScope.launch {
-            state.value = try { UiState.Ready(repo.route(id, force)) } catch (e: Exception) { UiState.Error(e.describe()) }
+            state.value = try {
+                UiState.Ready(repo.route(id, force))
+            } catch (e: Exception) {
+                UiState.Error(e.describe()); return@launch
+            }
+            topos.value = try { topoRepo.toposFor(NodeKind.ROUTE, id, force) } catch (e: Exception) { emptyList() }
         }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RouteScreen(routeId: Long, onOpenArea: (Long) -> Unit, onBack: () -> Unit) {
+fun RouteScreen(routeId: Long, onOpenArea: (Long) -> Unit, onOpenRoute: (Long) -> Unit, onBack: () -> Unit) {
     val context = LocalContext.current
-    val vm: RouteViewModel = viewModel(key = "route/$routeId") { RouteViewModel(TheCragApp.graph(context).nodes, routeId) }
+    val graph = TheCragApp.graph(context)
+    val vm: RouteViewModel = viewModel(key = "route/$routeId") { RouteViewModel(graph.nodes, graph.topos, routeId) }
     val state by vm.state.collectAsState()
+    val topos by vm.topos.collectAsState()
     val route = (state as? UiState.Ready)?.value
 
     Scaffold(
@@ -99,6 +119,15 @@ fun RouteScreen(routeId: Long, onOpenArea: (Long) -> Unit, onBack: () -> Unit) {
                         Text(facts.joinToString(" · "), Modifier.padding(top = 8.dp), style = MaterialTheme.typography.bodyMedium)
                         r.firstAscent?.let { Text("FA: $it", Modifier.padding(top = 4.dp), style = MaterialTheme.typography.bodyMedium) }
                     }
+                }
+                items(topos, key = { "t${it.id}" }) { topo ->
+                    TopoView(
+                        topo,
+                        selectedRouteId = r.id,
+                        onRouteTap = { if (it != r.id) onOpenRoute(it) },
+                        onAreaTap = onOpenArea,
+                        Modifier.padding(vertical = 4.dp),
+                    )
                 }
                 r.beta.forEach { s ->
                     item {

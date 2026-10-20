@@ -12,6 +12,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -36,6 +37,9 @@ import org.thecragunofficial.android.R
 import org.thecragunofficial.android.TheCragApp
 import org.thecragunofficial.android.domain.AreaDetail
 import org.thecragunofficial.android.domain.AreaSummary
+import org.thecragunofficial.android.domain.LatLon
+import org.thecragunofficial.android.domain.Topo
+import org.thecragunofficial.android.domain.WORLD_ID
 import org.thecragunofficial.android.domain.RouteSummary
 import org.thecragunofficial.android.ui.common.Attribution
 import org.thecragunofficial.android.ui.common.Breadcrumbs
@@ -43,6 +47,7 @@ import org.thecragunofficial.android.ui.common.GradeChip
 import org.thecragunofficial.android.ui.common.Stars
 import org.thecragunofficial.android.ui.common.StateBox
 import org.thecragunofficial.android.ui.common.UiState
+import org.thecragunofficial.android.ui.topo.TopoView
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -51,11 +56,14 @@ fun AreaScreen(
     onOpenArea: (Long) -> Unit,
     onOpenRoute: (Long) -> Unit,
     onSearch: () -> Unit,
+    onOpenMap: (LatLon?, Int) -> Unit,
     onBack: (() -> Unit)?,
 ) {
     val context = LocalContext.current
-    val vm: AreaViewModel = viewModel(key = "area/$areaId") { AreaViewModel(TheCragApp.graph(context).nodes, areaId) }
+    val graph = TheCragApp.graph(context)
+    val vm: AreaViewModel = viewModel(key = "area/$areaId") { AreaViewModel(graph.nodes, graph.topos, areaId) }
     val state by vm.state.collectAsState()
+    val topos by vm.topos.collectAsState()
     val title = (state as? UiState.Ready)?.value?.name ?: stringResource(R.string.world)
 
     Scaffold(
@@ -65,18 +73,24 @@ fun AreaScreen(
                 navigationIcon = {
                     if (onBack != null) IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, null) }
                 },
-                actions = { IconButton(onClick = onSearch) { Icon(Icons.Default.Search, stringResource(R.string.search)) } },
+                actions = {
+                    val area = (state as? UiState.Ready)?.value
+                    if (area != null && (area.location != null || area.id == WORLD_ID)) {
+                        IconButton(onClick = { onOpenMap(area.location, mapZoomFor(area.subType)) }) { Icon(Icons.Default.Map, "Map") }
+                    }
+                    IconButton(onClick = onSearch) { Icon(Icons.Default.Search, stringResource(R.string.search)) }
+                },
             )
         },
     ) { padding ->
         StateBox(state, onRetry = vm::reload) { area ->
-            AreaBody(area, onOpenArea, onOpenRoute, Modifier.padding(padding))
+            AreaBody(area, topos, onOpenArea, onOpenRoute, Modifier.padding(padding))
         }
     }
 }
 
 @Composable
-private fun AreaBody(area: AreaDetail, onOpenArea: (Long) -> Unit, onOpenRoute: (Long) -> Unit, modifier: Modifier) {
+private fun AreaBody(area: AreaDetail, topos: List<Topo>, onOpenArea: (Long) -> Unit, onOpenRoute: (Long) -> Unit, modifier: Modifier) {
     LazyColumn(modifier.fillMaxSize()) {
         item { Breadcrumbs(area.ancestors, onOpenArea) }
         item {
@@ -90,6 +104,12 @@ private fun AreaBody(area: AreaDetail, onOpenArea: (Long) -> Unit, onOpenRoute: 
                 }
                 Text(stats.joinToString(" · "), style = MaterialTheme.typography.bodyMedium)
                 area.blurb?.let { Text(it, Modifier.padding(top = 8.dp), style = MaterialTheme.typography.bodyMedium) }
+            }
+        }
+        if (topos.isNotEmpty()) {
+            item { SectionHeader("Topos") }
+            items(topos, key = { "t${it.id}" }) { topo ->
+                TopoView(topo, selectedRouteId = null, onRouteTap = onOpenRoute, onAreaTap = onOpenArea, Modifier.padding(vertical = 4.dp))
             }
         }
         if (area.subAreas.isNotEmpty()) {
@@ -161,4 +181,11 @@ private fun RouteRow(r: RouteSummary, onClick: () -> Unit) {
         }
         Stars(r.stars)
     }
+}
+
+/** A sensible starting zoom when opening the map from an area of this kind. */
+fun mapZoomFor(subType: String): Int = when (subType) {
+    "Region" -> 5
+    "Crag", "Cliff", "Sector", "Boulder", "Field", "Wall" -> 14
+    else -> 11
 }

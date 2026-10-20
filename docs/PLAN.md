@@ -1,6 +1,6 @@
 # theCrag Android client: plan
 
-Status: Stage 1 in progress. M1 skeleton, M2 API client and a first cut of M3 browse/route/search build and pass unit tests (2026-10-20); M4 topos and M5 map are next. Research is in `research/api.md`; sample
+Status: Stage 1 in progress. M1 skeleton, M2 API client, M3 browse/route/search, and first cuts of M4 topos and M5 map build and pass unit tests (2026-10-20); none of it has run on a device yet. M6 polish is next. Research is in `research/api.md`; sample
 payloads in `api-samples/`.
 
 ## 1. Decisions (settled 2026-10-20)
@@ -114,8 +114,8 @@ OkHttp 4, kotlinx.serialization, Room 2.7, Coil 3, jsoup, MapLibre Native Androi
 ## 6. Build environment in the container
 
 No JDK or SDK is preinstalled. `nix` is available:
-`docs/build-env.nix` composes platform 35 + build-tools 35.0.0 only (the default
+`shell.nix` composes platform 35 + build-tools 35.0.0 only (the default
 `androidenv.androidPkgs` pulls the NDK and emulator images). JDK via
-`nix shell nixpkgs#jdk17_headless`. Gradle wrapper from the project. No emulator in
+`shell.nix` too; recipes are in the `Justfile` (`just build`, `just test`, `just install`). No emulator in
 the container; UI verification happens on the owner's device or via screenshots of
 Compose previews (Paparazzi can run headless and is worth adding at M3).

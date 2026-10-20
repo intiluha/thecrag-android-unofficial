@@ -4,6 +4,7 @@ import okhttp3.ResponseBody
 import org.thecragunofficial.android.data.remote.dto.DataList
 import org.thecragunofficial.android.data.remote.dto.DataObj
 import org.thecragunofficial.android.data.remote.dto.LookupDto
+import org.thecragunofficial.android.data.remote.dto.MapBboxDto
 import org.thecragunofficial.android.data.remote.dto.NodeDto
 import retrofit2.Response
 import retrofit2.http.GET
@@ -35,6 +36,17 @@ interface TheCragApi {
         @Query("ancestor") ancestor: Long,
         @Query("page-size") pageSize: Int = 25,
     ): DataList<LookupDto>
+
+    @GET("api/map/bbox/heirachy")
+    suspend fun mapBbox(
+        @Query("s") s: String,
+        @Query("v") v: String,
+        @Query("f") f: String = "geometry,numberRoutes",
+    ): DataObj<MapBboxDto>
+
+    /** Node page HTML (`/en/climbing/world/area/{id}` or `/route/{id}`); the server serves it by id. */
+    @GET("en/climbing/world/{kind}/{id}")
+    suspend fun page(@Path("kind") kind: String, @Path("id") id: Long): ResponseBody
 
     /** Plain page load; its only purpose is to receive the anonymous session cookie. */
     @GET("home")

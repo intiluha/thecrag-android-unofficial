@@ -13,7 +13,10 @@ import org.thecragunofficial.android.data.remote.ApiFactory
 import org.thecragunofficial.android.data.remote.KeyValueStore
 import org.thecragunofficial.android.data.remote.PersistentCookieJar
 import org.thecragunofficial.android.data.remote.TheCragApi
+import org.thecragunofficial.android.data.html.TopoHtmlParser
+import org.thecragunofficial.android.data.repo.MapRepository
 import org.thecragunofficial.android.data.repo.NodeRepository
+import org.thecragunofficial.android.data.repo.TopoRepository
 
 /** Hand-rolled dependency graph; small enough not to need a DI framework. */
 class AppGraph(app: Application) {
@@ -26,6 +29,8 @@ class AppGraph(app: Application) {
     val okHttp: OkHttpClient = ApiFactory.okHttp(cookies, app.cacheDir, BuildConfig.DEBUG)
     val api: TheCragApi = ApiFactory.api(ApiFactory.retrofit(okHttp))
     val nodes = NodeRepository(api)
+    val topos = TopoRepository(api, TopoHtmlParser(ApiFactory.json))
+    val map = MapRepository(api, ApiFactory.json)
 }
 
 class TheCragApp : Application(), SingletonImageLoader.Factory {

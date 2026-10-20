@@ -12,6 +12,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import org.thecragunofficial.android.domain.WORLD_ID
 import org.thecragunofficial.android.ui.browse.AreaScreen
+import org.thecragunofficial.android.ui.map.MapScreen
 import org.thecragunofficial.android.ui.route.RouteScreen
 import org.thecragunofficial.android.ui.search.SearchScreen
 import org.thecragunofficial.android.ui.theme.TheCragTheme
@@ -35,12 +36,37 @@ fun AppNav() {
                 onOpenArea = { nav.navigate("area/$it") },
                 onOpenRoute = { nav.navigate("route/$it") },
                 onSearch = { nav.navigate("search") },
+                onOpenMap = { loc, zoom ->
+                    nav.navigate("map/${loc?.lat ?: 20.0}/${loc?.lon ?: 0.0}/${if (loc == null) 1 else zoom}")
+                },
                 onBack = if (nav.previousBackStackEntry != null) ({ nav.popBackStack() }) else null,
             )
         }
         composable("route/{id}", arguments = listOf(navArgument("id") { type = NavType.LongType })) { entry ->
             val id = entry.arguments?.getLong("id") ?: return@composable
-            RouteScreen(routeId = id, onOpenArea = { nav.navigate("area/$it") }, onBack = { nav.popBackStack() })
+            RouteScreen(
+                routeId = id,
+                onOpenArea = { nav.navigate("area/$it") },
+                onOpenRoute = { nav.navigate("route/$it") },
+                onBack = { nav.popBackStack() },
+            )
+        }
+        composable(
+            "map/{lat}/{lon}/{zoom}",
+            arguments = listOf(
+                navArgument("lat") { type = NavType.StringType },
+                navArgument("lon") { type = NavType.StringType },
+                navArgument("zoom") { type = NavType.StringType },
+            ),
+        ) { entry ->
+            val a = entry.arguments
+            MapScreen(
+                lat = a?.getString("lat")?.toDoubleOrNull() ?: 20.0,
+                lon = a?.getString("lon")?.toDoubleOrNull() ?: 0.0,
+                zoom = a?.getString("zoom")?.toDoubleOrNull() ?: 1.0,
+                onOpenArea = { nav.navigate("area/$it") },
+                onBack = { nav.popBackStack() },
+            )
         }
         composable("search") {
             SearchScreen(
