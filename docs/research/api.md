@@ -110,6 +110,26 @@ Not available anonymously: `/api/index/summary|detail` (bulk sync), `/api/facet/
 - The site's JS (`common-1.1.78.js`, `postAPI`) sends JSON writes to `/api/<x>/update?cookieAuth=1`, i.e. the session cookie authenticates `/api` calls when `cookieAuth=1` is present. Whether `POST /api/ascent/create?cookieAuth=1` accepts this is **inferred** (not tested; nothing was posted).
 - Official ascent write (OAuth1): `POST /api/ascent/create` (and `/create/validate`) with `{"data":{account, node, version:2, tick, date, climbedGearStyle, grade, gradeSystem, quality, relativeDifficulty, comment, trip, numberAttempts, externalUuid, pitch[]}}` → `{"ok":{"ascentID","uri"}}`. Tick types per gear style are in `/api/config/ascent/ticktypes` (open endpoint). Quality: crap…megaclassic. Relative difficulty: soft…sand.
 - Reading ascents (key/OAuth): `/api/climber/id/N/ascents`, `/api/ascent/id/N`, `/api/facet/ascents/at/N/by/A`. Self-serve: personal key `/api/logbook/ascents` (§1).
+- **authweb level (verified 2026-10-20 from error messages, no login performed)**: with `cookieAuth=1`,
+  `/api/(climber|user|account)/id/(me|N)`, `.../ascents`, `.../target-lists`, `/api/ascent/id/N`,
+  `POST /api/ascent/create` and `/create/validate` all require "minimum level authweb", i.e. a
+  logged-in session cookie. `/api/logbook/ascents` needs level `logbook` (the personal key).
+  The login form `GET /CIDS/cgi-bin/cids.cgi?C:HideNavigation=1&C:State=13216&D:LoginTarget=…`
+  is served to a plain client (200, sets `ApacheSessionID`, carries `D:CSRF`). A wrong login
+  answers 200 with the form again and `<div class="alert alert-danger">Your username is not
+  listed</div>`; success is expected to be a 302 to `D:LoginTarget` (inferred, untested).
+- **Verified live (2026-10-20, throwaway account, test area only):** the login POST answers
+  `302` to `cids.cgi?C:State=Home&D:LoginTarget=…` and re-sets `ApacheSessionID` (two Set-Cookie
+  headers, the second with a 3-year expiry); no email verification is needed for API use.
+  `GET /api/account/id/me?cookieAuth=1` -> `data{id, login, name, slug, private, ascentCount,
+  country…}` (`api-samples/account_me.json`). `GET /api/climber/id/me/ascents?cookieAuth=1` ->
+  `data[]{id, date (ISO datetime), logDate, markdown, climbedGearStyle, tick{label,name},
+  route{id, name, gradeBand, stars, style, ancestors[]}, account{…}}`, no paging info in
+  `query` (`account_me_ascents.json`). `POST /api/ascent/create/validate?cookieAuth=1` with
+  the v2 body answers **202** echoing `data` (no `ok`); `POST /api/ascent/create` answers 202
+  with `ok{ascentID, eventStats, isFirstAscent}`; `POST /api/ascent/delete` wants
+  `{"data":{"ascent":id}}` (`{"id":…}` -> 400 `ascentError: mandatory field`) and answers
+  202 `ok{}`. Rejections are HTTP 400 with `error{field: reason}`.
 - OAuth 1.0a: `/oauth/request_token` → `/oauth/authorize?oauth_token=` → `/oauth/access_token`; consumer key needs the partner agreement. A FOSS app cannot keep a consumer secret private anyway.
 
 ## 6. Terms and licensing summary

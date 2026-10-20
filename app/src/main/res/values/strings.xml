@@ -20,4 +20,22 @@
     <string name="about_storage">Pages, topos and images you have opened stay cached on this device and are shown again when the network is unreachable.</string>
     <string name="clear_cache">Clear cached data</string>
     <string name="cache_cleared">Cache cleared</string>
+    <string name="account">Account</string>
+    <string name="logbook">Logbook</string>
+    <string name="login">Log in</string>
+    <string name="logout">Log out</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="tick">Tick</string>
+    <string name="log_ascent">Log ascent</string>
+    <string name="dry_run">Dry run</string>
+    <string name="your_ascents">Your ascents</string>
+    <string name="pending">pending</string>
+    <string name="refresh_logbook">Refresh logbook</string>
+    <string name="retry_outbox">Retry pending</string>
+    <string name="account_blurb">Your theCrag account is used only to log in, read your own logbook and send ticks. Browsing stays anonymous and never carries your session. The password is not stored.</string>
+    <string name="not_logged_in">Not logged in.</string>
+    <string name="delete_ascent">Delete this ascent on theCrag?</string>
+    <string name="delete">Delete</string>
+    <string name="cancel">Cancel</string>
 </resources>

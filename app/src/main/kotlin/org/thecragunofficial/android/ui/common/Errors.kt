@@ -1,5 +1,8 @@
 package org.thecragunofficial.android.ui.common
 
+import org.thecragunofficial.android.data.auth.AuthRepository
+import org.thecragunofficial.android.data.remote.ApiFactory
+import org.thecragunofficial.android.data.remote.dto.ApiError
 import retrofit2.HttpException
 import java.io.IOException
 import java.net.ConnectException
@@ -8,7 +11,10 @@ import java.net.UnknownHostException
 
 /** One readable line per failure; network problems get wording the user can act on. */
 fun Throwable.describe(): String = when (this) {
-    is HttpException -> when (code()) {
+    is AuthRepository.LoginFailed -> message ?: "Login failed."
+    is HttpException -> apiError()?.let { e ->
+        if (e.contains("minimum level authweb")) "Not logged in, or the theCrag session has expired. Log in again." else "theCrag: $e"
+    } ?: when (code()) {
         400 -> "theCrag refused the request (HTTP 400). The session may need refreshing; try again."
         403 -> "Blocked by theCrag's edge (HTTP 403)."
         404 -> "Not found on theCrag (HTTP 404)."
@@ -21,4 +27,13 @@ fun Throwable.describe(): String = when (this) {
     is SocketTimeoutException -> "theCrag did not answer in time."
     is IOException -> "Network error: ${message ?: javaClass.simpleName}"
     else -> message ?: javaClass.simpleName
+}
+
+/** theCrag's API errors are JSON `{"error": "...", "errorLabel": "..."}` with HTTP 400. */
+private fun HttpException.apiError(): String? = try {
+    response()?.errorBody()?.string()
+        ?.let { ApiFactory.json.decodeFromString(ApiError.serializer(), it) }
+        ?.error?.takeIf { it.isNotBlank() }
+} catch (e: Exception) {
+    null
 }

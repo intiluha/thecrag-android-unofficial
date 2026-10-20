@@ -1,0 +1,91 @@
+{
+  "data": [
+    {
+      "account": {
+        "id": "14955324951",
+        "login": "tester",
+        "name": "Tester",
+        "private": 1,
+        "slug": "tester",
+        "type": "climber"
+      },
+      "climbedGearStyle": "sport",
+      "date": "2026-10-20T00:00:00Z",
+      "id": 14955329028,
+      "logDate": "2026-10-20T18:58:13Z",
+      "markdown": "app test tick, will be deleted",
+      "route": {
+        "ancestors": [
+          {
+            "depth": 0,
+            "id": 7546063,
+            "name": "World",
+            "subAreaCount": 12,
+            "subType": "Region",
+            "type": "area",
+            "urlStub": "world"
+          },
+          {
+            "depth": 1,
+            "id": 11737939,
+            "name": "test area",
+            "subAreaCount": 51,
+            "subType": "Region",
+            "type": "area",
+            "urlStub": "test-area"
+          },
+          {
+            "depth": 2,
+            "id": "6135334065",
+            "name": "Test region",
+            "subAreaCount": 3,
+            "subType": "Region",
+            "type": "area",
+            "urlAncestorStub": "test-area"
+          },
+          {
+            "depth": 3,
+            "id": "6135922341",
+            "isTLC": 1,
+            "name": "test crag without area above",
+            "subAreaCount": 1,
+            "subType": "Crag",
+            "type": "area",
+            "urlAncestorStub": "test-area"
+          },
+          {
+            "depth": 4,
+            "id": "6135930018",
+            "name": "test sector without area above",
+            "subAreaCount": 0,
+            "subType": "Sector",
+            "type": "area",
+            "urlAncestorStub": "test-area"
+          }
+        ],
+        "gradeAtom": {
+          "gradeBand": 0,
+          "type": "grade"
+        },
+        "gradeBand": 0,
+        "id": 6135933117,
+        "name": "test route 4",
+        "stars": 0,
+        "style": "Sport",
+        "urlAncestorStub": "test-area"
+      },
+      "tick": {
+        "label": "redpoint",
+        "name": "Red point"
+      },
+      "type": "ascent",
+      "version": 2
+    }
+  ],
+  "query": {
+    "arg": "ascents",
+    "entity": "account",
+    "id": "14955324951",
+    "request": "id"
+  }
+}

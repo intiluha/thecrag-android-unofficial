@@ -14,6 +14,10 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.OpenInNew
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -25,6 +29,10 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -46,6 +54,9 @@ import org.thecragunofficial.android.domain.Topo
 import org.thecragunofficial.android.ui.common.Attribution
 import org.thecragunofficial.android.ui.common.Breadcrumbs
 import org.thecragunofficial.android.ui.common.GradeChip
+import org.thecragunofficial.android.ui.common.SectionHeader
+import org.thecragunofficial.android.ui.logbook.AscentRow
+import org.thecragunofficial.android.ui.logbook.PendingRow
 import org.thecragunofficial.android.ui.common.OverflowMenu
 import org.thecragunofficial.android.ui.common.Stars
 import org.thecragunofficial.android.ui.common.StateBox
@@ -88,13 +99,19 @@ class RouteViewModel(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RouteScreen(routeId: Long, onOpenArea: (Long) -> Unit, onOpenRoute: (Long) -> Unit, onBack: () -> Unit) {
+fun RouteScreen(routeId: Long, onOpenArea: (Long) -> Unit, onOpenRoute: (Long) -> Unit, onAccount: () -> Unit, onBack: () -> Unit) {
     val context = LocalContext.current
     val graph = TheCragApp.graph(context)
     val vm: RouteViewModel = viewModel(key = "route/$routeId") { RouteViewModel(graph.nodes, graph.topos, graph.recents, routeId) }
     val state by vm.state.collectAsState()
     val topos by vm.topos.collectAsState()
     val route = (state as? UiState.Ready)?.value
+    val account by graph.auth.state.collectAsState()
+    val myAscents by graph.logbook.ascents.collectAsState()
+    val pending by graph.logbook.outbox.collectAsState()
+    var showTick by remember { mutableStateOf(false) }
+    val snackbar = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
 
     Scaffold(
         topBar = {
@@ -109,7 +126,21 @@ fun RouteScreen(routeId: Long, onOpenArea: (Long) -> Unit, onOpenRoute: (Long) -
                 },
             )
         },
+        snackbarHost = { SnackbarHost(snackbar) },
+        floatingActionButton = {
+            if (route != null) ExtendedFloatingActionButton(
+                onClick = { if (account != null) showTick = true else onAccount() },
+                icon = { Icon(Icons.Default.Check, null) },
+                text = { Text(stringResource(R.string.tick)) },
+            )
+        },
     ) { padding ->
+        if (showTick && route != null) {
+            TickSheet(route, graph.logbook, onDismiss = { showTick = false }) { msg ->
+                showTick = false
+                scope.launch { snackbar.showSnackbar(msg) }
+            }
+        }
         StateBox(state, onRetry = vm::reload) { r ->
             LazyColumn(Modifier.fillMaxSize().padding(padding)) {
                 item { Breadcrumbs(r.ancestors, onOpenArea) }
@@ -147,6 +178,13 @@ fun RouteScreen(routeId: Long, onOpenArea: (Long) -> Unit, onOpenRoute: (Long) -
                             Modifier.padding(vertical = 4.dp),
                         )
                     }
+                }
+                val mine = myAscents.filter { it.routeId == r.id }
+                val minePending = pending.filter { it.routeId == r.id }
+                if (mine.isNotEmpty() || minePending.isNotEmpty()) {
+                    item { SectionHeader(stringResource(R.string.your_ascents)) }
+                    items(minePending, key = { "p${it.createdAt}" }) { PendingRow(it) {} }
+                    items(mine, key = { "a${it.id}" }) { AscentRow(it, onClick = {}) }
                 }
                 r.beta.forEach { s ->
                     item {

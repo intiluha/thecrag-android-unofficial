@@ -20,13 +20,13 @@ class InMemoryStore : KeyValueStore {
  * Keeps the thecrag.com cookies (ApacheSessionID, userstatus, acceptedterms, NavCtx)
  * across process restarts. Cookies are stored by name as their Set-Cookie string.
  */
-class PersistentCookieJar(private val store: KeyValueStore) : CookieJar {
+class PersistentCookieJar(private val store: KeyValueStore, private val key: String = KEY) : CookieJar {
     private val host = "www.thecrag.com"
     private val url: HttpUrl = HttpUrl.Builder().scheme("https").host(host).build()
     private val cache = HashMap<String, Cookie>()
 
     init {
-        store.get(KEY)?.lineSequence()?.filter { it.isNotBlank() }?.forEach { line ->
+        store.get(key)?.lineSequence()?.filter { it.isNotBlank() }?.forEach { line ->
             Cookie.parse(url, line)?.let { cache[it.name] = it }
         }
     }
@@ -53,8 +53,12 @@ class PersistentCookieJar(private val store: KeyValueStore) : CookieJar {
     fun clear() { cache.clear(); persist() }
 
     private fun persist() {
-        store.put(KEY, cache.values.joinToString("\n") { it.toString() })
+        store.put(key, cache.values.joinToString("\n") { it.toString() })
     }
 
-    companion object { const val KEY = "thecrag.cookies" }
+    companion object {
+        const val KEY = "thecrag.cookies"
+        /** The logged-in session lives in its own jar: browsing never sends it. */
+        const val AUTH_KEY = "thecrag.auth.cookies"
+    }
 }

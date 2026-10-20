@@ -69,6 +69,8 @@ data class RouteDetail(
     val gradeContext: String?,
     val gradeBand: Int,
     val style: String?,
+    /** Lower-case gear style as the API names it (`sport`, `trad`, `boulder`); the default `climbedGearStyle` of a tick. */
+    val styleStub: String?,
     val stars: Int,
     val height: Measure?,
     val bolts: Int?,

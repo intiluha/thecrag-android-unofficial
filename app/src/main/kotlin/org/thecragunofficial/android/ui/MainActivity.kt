@@ -13,6 +13,8 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import org.thecragunofficial.android.domain.WORLD_ID
 import org.thecragunofficial.android.ui.about.AboutScreen
+import org.thecragunofficial.android.ui.account.AccountScreen
+import org.thecragunofficial.android.ui.logbook.LogbookScreen
 import org.thecragunofficial.android.ui.browse.AreaScreen
 import org.thecragunofficial.android.ui.map.MapScreen
 import org.thecragunofficial.android.ui.route.RouteScreen
@@ -42,6 +44,8 @@ fun AppNav() {
                     nav.navigate("map/${loc?.lat ?: 20.0}/${loc?.lon ?: 0.0}/${if (loc == null) 1 else zoom}")
                 },
                 onAbout = { nav.navigate("about") },
+                onLogbook = { nav.navigate("logbook") },
+                onAccount = { nav.navigate("account") },
                 onBack = if (nav.previousBackStackEntry != null) ({ nav.popBackStack() }) else null,
             )
         }
@@ -51,6 +55,7 @@ fun AppNav() {
                 routeId = id,
                 onOpenArea = { nav.navigate("area/$it") },
                 onOpenRoute = { nav.navigate("route/$it") },
+                onAccount = { nav.navigate("account") },
                 onBack = { nav.popBackStack() },
             )
         }
@@ -87,5 +92,9 @@ fun AppNav() {
             )
         }
         composable("about") { AboutScreen(onBack = { nav.popBackStack() }) }
+        composable("account") { AccountScreen(onBack = { nav.popBackStack() }, onLogbook = { nav.navigate("logbook") }) }
+        composable("logbook") {
+            LogbookScreen(onOpenRoute = { nav.navigate("route/$it") }, onAccount = { nav.navigate("account") }, onBack = { nav.popBackStack() })
+        }
     }
 }

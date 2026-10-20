@@ -1,0 +1,22 @@
+{
+  "data": {
+    "account": 14955324951,
+    "climbedGearStyle": "sport",
+    "comment": "app test tick, will be deleted",
+    "date": "2026-10-20",
+    "node": 6135933117,
+    "tick": "redpoint",
+    "version": 2
+  },
+  "ok": {
+    "ascentID": 14955329028,
+    "eventStats": {
+      "attempts": 1,
+      "id": "14955329115",
+      "success": 1,
+      "updated": 1,
+      "when": "2026-10-20"
+    },
+    "isFirstAscent": 1
+  }
+}

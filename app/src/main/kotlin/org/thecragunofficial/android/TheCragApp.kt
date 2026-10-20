@@ -9,7 +9,11 @@ import coil3.disk.directory
 import coil3.network.okhttp.OkHttpNetworkFetcherFactory
 import coil3.request.crossfade
 import okhttp3.OkHttpClient
+import org.thecragunofficial.android.data.auth.AuthApi
+import org.thecragunofficial.android.data.auth.AuthRepository
+import org.thecragunofficial.android.data.logbook.LogbookRepository
 import org.thecragunofficial.android.data.remote.ApiFactory
+import org.thecragunofficial.android.data.remote.authHttp
 import org.thecragunofficial.android.data.remote.KeyValueStore
 import org.thecragunofficial.android.data.remote.PersistentCookieJar
 import org.thecragunofficial.android.data.remote.TheCragApi
@@ -32,6 +36,13 @@ class AppGraph(app: Application) {
     val topos = TopoRepository(api)
     val map = MapRepository(api, ApiFactory.json)
     val recents = RecentStore(store, ApiFactory.json)
+
+    // Stage 2: the account. Separate client and cookie jar; browsing above never sees it.
+    val authCookies = PersistentCookieJar(store, PersistentCookieJar.AUTH_KEY)
+    val authHttp: OkHttpClient = ApiFactory.authHttp(authCookies, BuildConfig.DEBUG)
+    val authApi: AuthApi = ApiFactory.retrofit(authHttp).create(AuthApi::class.java)
+    val auth = AuthRepository(authApi, authCookies, store, ApiFactory.json)
+    val logbook = LogbookRepository(authApi, auth, app.filesDir, ApiFactory.json)
 
     /** Drops everything fetched from theCrag: in-memory copies and the HTTP disk cache. Blocking; call off the main thread. */
     fun clearCaches() {

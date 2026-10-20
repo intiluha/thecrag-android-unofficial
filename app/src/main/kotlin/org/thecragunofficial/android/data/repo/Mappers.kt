@@ -77,6 +77,7 @@ fun NodeDto.toRouteDetail() = RouteDetail(
     gradeContext = context,
     gradeBand = gradeBand ?: 0,
     style = style,
+    styleStub = styleStub,
     stars = stars ?: 0,
     height = height.asMeasure()?.let { Measure(it.first, it.second) },
     bolts = bolts,

@@ -62,6 +62,8 @@ fun AreaScreen(
     onSearch: (ancestorId: Long, ancestorName: String) -> Unit,
     onOpenMap: (LatLon?, Int) -> Unit,
     onAbout: () -> Unit,
+    onLogbook: () -> Unit,
+    onAccount: () -> Unit,
     onBack: (() -> Unit)?,
 ) {
     val context = LocalContext.current
@@ -87,6 +89,8 @@ fun AreaScreen(
                     IconButton(onClick = { onSearch(areaId, title) }) { Icon(Icons.Default.Search, stringResource(R.string.search)) }
                     OverflowMenu(
                         stringResource(R.string.refresh) to vm::reload,
+                        stringResource(R.string.logbook) to onLogbook,
+                        stringResource(R.string.account) to onAccount,
                         stringResource(R.string.about) to onAbout,
                     )
                 },

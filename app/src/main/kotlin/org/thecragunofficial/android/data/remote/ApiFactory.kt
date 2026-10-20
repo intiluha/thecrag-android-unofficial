@@ -48,3 +48,21 @@ object ApiFactory {
 
     fun api(retrofit: Retrofit): TheCragApi = retrofit.create(TheCragApi::class.java)
 }
+
+/**
+ * Client for the logged-in session: its own cookie jar, no redirects (a login
+ * success is the 302 itself, the target page is never loaded), no disk cache,
+ * same rate limiter. Nothing else ever uses this client.
+ */
+fun ApiFactory.authHttp(cookies: PersistentCookieJar, debug: Boolean): OkHttpClient {
+    val b = OkHttpClient.Builder()
+        .cookieJar(cookies)
+        .followRedirects(false)
+        .followSslRedirects(false)
+        .connectTimeout(20, TimeUnit.SECONDS)
+        .readTimeout(30, TimeUnit.SECONDS)
+        .addInterceptor(SessionInterceptor())
+        .addNetworkInterceptor(RateLimitInterceptor())
+    if (debug) b.addInterceptor(HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BASIC })
+    return b.build()
+}

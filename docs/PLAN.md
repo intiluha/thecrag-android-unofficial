@@ -83,17 +83,25 @@ OkHttp 4, kotlinx.serialization, Room 2.7, Coil 3, MapLibre Native Android
    attribution and cache clearing, minified release build signed with the debug key.
    Skipped: F-Droid metadata (`fastlane/`), since no release is planned.
 
-### Stage 2: account, logbook, ticks
-- Login in a WebView on `/processmap/login`; capture `ApacheSessionID` from the
-  CookieManager; the API client sends `?cookieAuth=1` on writes. First task is to
-  verify `POST /api/ascent/create?cookieAuth=1` against a throwaway account (needs an
-  owner-approved test, not done yet). Form fields and the ascent schema are documented.
-- Logbook read: `/api/climber/id/{me}/ascents` with the cookie if it works at that
-  level, else the supporter personal key path (`/api/logbook/ascents`) as an opt-in.
-- Tick UI: tick type list from `/api/config/ascent/ticktypes` filtered by gear style,
-  date, grade with system, quality, comment; queued offline, sent when online.
-- If theCrag grants a partner key: swap the auth layer for OAuth 1.0a (signpost-style
-  signing, custom-scheme callback); keep the cookie path as fallback.
+### Stage 2: account, logbook, ticks (verified live 2026-10-20 with a throwaway account on the test area)
+- Login is driven natively: GET the cids.cgi form (session cookie + CSRF), POST the
+  credentials, 302 = success, then one `GET /api/account/id/me?cookieAuth=1` for the id.
+  No WebView, the login target page is never loaded, the password is never stored.
+- The logged-in session lives in its own OkHttp client and cookie jar (no redirects, no
+  cache). Only login, `me`, the own ascents list and ascent create/validate use it; all
+  browsing stays on the anonymous session, so the account is disclosed as little as possible.
+- Everything needed is at the `authweb` access level (session cookie + `cookieAuth=1`),
+  and the live replies are saved as `api-samples/account_me*.json` and `ascent_*_reply.json`;
+  the ascent parser still reads fields defensively with fallbacks.
+- Logbook: `GET /api/climber/id/me/ascents?cookieAuth=1### Stage 3page=N### Stage 3page-size=250` on request
+  only, stored as JSON in private storage. Ticks: `POST /api/ascent/create?cookieAuth=1`
+  with the documented v2 schema; `/create/validate` as a dry run; network failures park
+  the tick in an outbox with manual retry.
+- Delete: `POST /api/ascent/delete?cookieAuth=1` with `{"data":{"ascent":id}}` (long-press in the logbook).
+- Open: whether `climbedGearStyle`
+  values beyond sport/trad/boulder are right, editing an ascent, paging of the ascents
+  list beyond one page (no `query.page` seen in the reply), the
+  partner-key OAuth path if theCrag ever grants one.
 
 ### Stage 3: offline favourites
 - "Star" an area: background WorkManager job walks the subtree (children/area +
