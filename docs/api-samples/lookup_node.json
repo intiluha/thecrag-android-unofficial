@@ -1,0 +1,29 @@
+{
+  "data": [
+    {
+      "id": 11740915,
+      "name": "Arapiles",
+      "qualifier": "",
+      "type": "area"
+    },
+    {
+      "id": 13120357,
+      "name": "Arapiles",
+      "qualifier": "(18)",
+      "type": "route"
+    },
+    {
+      "id": 16714105,
+      "name": "Arapiles",
+      "qualifier": "(5.10a)",
+      "type": "route"
+    }
+  ],
+  "query": {
+    "entity": "lookup",
+    "page": 1,
+    "page-size": "5",
+    "request": "node",
+    "search": "arapiles"
+  }
+}

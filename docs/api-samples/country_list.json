@@ -1,0 +1,73 @@
+{
+  "data": [
+    {
+      "countryCode": "AF",
+      "countryNodeID": 11746843,
+      "defaultGrading": {
+        "context": "US",
+        "contextID": "7516378",
+        "contextName": "American (YDS ...)",
+        "systems": [
+          "CLS",
+          "YDS",
+          "YDS_ALT",
+          "BLDV",
+          "BLDB",
+          "BLDS",
+          "BLDP",
+          "BLDJT",
+          "AID",
+          "AIDC",
+          "NCCS",
+          "PROT",
+          "AICE",
+          "WICE",
+          "MIXED",
+          "STAR",
+          "NCCST",
+          "SCHALL",
+          "DWS_S"
+        ]
+      },
+      "id": "7478170",
+      "label": "afghanistan",
+      "name": "Afghanistan"
+    },
+    {
+      "countryCode": "AX",
+      "defaultGrading": {
+        "context": "US",
+        "contextID": "7516378",
+        "contextName": "American (YDS ...)",
+        "systems": [
+          "CLS",
+          "YDS",
+          "YDS_ALT",
+          "BLDV",
+          "BLDB",
+          "BLDS",
+          "BLDP",
+          "BLDJT",
+          "AID",
+          "AIDC",
+          "NCCS",
+          "PROT",
+          "AICE",
+          "WICE",
+          "MIXED",
+          "STAR",
+          "NCCST",
+          "SCHALL",
+          "DWS_S"
+        ]
+      },
+      "id": "7478176",
+      "label": "alandislands",
+      "name": "Aland Islands"
+    }
+  ],
+  "query": {
+    "entity": "country",
+    "request": "list"
+  }
+}

@@ -1,0 +1,276 @@
+{
+  "data": [
+    {
+      "ascentCount": 552,
+      "asciiName": "Cassandra Area",
+      "averageHeight": [
+        29,
+        "m"
+      ],
+      "depth": 7,
+      "displayAverageHeight": [
+        29,
+        "m"
+      ],
+      "gbAscents": [
+        0,
+        2,
+        277,
+        238,
+        2,
+        0
+      ],
+      "gbRoutes": [
+        0,
+        2,
+        3,
+        6,
+        1,
+        0
+      ],
+      "geometry": {
+        "altitude": {
+          "avg": 228,
+          "max": 228,
+          "min": 228,
+          "showMinMax": "",
+          "unit": "m"
+        },
+        "areasize": 136,
+        "bbox": [
+          141.8457239,
+          -36.7625383,
+          141.8459319,
+          -36.7624176
+        ],
+        "boundary": [
+          [
+            [
+              141.8459019,
+              -36.7625207
+            ],
+            [
+              141.8459319,
+              -36.7624176
+            ],
+            [
+              141.8457817,
+              -36.7624584
+            ],
+            [
+              141.8457239,
+              -36.7625383
+            ],
+            [
+              141.8459019,
+              -36.7625207
+            ]
+          ]
+        ],
+        "center": [
+          141.845828,
+          -36.762478
+        ],
+        "lat": -36.762478,
+        "long": 141.845828,
+        "point": [
+          "141.84583850037",
+          "-36.76248490940"
+        ]
+      },
+      "hasUnarchivedChildren": 1,
+      "hide": {},
+      "id": "11962555",
+      "kudos": 884,
+      "locatedness": 18,
+      "maxPop": 69,
+      "name": "Cassandra Area",
+      "numberPhotos": 2,
+      "numberRoutes": 12,
+      "numberTopos": 3,
+      "redirectStubs": [],
+      "siblingLabel": 1,
+      "styles": [
+        {
+          "gradeBand": [
+            0,
+            2,
+            2,
+            4,
+            1,
+            0
+          ],
+          "label": "Trad",
+          "style": "Trad",
+          "total": 9,
+          "translate_stub": "dbconfig.route-gear-style.trad"
+        },
+        {
+          "gradeBand": [
+            0,
+            0,
+            1,
+            2,
+            0,
+            0
+          ],
+          "label": "Sport",
+          "style": "Sport",
+          "total": 3,
+          "translate_stub": "dbconfig.route-gear-style.sport"
+        }
+      ],
+      "subType": "Cliff",
+      "totalFavorites": 2,
+      "type": "area",
+      "urlAncestorStub": "australia/arapiles/atridae"
+    },
+    {
+      "ascentCount": 1389,
+      "asciiName": "The Flight Deck",
+      "averageHeight": [
+        21,
+        "m"
+      ],
+      "depth": 7,
+      "displayAverageHeight": [
+        21,
+        "m"
+      ],
+      "gbAscents": [
+        0,
+        0,
+        0,
+        462,
+        613,
+        0
+      ],
+      "gbRoutes": [
+        0,
+        0,
+        0,
+        3,
+        6,
+        0
+      ],
+      "geometry": {
+        "altitude": {
+          "avg": 224,
+          "max": 230,
+          "min": 213,
+          "showMinMax": "",
+          "unit": "m"
+        },
+        "areasize": 262,
+        "bbox": [
+          141.8456772,
+          -36.7624584,
+          141.8459319,
+          -36.7622784
+        ],
+        "boundary": [
+          [
+            [
+              141.8456772,
+              -36.7623414
+            ],
+            [
+              141.8458755,
+              -36.7622784
+            ],
+            [
+              141.8459319,
+              -36.7624176
+            ],
+            [
+              141.8457817,
+              -36.7624584
+            ],
+            [
+              141.8457817,
+              -36.7624584
+            ],
+            [
+              141.8457817,
+              -36.7624584
+            ],
+            [
+              141.8457817,
+              -36.7624584
+            ],
+            [
+              141.8457817,
+              -36.7624584
+            ],
+            [
+              141.8456772,
+              -36.7623414
+            ]
+          ]
+        ],
+        "center": [
+          141.845805,
+          -36.762368
+        ],
+        "lat": -36.762368,
+        "long": 141.845805,
+        "point": [
+          "141.84581531598",
+          "-36.76237052414"
+        ]
+      },
+      "hasUnarchivedChildren": 1,
+      "hide": {},
+      "id": 11962579,
+      "kudos": 5463,
+      "locatedness": 23,
+      "maxPop": 81,
+      "name": "The Flight Deck",
+      "numberPhotos": 6,
+      "numberRoutes": 9,
+      "numberTopos": 3,
+      "redirectStubs": [],
+      "siblingLabel": 2,
+      "styles": [
+        {
+          "gradeBand": [
+            0,
+            0,
+            0,
+            2,
+            3,
+            0
+          ],
+          "label": "Trad",
+          "style": "Trad",
+          "total": 5,
+          "translate_stub": "dbconfig.route-gear-style.trad"
+        },
+        {
+          "gradeBand": [
+            0,
+            0,
+            0,
+            1,
+            3,
+            0
+          ],
+          "label": "Sport",
+          "style": "Sport",
+          "total": 4,
+          "translate_stub": "dbconfig.route-gear-style.sport"
+        }
+      ],
+      "subType": "Cliff",
+      "totalFavorites": 1,
+      "type": "area",
+      "urlAncestorStub": "australia/arapiles/atridae"
+    }
+  ],
+  "query": {
+    "arg": "children/area",
+    "entity": "node",
+    "id": "11764567",
+    "request": "id"
+  }
+}

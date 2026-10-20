@@ -1,0 +1,142 @@
+{
+  "data": [
+    {
+      "ascentCount": 61,
+      "asciiName": "Have a Good Flight Direct Start",
+      "context": "AU",
+      "cragScore": 4.24,
+      "depth": 8,
+      "displayHeight": [
+        20,
+        "m"
+      ],
+      "flags": {
+        "IsFree": 1,
+        "IsSport": 1
+      },
+      "grade": "27",
+      "gradeAtom": {
+        "context": "AU",
+        "grade": "27",
+        "gradeBand": 4,
+        "gradeInContext": "27",
+        "gradeStyle": "Free",
+        "internal": [
+          326,
+          338
+        ],
+        "type": "grade"
+      },
+      "gradeBand": 4,
+      "gradeInContext": "27",
+      "gradeStyle": "Free",
+      "height": [
+        "20",
+        "m"
+      ],
+      "id": 277863564,
+      "name": "Have a Good Flight Direct Start",
+      "parentID": 11962579,
+      "pitches": 1,
+      "popularity": 51,
+      "qualityScore": 67,
+      "rawGrade": [
+        326,
+        338
+      ],
+      "relativePopularity": 51,
+      "seasonality": [
+        4,
+        2,
+        3,
+        12,
+        5,
+        6,
+        2,
+        3,
+        10,
+        7,
+        4,
+        2
+      ],
+      "siblingLabel": 1,
+      "stars": 2,
+      "style": "Sport",
+      "styleStub": "sport",
+      "type": "route",
+      "urlAncestorStub": "australia/arapiles/atridae"
+    },
+    {
+      "ascentCount": 4,
+      "asciiName": "Afterburner",
+      "bolts": 7,
+      "context": "AU",
+      "cragScore": 14.76,
+      "depth": 8,
+      "displayHeight": [
+        25,
+        "m"
+      ],
+      "flags": {
+        "IsFree": 1,
+        "IsTrad": 1
+      },
+      "grade": "30",
+      "gradeAtom": {
+        "context": "AU",
+        "grade": "30",
+        "gradeBand": 4,
+        "gradeInContext": "30",
+        "gradeStyle": "Free",
+        "internal": [
+          364,
+          375
+        ],
+        "type": "grade"
+      },
+      "gradeBand": 4,
+      "gradeInContext": "30",
+      "gradeStyle": "Free",
+      "height": [
+        "25",
+        "m"
+      ],
+      "id": 12872911,
+      "name": "Afterburner",
+      "parentID": 11962579,
+      "popularity": 17,
+      "qualityScore": 46,
+      "rawGrade": [
+        364,
+        375
+      ],
+      "relativePopularity": 17,
+      "seasonality": [
+        0,
+        0,
+        1,
+        2,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "siblingLabel": 2,
+      "stars": 1,
+      "style": "Trad",
+      "styleStub": "trad",
+      "type": "route",
+      "urlAncestorStub": "australia/arapiles/atridae"
+    }
+  ],
+  "query": {
+    "arg": "children/route",
+    "entity": "node",
+    "id": "11962579",
+    "request": "id"
+  }
+}

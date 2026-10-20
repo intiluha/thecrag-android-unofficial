@@ -1,0 +1,239 @@
+{
+  "ascentCount": 1389,
+  "asciiName": "The Flight Deck",
+  "averageHeight": [
+    21,
+    "m"
+  ],
+  "childIDs": [
+    277863564,
+    12872911,
+    12872971,
+    12873043,
+    12873151,
+    12873241,
+    12873343,
+    12873403,
+    12873475
+  ],
+  "depth": 7,
+  "displayAverageHeight": [
+    21,
+    "m"
+  ],
+  "hasTopo": 1,
+  "hasUnarchivedChildren": 1,
+  "hide": {},
+  "id": 11962579,
+  "kudos": 5463,
+  "lastPDFSize": "526212",
+  "lastPDFStaticDate": "2019-07-06T03:37:15Z",
+  "lastPDFStaticSize": "1253224",
+  "locatedness": 23,
+  "maxPop": 81,
+  "name": "The Flight Deck",
+  "numberPhotos": 6,
+  "numberRoutes": 9,
+  "numberTopos": 3,
+  "parentID": 11764567,
+  "permitNode": {
+    "node": {
+      "id": 11764567
+    }
+  },
+  "priceCategory": "Medium",
+  "redirectStubs": [],
+  "seasonality": [
+    56,
+    35,
+    86,
+    262,
+    153,
+    90,
+    60,
+    48,
+    119,
+    110,
+    115,
+    74
+  ],
+  "siblingLabel": 2,
+  "subType": "Cliff",
+  "tlc": {
+    "node": {
+      "id": 11740915
+    }
+  },
+  "topos": [
+    {
+      "aspectFlipped": 0,
+      "hashID": "2e471fcf7e03a141d7b7b7a42d7fcc67ceb0dd7f",
+      "height": 550,
+      "id": "209410425",
+      "insideNode": {
+        "ascentCount": 11926,
+        "asciiName": "Atridae",
+        "averageHeight": [
+          29,
+          "m"
+        ],
+        "depth": 6,
+        "displayAverageHeight": [
+          29,
+          "m"
+        ],
+        "hasUnarchivedChildren": 1,
+        "hide": {},
+        "id": 11764567,
+        "kudos": 40455,
+        "locatedness": 31,
+        "maxPop": 96,
+        "name": "Atridae",
+        "numberPhotos": 53,
+        "numberRoutes": 65,
+        "numberTopos": 23,
+        "permitNode": {
+          "node": {
+            "id": 11764567
+          }
+        },
+        "priceCategory": "Medium",
+        "redirectStubs": [],
+        "siblingLabel": 8,
+        "subAreaCount": 5,
+        "subType": "Crag",
+        "tlc": {
+          "node": {
+            "id": "11740915"
+          }
+        },
+        "totalFavorites": 11,
+        "type": "area",
+        "urlStub": "australia/arapiles/atridae"
+      },
+      "lastUpdated": 1681528915,
+      "linked": "true",
+      "name": "",
+      "node": 11764567,
+      "objects": [
+        {
+          "ascentCount": 4415,
+          "asciiName": "Agamemnon Area",
+          "averageHeight": [
+            27,
+            "m"
+          ],
+          "beta": [
+            {
+              "markdown": "The area uphill and to the R of Muldoon.\n\nEmergency Location: Mount Arapiles,The Atridae Area",
+              "name": "Description"
+            },
+            {
+              "markdown": "There are rap stations above many routes, but if you are trying to get to one from above your best bet is Agamemnon (30m) or walk L to the rap anchors above Muldoon (35m). Or walk off R along the cliff top and down the gully.",
+              "name": "Descent Notes"
+            }
+          ],
+          "depth": 7,
+          "displayAverageHeight": [
+            27,
+            "m"
+          ],
+          "hasUnarchivedChildren": 1,
+          "hide": {},
+          "id": 11962651,
+          "kudos": 15691,
+          "locatedness": 29,
+          "maxPop": 94,
+          "name": "Agamemnon Area",
+          "numberPhotos": 24,
+          "numberRoutes": 28,
+          "numberTopos": 7,
+          "objectID": 11962651,
+          "objectType": "Area",
+          "parentObjectID": 11764567,
+          "permitNode": {
+            "node": {
+              "id": 11764567
+            }
+          },
+          "priceCategory": "Medium",
+          "redirectStubs": [],
+          "shape": "327.5 327 ctvnd Agamemnon%0AArea,278 287,327.5 287,327.5 327,327.5 287,377 287,377 70,278 70",
+          "siblingLabel": 5,
+          "subType": "Cliff",
+          "tlc": {
+            "node": {
+              "id": 11740915
+            }
+          },
+          "totalFavorites": 3,
+          "type": "area",
+          "urlAncestorStub": "australia/arapiles/atridae"
+        },
+        {
+          "ascentCount": 3326,
+          "asciiName": "Muldoon Area",
+          "averageHeight": [
+            36,
+            "m"
+          ],
+          "beta": [
+            {
+              "markdown": "Muldoon, Curved Air and Fail Safe start at the base of the Atridae and climb the Main Wall.\n\nThe other routes are on the neighbouring buttresses- Iphigenia and Clytemnaestra.\n\nEmergency Location: Mount Arapiles,The Atridae Area",
+              "name": "Description"
+            },
+            {
+              "markdown": "Abseil descent : 35m from above Muldoon. Some people use a single 60m rope and scramble the last few metres but be careful, there have been slips on this.\n\nOtherwise walk off to right and down the gully between Atridae and Organ Pipes.",
+              "name": "Descent Notes"
+            }
+          ],
+          "depth": 7,
+          "displayAverageHeight": [
+            36,
+            "m"
+          ],
+          "hasUnarchivedChildren": 1,
+          "hide": {},
+          "id": 11962627,
+          "kudos": 13196,
+          "locatedness": 22,
+          "maxPop": 96,
+          "name": "Muldoon Area",
+          "numberPhotos": 13,
+          "numberRoutes": 8,
+          "numberTopos": 4,
+          "objectID": 11962627,
+          "objectType": "Area",
+          "parentObjectID": 11764567,
+          "permitNode": {
+            "node": {
+              "id": 11764567
+            }
+          },
+          "priceCategory": "Medium",
+          "redirectStubs": [],
+          "shape": "259 47.6 rbvnd Muldoon%0AArea,278 108,278 301,240 301,240 108,259 108,259 47.6,259 108",
+          "siblingLabel": 4,
+          "subType": "Cliff",
+          "tlc": {
+            "node": {
+              "id": 11740915
+            }
+          },
+          "totalFavorites": 2,
+          "type": "area",
+          "urlAncestorStub": "australia/arapiles/atridae"
+        }
+      ],
+      "origHeight": 1600,
+      "origWidth": 1200,
+      "positionMaxLabel": 5,
+      "positionMinLabel": 1,
+      "type": "topo",
+      "width": 413
+    }
+  ],
+  "totalFavorites": 1,
+  "type": "area",
+  "urlAncestorStub": "australia/arapiles/atridae"
+}

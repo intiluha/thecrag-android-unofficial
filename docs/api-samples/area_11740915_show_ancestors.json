@@ -1,0 +1,113 @@
+{
+  "altNames": [
+    {
+      "name": "Djurite",
+      "type": "Language"
+    }
+  ],
+  "ancestors": [
+    {
+      "depth": 0,
+      "id": "7546063",
+      "name": "World",
+      "numberRoutes": 1493365,
+      "subAreaCount": 12,
+      "subType": "Region",
+      "type": "area",
+      "urlStub": "world"
+    },
+    {
+      "depth": 1,
+      "id": "11737891",
+      "name": "Oceania",
+      "numberRoutes": 129798,
+      "subAreaCount": 5,
+      "subType": "Region",
+      "type": "area",
+      "urlStub": "oceania"
+    },
+    {
+      "countryCode": "AU",
+      "countryID": 7478254,
+      "depth": 2,
+      "id": "11737699",
+      "isCountry": 1,
+      "name": "Australia",
+      "numberRoutes": 105674,
+      "subAreaCount": 9,
+      "subType": "Region",
+      "type": "area",
+      "unique": "A continent of crags, diverse in terms of rock types and climbing styles. Explore the sheer endless climbing opportunities here on the world's largest rock climbing and bouldering platform.",
+      "urlStub": "australia"
+    }
+  ],
+  "ascentCount": 179776,
+  "asciiName": "Arapiles",
+  "averageHeight": [
+    27,
+    "m"
+  ],
+  "childIDs": [
+    11764447,
+    11764471,
+    11764495,
+    11962267,
+    11962291
+  ],
+  "depth": 5,
+  "displayAverageHeight": [
+    27,
+    "m"
+  ],
+  "hasTopo": 1,
+  "hasUnarchivedChildren": 1,
+  "hide": {},
+  "id": 11740915,
+  "isTLC": 1,
+  "kudos": 439617,
+  "lastPDFSize": "49316446",
+  "lastPDFStaticDate": "2016-04-23T17:10:07Z",
+  "lastPDFStaticSize": "51268519",
+  "locatedness": 167,
+  "maxPop": 96,
+  "name": "Arapiles",
+  "numberCircuits": 19,
+  "numberPhotos": 958,
+  "numberRoutes": 3339,
+  "numberTopos": 528,
+  "parentID": 140637204,
+  "permitNode": {
+    "node": {
+      "id": 11740915
+    }
+  },
+  "priceCategory": "Medium",
+  "redirectStubs": [],
+  "seasonality": [
+    10037,
+    5884,
+    12263,
+    31448,
+    14361,
+    9401,
+    6141,
+    5441,
+    14482,
+    17457,
+    14239,
+    11177,
+    -15
+  ],
+  "siblingLabel": 1,
+  "subAreaCount": 24,
+  "subType": "Crag",
+  "tlc": {
+    "node": {
+      "id": 11740915
+    }
+  },
+  "totalFavorites": 1068,
+  "type": "area",
+  "unique": "The most loved and known, easily accessible quality crag in the land.",
+  "urlStub": "australia/arapiles"
+}

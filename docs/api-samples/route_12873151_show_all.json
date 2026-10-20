@@ -1,0 +1,372 @@
+{
+  "ancestors": [
+    {
+      "depth": 0,
+      "id": 7546063,
+      "name": "World",
+      "numberRoutes": 1493366,
+      "subAreaCount": 12,
+      "subType": "Region",
+      "type": "area",
+      "urlStub": "world"
+    },
+    {
+      "depth": 1,
+      "id": 11737891,
+      "name": "Oceania",
+      "numberRoutes": 129798,
+      "subAreaCount": 5,
+      "subType": "Region",
+      "type": "area",
+      "urlStub": "oceania"
+    },
+    {
+      "countryCode": "AU",
+      "countryID": 7478254,
+      "depth": 2,
+      "id": 11737699,
+      "isCountry": 1,
+      "name": "Australia",
+      "numberRoutes": 105674,
+      "subAreaCount": 9,
+      "subType": "Region",
+      "type": "area",
+      "unique": "A continent of crags, diverse in terms of rock types and climbing styles. Explore the sheer endless climbing opportunities here on the world's largest rock climbing and bouldering platform.",
+      "urlStub": "australia"
+    },
+    {
+      "depth": 3,
+      "id": 11738035,
+      "name": "Victoria",
+      "numberRoutes": 22781,
+      "short": "Vic",
+      "subAreaCount": 6,
+      "subType": "Region",
+      "type": "area",
+      "urlStub": "australia/victoria"
+    },
+    {
+      "depth": 4,
+      "id": 140637204,
+      "name": "North West",
+      "numberRoutes": 13322,
+      "subAreaCount": 5,
+      "subType": "Region",
+      "type": "area",
+      "urlStub": "australia/victoria/north-west"
+    },
+    {
+      "depth": 5,
+      "id": 11740915,
+      "isTLC": 1,
+      "name": "Arapiles",
+      "numberRoutes": 3339,
+      "subAreaCount": 24,
+      "subType": "Crag",
+      "type": "area",
+      "unique": "The most loved and known, easily accessible quality crag in the land.",
+      "urlStub": "australia/arapiles"
+    },
+    {
+      "depth": 6,
+      "id": 11764567,
+      "name": "Atridae",
+      "numberRoutes": 65,
+      "subAreaCount": 5,
+      "subType": "Crag",
+      "type": "area",
+      "urlStub": "australia/arapiles/atridae"
+    },
+    {
+      "depth": 7,
+      "id": 11962579,
+      "name": "The Flight Deck",
+      "numberRoutes": 9,
+      "subAreaCount": 0,
+      "subType": "Cliff",
+      "type": "area",
+      "urlAncestorStub": "australia/arapiles/atridae"
+    }
+  ],
+  "ascentCount": 740,
+  "asciiName": "Have A Good Flight",
+  "beta": [
+    {
+      "attribute": {
+        "foreignID": "bomber pro",
+        "publication": {
+          "id": 126466845,
+          "name": "ACA Route Register"
+        },
+        "url": "http://www.climb.org.au/index.php?page_id=10&action=route&route_id=8077"
+      },
+      "copyrightID": "126454854",
+      "markupHTML": "<p>Climb It'll Never Fly almost to arete, then cut back diagonally right and up to another bolt (exciting) then up to anchor.</p>\n\n<p>Start: As for It'll Never Fly.</p>\n",
+      "name": "Description",
+      "publisherID": "126454860"
+    },
+    {
+      "inheritedFrom": {
+        "id": "11740915",
+        "urlStub": "australia/arapiles"
+      },
+      "markupHTML": "<p>Cultural Heritage closures now apply to some parts of Arapiles, and several climbs are now closed.  Please respect these closures.  For the latest advice (Oct 2026) please see the \"Access Changes Summary\" document at <a href=\"https://engage.vic.gov.au/dyurrite\" target=\"_blank\">https://engage.vic.gov.au/dyurrite</a>  </p>\n\n<p>Bird Nesting September-December\nRaptors usually nest on the following climbs in Spring : <a class=\"internal\" data-nid=\"12872461\" href=\"/climbing/australia/arapiles/atridae/route/12872461\">Cassandra</a>,\n<a class=\"internal\" data-nid=\"11966899\" href=\"/climbing/australia/arapiles/route/11966899\">Eurydice</a>, <a class=\"internal\" data-nid=\"12947503\" href=\"/climbing/australia/arapiles/northern-group/route/12947503\">Harlequin Cracks</a>, <a class=\"internal\" data-nid=\"12962965\" href=\"/climbing/australia/arapiles/mitre-rock/route/12962965\">Revelations</a>.\nNesting usually finishes mid-December. There may or may not be signs in place at these times. \nPlease keep 50m clear of these climbs if there appears to be nesting activity.</p>\n\n<p>State Park - no dogs. No fires allowed Oct-Apr (inclusive).</p>\n",
+      "name": "Access Issues"
+    },
+    {
+      "inheritedFrom": {
+        "id": "11740915",
+        "urlStub": "australia/arapiles"
+      },
+      "markupHTML": "<p>Mount Arapiles is first and foremost a trad climbing area. The few sport climbs tend to be in the higher grades where no natural pro is available.</p>\n\n<p>Bolting, particularly retro-bolting, is discouraged and should only be undertaken after extensive consultation with the local climbers, first ascensionists, etc. Inappropriately placed bolts have been chopped.</p>\n\n<p>Do not chip the rock.</p>\n\n<p>Look after the park.  </p>\n\n<ul>\n<li><p>Stick to the paths. </p></li>\n<li><p>Don't disturb the wildlife. </p></li>\n<li><p>Routes near peregrine falcon nesting sites are closed in the spring.</p></li>\n<li><p>Minimise the impact of your camping (fuel stoves not fires, take your rubbish with you, etc).</p></li>\n</ul>\n",
+      "name": "Ethic"
+    }
+  ],
+  "bolts": 5,
+  "context": "AU",
+  "cragScore": 2.4,
+  "depth": 8,
+  "displayHeight": [
+    18,
+    "m"
+  ],
+  "flags": {
+    "IsFree": 1,
+    "IsSport": 1
+  },
+  "grade": "25",
+  "gradeAtom": {
+    "context": "AU",
+    "grade": "25",
+    "gradeBand": 4,
+    "gradeInContext": "25",
+    "gradeStyle": "Free",
+    "internal": [
+      301,
+      313
+    ],
+    "type": "grade"
+  },
+  "gradeBand": 4,
+  "gradeInContext": "25",
+  "gradeStyle": "Free",
+  "height": [
+    "18",
+    "m"
+  ],
+  "hide": {},
+  "history": [
+    {
+      "climbers": "Chris Shepherd",
+      "date": "1982-09-20T00:00:00Z",
+      "epoch": 401328000,
+      "id": "143065845",
+      "type": "First Ascent"
+    }
+  ],
+  "id": "12873151",
+  "name": "Have A Good Flight",
+  "parentID": 11962579,
+  "popularity": 81,
+  "priceCategory": "Medium",
+  "qualityScore": 83,
+  "rawGrade": [
+    301,
+    313
+  ],
+  "relativePopularity": 81,
+  "seasonality": [
+    29,
+    24,
+    62,
+    144,
+    92,
+    49,
+    34,
+    25,
+    65,
+    65,
+    57,
+    46
+  ],
+  "siblingLabel": 5,
+  "stars": 3,
+  "style": "Sport",
+  "styleStub": "sport",
+  "systems": {
+    "7510852": [
+      "25"
+    ]
+  },
+  "tlc": {
+    "node": {
+      "id": 11740915
+    }
+  },
+  "topos": [
+    {
+      "aspectFlipped": 0,
+      "hashID": "928abc94d9e930b0d5fb58e0af620c1cd4924f6c",
+      "height": 504,
+      "id": "119694216",
+      "insideNode": {
+        "ascentCount": 1389,
+        "asciiName": "The Flight Deck",
+        "averageHeight": [
+          21,
+          "m"
+        ],
+        "beta": [
+          {
+            "markupHTML": "<p>The open corner. Lots of chalk on the L wall</p>\n\n<p>Emergency Location: Mount Arapiles,The Flight Deck Area</p>\n",
+            "multiple": 1,
+            "name": "Description"
+          },
+          {
+            "inheritedFrom": {
+              "id": "11740915",
+              "urlStub": "australia/arapiles"
+            },
+            "markupHTML": "<p>Cultural Heritage closures now apply to some parts of Arapiles, and several climbs are now closed.  Please respect these closures.  For the latest advice (Oct 2026) please see the \"Access Changes Summary\" document at <a href=\"https://engage.vic.gov.au/dyurrite\" target=\"_blank\">https://engage.vic.gov.au/dyurrite</a>  </p>\n\n<p>Bird Nesting September-December\nRaptors usually nest on the following climbs in Spring : <a class=\"internal\" data-nid=\"12872461\" href=\"/climbing/australia/arapiles/atridae/route/12872461\">Cassandra</a>,\n<a class=\"internal\" data-nid=\"11966899\" href=\"/climbing/australia/arapiles/route/11966899\">Eurydice</a>, <a class=\"internal\" data-nid=\"12947503\" href=\"/climbing/australia/arapiles/northern-group/route/12947503\">Harlequin Cracks</a>, <a class=\"internal\" data-nid=\"12962965\" href=\"/climbing/australia/arapiles/mitre-rock/route/12962965\">Revelations</a>.\nNesting usually finishes mid-December. There may or may not be signs in place at these times. \nPlease keep 50m clear of these climbs if there appears to be nesting activity.</p>\n\n<p>State Park - no dogs. No fires allowed Oct-Apr (inclusive).</p>\n",
+            "name": "Access Issues"
+          },
+          {
+            "markupHTML": "<p>Steep scramble up the slabs below.</p>\n",
+            "name": "Approach"
+          },
+          {
+            "markupHTML": "<p>There is a rap station at the top of It'll Never Fly and one at the top of <a class=\"internal\" data-nid=\"12873241\" href=\"/climbing/australia/arapiles/atridae/route/12873241\">Orestes</a>.</p>\n",
+            "name": "Descent Notes"
+          },
+          {
+            "inheritedFrom": {
+              "id": "11740915",
+              "urlStub": "australia/arapiles"
+            },
+            "markupHTML": "<p>Mount Arapiles is first and foremost a trad climbing area. The few sport climbs tend to be in the higher grades where no natural pro is available.</p>\n\n<p>Bolting, particularly retro-bolting, is discouraged and should only be undertaken after extensive consultation with the local climbers, first ascensionists, etc. Inappropriately placed bolts have been chopped.</p>\n\n<p>Do not chip the rock.</p>\n\n<p>Look after the park.  </p>\n\n<ul>\n<li><p>Stick to the paths. </p></li>\n<li><p>Don't disturb the wildlife. </p></li>\n<li><p>Routes near peregrine falcon nesting sites are closed in the spring.</p></li>\n<li><p>Minimise the impact of your camping (fuel stoves not fires, take your rubbish with you, etc).</p></li>\n</ul>\n",
+            "name": "Ethic"
+          }
+        ],
+        "depth": 7,
+        "displayAverageHeight": [
+          21,
+          "m"
+        ],
+        "hasUnarchivedChildren": 1,
+        "hide": {},
+        "id": 11962579,
+        "kudos": 5463,
+        "locatedness": 23,
+        "maxPop": 81,
+        "name": "The Flight Deck",
+        "numberPhotos": 6,
+        "numberRoutes": 9,
+        "numberTopos": 3,
+        "permitNode": {
+          "node": {
+            "id": 11764567
+          }
+        },
+        "priceCategory": "Medium",
+        "redirectStubs": [],
+        "siblingLabel": 2,
+        "subType": "Cliff",
+        "tlc": {
+          "node": {
+            "id": 11740915
+          }
+        },
+        "totalFavorites": 1,
+        "type": "area",
+        "urlAncestorStub": "australia/arapiles/atridae"
+      },
+      "lastUpdated": 1606788693,
+      "linked": "true",
+      "node": 11962579,
+      "objects": [
+        {
+          "ascentCount": 61,
+          "asciiName": "Have a Good Flight Direct Start",
+          "beta": [
+            {
+              "markupHTML": "<p>Start as for Jetlag, 2m Left of the original but finish up HaGF instead.\nStill great climbing even though the Jetlag finish has been added.</p>\n",
+              "name": "Description"
+            }
+          ],
+          "context": "AU",
+          "cragScore": 4.24,
+          "depth": 8,
+          "displayHeight": [
+            20,
+            "m"
+          ],
+          "flags": {
+            "IsFree": 1,
+            "IsSport": 1
+          },
+          "grade": "27",
+          "gradeAtom": {
+            "context": "AU",
+            "grade": "27",
+            "gradeBand": 4,
+            "gradeInContext": "27",
+            "gradeStyle": "Free",
+            "internal": [
+              326,
+              338
+            ],
+            "type": "grade"
+          },
+          "gradeBand": 4,
+          "gradeInContext": "27",
+          "gradeStyle": "Free",
+          "height": [
+            "20",
+            "m"
+          ],
+          "hide": {},
+          "id": 277863564,
+          "name": "Have a Good Flight Direct Start",
+          "objectID": 277863564,
+          "objectType": "Route",
+          "parentID": 11962579,
+          "parentObjectID": 11962579,
+          "pitches": 1,
+          "points": "260 405 label,240 328,242.1 252.2,210.3 185.6,237 147 label,226 60",
+          "popularity": 51,
+          "priceCategory": "Medium",
+          "qualityScore": 67,
+          "rawGrade": [
+            326,
+            338
+          ],
+          "relativePopularity": 51,
+          "siblingLabel": 1,
+          "stars": 2,
+          "style": "Sport",
+          "styleStub": "sport",
+          "systems": {
+            "7510852": [
+              "27"
+            ]
+          },
+          "tlc": {
+            "node": {
+              "id": 11740915
+            }
+          },
+          "type": "route",
+          "urlAncestorStub": "australia/arapiles/atridae"
+        }
+      ],
+      "origHeight": 823,
+      "origWidth": 898,
+      "positionMaxLabel": 9,
+      "positionMinLabel": 1,
+      "type": "topo",
+      "width": 550
+    }
+  ],
+  "type": "route",
+  "urlAncestorStub": "australia/arapiles/atridae"
+}

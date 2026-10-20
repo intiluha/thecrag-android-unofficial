@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">theCrag unofficial</string>
+    <string name="attribution">Data © theCrag contributors, CC BY-NC-SA</string>
+    <string name="open_on_thecrag">Open on theCrag</string>
+    <string name="search">Search</string>
+    <string name="retry">Retry</string>
+    <string name="world">World</string>
+</resources>
