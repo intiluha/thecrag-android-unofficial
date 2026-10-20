@@ -34,7 +34,11 @@ Error bodies name the level an endpoint needs. What grants each level, verified:
 | key / OAuth | partner key | everything, writes |
 
 Errors are HTTP 400 with `{"error":…,"errorLabel":"insufficient-api-permissions"|"invalid-api-key"|…}`.
-About 80 calls were made without any throttling. The "tab" HTML pages
+**Throttling (observed 2026-10-20):** after a few dozen anonymous HTML node-page loads
+from one IP, every node page answers `302` to `swamp.processing.thecrag.com`, which
+redirects to `/processmap/login?throttled=1`, which serves the login page with HTTP 200.
+It is per IP (a fresh session cookie or no cookie makes no difference) and hits only
+HTML; `/api/*` kept answering normally throughout. The "tab" HTML pages
 (`/routes`, `/maps`, `/topos`, `/photos`, `?format=csv`) redirect anonymous clients to
 a login page; the main node pages do not.
 
@@ -82,13 +86,19 @@ Not available anonymously: `/api/index/summary|detail` (bulk sync), `/api/facet/
 - **Area outlines** come with `shape`: first token `x y <opts> <urlencoded label>` where
   opts = halign(l/c/r) valign(t/m/b) visibility(v/h) line(n/y/p) expand(d/a); the rest are
   polygon vertices `x y`.
-- **Route lines are `shape: null` in the JSON** for every route object seen (37 of 37).
-  Route lines exist only in the HTML of the crag/route page, as
-  `<div class="phototopo" data-tid data-width data-height data-view-scale data-topodata='[…]'>`
-  with `<img src="https://image.thecrag.com/240x320/…" data-big="…/1200x1600/…">`.
-  Sample: `../api-samples/topodata_html_sample.json`. `data-topodata` route entries: `{id,type:"route",num,grade,class:"gb2",zindex,name,stars:"★",style,order,url,points:"46 268,45 224,79 193 lower"}`.
-  `points` is a comma list of `x y [type]`; types: `label, endarrow, draw, bolt, piton, thread, lower, anchor, belay, belayfixed, belaynatural, belaysemi, belayhanging, crux, warning, jumpoff`, trailing `hidden`. The site smooths the polyline in SVG (`static.thecrag.com/cids/phototopo-1.1.65.js`). The coordinate space is `data-width/data-view-scale`, which equals the API topo `width`/`height` (verified: 349/0.6345 = 550 for topo 119694216, present in both sources with the same id). Point smoothing (the site curves the polyline in SVG) still needs visual comparison.
-  The main node pages are Cloudflare-cached and need no cookie, so one HTML GET per crag gives all its topos' route lines. The JSON `topos[]` ids for a node and the `data-tid`s on its page were identical for the two nodes compared (11962579, 11764567).
+- **Route lines are in the JSON after all**: route objects have `shape: null` but carry
+  `points` (`"298 401 label,283 292,…,226 60 lower"`), byte-identical to the `data-topodata`
+  the website embeds in its pages. The first research pass only looked at `shape`, and
+  M4 scraped `div.phototopo[data-topodata]` from the page HTML until page loads turned
+  out to be throttled (above). Samples: `../api-samples/route_12873151_show_topo.json`,
+  `../api-samples/area_2306004858_show_topo.json`.
+  `points` is a comma list of `x y [type]`; types: `label, endarrow, draw, bolt, piton, thread, lower, anchor, belay, belayfixed, belaynatural, belaysemi, belayhanging, crux, warning, jumpoff`, trailing `hidden`. The site smooths the polyline in SVG (`static.thecrag.com/cids/phototopo-1.1.65.js`, which just applies a server-supplied `viewScale`, "scale of max size of topo").
+  **Coordinate space** = the original image fitted into a 550x550 box. Verified on five
+  topos: 898x823 -> 550x504 (page `data-width/data-view-scale` = 349/0.6345), 428x700 ->
+  336x550, 4624x3468 -> 550x412 (Shengavit, five topos), 7000x5250 -> 550x412 (Ohanavan
+  area outlines). The JSON `width`/`height` is unreliable: it is the fitted size for old
+  topos and the original size for newer ones; use `origWidth`/`origHeight`.
+  The route number drawn on the topo is `siblingLabel`; `gradeBand` is the `gbN` class.
 - Image URL: `https://image.thecrag.com/{W}x{H}/{h[0:2]}/{h[2:4]}/{hashID}`; the server
   scales to fit, keeps aspect, may answer webp or jpeg. Without the size segment it
   returns the original. No auth; needs the realistic UA.

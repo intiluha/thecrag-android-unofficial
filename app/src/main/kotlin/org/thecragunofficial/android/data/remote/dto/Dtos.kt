@@ -113,7 +113,10 @@ data class TopoDto(
 data class TopoObjectDto(
     @Serializable(with = LenientLong::class) val objectID: Long = 0,
     val objectType: String = "",
+    /** Area outline: `"x y <opts> <label>,x y,..."`; null on routes. */
     val shape: String? = null,
+    /** Route line: `"x y [type],..."` in the topo base space; null on areas. */
+    val points: String? = null,
     val name: String = "",
     val grade: String? = null,
     @Serializable(with = LenientIntOrNull::class) val gradeBand: Int? = null,

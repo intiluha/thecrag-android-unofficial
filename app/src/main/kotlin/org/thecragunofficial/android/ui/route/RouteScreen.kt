@@ -78,7 +78,7 @@ class RouteViewModel(
             recents.record(route.id, route.name, NodeKind.ROUTE, listOfNotNull(route.grade, route.ancestors.lastOrNull()?.name).joinToString(" · "))
             topos.value = UiState.Loading
             topos.value = try {
-                UiState.Ready(topoRepo.toposFor(NodeKind.ROUTE, id, force))
+                UiState.Ready(topoRepo.toposFor(id, force))
             } catch (e: Exception) {
                 UiState.Error(e.describe())
             }

@@ -1,7 +1,8 @@
 # thecrag-android-unofficial
 
 Unofficial, personal-use Android client for [theCrag](https://www.thecrag.com):
-browse areas and crags, list routes, view topos, see locations on a map.
+browse areas and crags, list routes, view topos, see locations on a map. Everything
+comes from the JSON endpoints the website itself uses; no HTML scraping.
 Not affiliated with theCrag. Data is theirs and their contributors' (CC BY-NC-SA).
 
 Status: Stage 1 (anonymous online guide) feature-complete. Opened pages, topos and

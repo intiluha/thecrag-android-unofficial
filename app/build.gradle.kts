@@ -71,7 +71,6 @@ dependencies {
     implementation(libs.okhttp.logging)
     implementation(libs.coil.compose)
     implementation(libs.coil.okhttp)
-    implementation(libs.jsoup)
     implementation(libs.maplibre)
     debugImplementation(libs.androidx.compose.ui.tooling)
 

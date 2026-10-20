@@ -20,10 +20,10 @@ payloads in `api-samples/`.
   call carries a realistic `User-Agent`, `Referer: https://www.thecrag.com/`, and the
   anonymous `ApacheSessionID` cookie obtained by one `GET /home` on first run
   (persisted; refreshed on any `insufficient-api-permissions` error).
-- **Route lines on topos** are not in the JSON. For a crag with topos, fetch the
-  cached HTML page once and parse `div.phototopo[data-topodata]` with jsoup. The
-  topo image and the area outlines come from `show=topo`; both sources are joined on
-  topo id (`data-tid` == `topos[].id`).
+- **Topos** come entirely from `show=topo`: image hash, route lines (`objects[].points`)
+  and area outlines (`objects[].shape`). Coordinates are in the original image fitted
+  into 550x550 (see research). No HTML page loads: those are throttled per IP after a
+  few dozen views (302 to a login page), the JSON API is not.
 - **Coordinates**: `show=location` for a node, `/api/map/bbox/heirachy` for the map
   viewport, `/api/map/summary/{id}` for all located descendants of an area.
 - **Search**: `/api/lookup/node?ancestor=7546063` (global) or scoped to the current area.
@@ -46,7 +46,7 @@ app/
   data/
     remote/     OkHttp + Retrofit, kotlinx.serialization (lenient Long ids), interceptors:
                 UA + Referer + cookie jar, rate limiter, session bootstrap/retry
-    html/       jsoup parser for data-topodata -> TopoOverlay
+    repo/       NodeRepository, TopoRepository + TopoMapper, MapRepository, RecentStore
     local/      Room: nodes, children edges, topos, topo objects, favourites (Stage 3)
     repo/       NodeRepository, SearchRepository, MapRepository, TopoRepository
   domain/       Node (Area|Route), Grade (context + systems), Topo, TopoPath, GeoBox
@@ -59,7 +59,7 @@ app/
 ```
 
 Libraries: Kotlin 2.x, Compose BOM, Material 3, Navigation Compose, Retrofit 2 +
-OkHttp 4, kotlinx.serialization, Room 2.7, Coil 3, jsoup, MapLibre Native Android
+OkHttp 4, kotlinx.serialization, Room 2.7, Coil 3, MapLibre Native Android
 11.x, kotlinx.coroutines. Tests: JUnit 5 + kotlinx-serialization fixtures from
 `docs/api-samples/`, MockWebServer for the session/retry logic.
 
@@ -72,7 +72,8 @@ OkHttp 4, kotlinx.serialization, Room 2.7, Coil 3, jsoup, MapLibre Native Androi
    lookup/location/topo, lenient id parsing, fixtures-based tests.
 3. **M3 browse**: World → regions → crags → routes; breadcrumb; route table; route
    screen with beta sections rendered from markdown; grade context from `country/list`.
-4. **M4 topos**: HTML topodata parser; overlay renderer; verify scaling against the
+4. **M4 topos**: topo overlay from `show=topo` (first cut parsed page HTML, replaced
+   2026-10-20 when page loads turned out to be throttled); verify scaling against the
    website on three topos (Arapiles, a Fontainebleau boulder, an alpine multi-pitch).
 5. **M5 map**: MapLibre screen, bbox hierarchy loading on viewport change with debounce,
    polygons for leaf crags, markers with route counts, "map" button on an area screen.

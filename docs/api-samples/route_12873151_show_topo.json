@@ -1,0 +1,1676 @@
+{
+  "data": {
+    "id": "12873151",
+    "name": "Have A Good Flight",
+    "type": "route",
+    "topos": [
+      {
+        "aspectFlipped": 0,
+        "hashID": "928abc94d9e930b0d5fb58e0af620c1cd4924f6c",
+        "height": 504,
+        "id": "119694216",
+        "insideNode": {
+          "ascentCount": 1389,
+          "asciiName": "The Flight Deck",
+          "averageHeight": [
+            21,
+            "m"
+          ],
+          "beta": [
+            {
+              "markdown": "The open corner. Lots of chalk on the L wall\n\nEmergency Location: Mount Arapiles,The Flight Deck Area",
+              "multiple": 1,
+              "name": "Description"
+            },
+            {
+              "inheritedFrom": {
+                "id": "11740915",
+                "urlStub": "australia/arapiles"
+              },
+              "markdown": "Cultural Heritage closures now apply to some parts of Arapiles, and several climbs are now closed.  Please respect these closures.  For the latest advice (Oct 2026) please see the \"Access Changes Summary\" document at https://engage.vic.gov.au/dyurrite  \n\nBird Nesting September-December\nRaptors usually nest on the following climbs in Spring : Cassandra,\nEurydice, Harlequin Cracks, Revelations.\nNesting usually finishes mid-December. There may or may not be signs in place at these times. \nPlease keep 50m clear of these climbs if there appears to be nesting activity.\n\nState Park - no dogs. No fires allowed Oct-Apr (inclusive).",
+              "name": "Access Issues"
+            },
+            {
+              "markdown": "Steep scramble up the slabs below.",
+              "name": "Approach"
+            },
+            {
+              "markdown": "There is a rap station at the top of It'll Never Fly and one at the top of Orestes.",
+              "name": "Descent Notes"
+            },
+            {
+              "inheritedFrom": {
+                "id": "11740915",
+                "urlStub": "australia/arapiles"
+              },
+              "markdown": "Mount Arapiles is first and foremost a trad climbing area. The few sport climbs tend to be in the higher grades where no natural pro is available.\n\nBolting, particularly retro-bolting, is discouraged and should only be undertaken after extensive consultation with the local climbers, first ascensionists, etc. Inappropriately placed bolts have been chopped.\n\nDo not chip the rock.\n\nLook after the park.  \n\n- Stick to the paths. \n\n- Don't disturb the wildlife. \n\n- Routes near peregrine falcon nesting sites are closed in the spring.\n\n- Minimise the impact of your camping (fuel stoves not fires, take your rubbish with you, etc).",
+              "name": "Ethic"
+            }
+          ],
+          "depth": 7,
+          "displayAverageHeight": [
+            21,
+            "m"
+          ],
+          "hasUnarchivedChildren": 1,
+          "hide": {},
+          "id": 11962579,
+          "kudos": 5463,
+          "locatedness": 23,
+          "maxPop": 81,
+          "name": "The Flight Deck",
+          "numberPhotos": 6,
+          "numberRoutes": 9,
+          "numberTopos": 3,
+          "permitNode": {
+            "node": {
+              "id": 11764567
+            }
+          },
+          "priceCategory": "Medium",
+          "redirectStubs": [],
+          "siblingLabel": 2,
+          "subType": "Cliff",
+          "tlc": {
+            "node": {
+              "id": 11740915
+            }
+          },
+          "totalFavorites": 1,
+          "type": "area",
+          "urlAncestorStub": "australia/arapiles/atridae"
+        },
+        "lastUpdated": 1606788693,
+        "linked": "true",
+        "node": 11962579,
+        "objects": [
+          {
+            "ascentCount": 61,
+            "asciiName": "Have a Good Flight Direct Start",
+            "beta": [
+              {
+                "markdown": "Start as for Jetlag, 2m Left of the original but finish up HaGF instead.\nStill great climbing even though the Jetlag finish has been added.",
+                "name": "Description"
+              }
+            ],
+            "context": "AU",
+            "cragScore": 4.24,
+            "depth": 8,
+            "displayHeight": [
+              20,
+              "m"
+            ],
+            "flags": {
+              "IsFree": 1,
+              "IsSport": 1
+            },
+            "grade": "27",
+            "gradeAtom": {
+              "context": "AU",
+              "grade": "27",
+              "gradeBand": 4,
+              "gradeInContext": "27",
+              "gradeStyle": "Free",
+              "internal": [
+                326,
+                338
+              ],
+              "type": "grade"
+            },
+            "gradeBand": 4,
+            "gradeInContext": "27",
+            "gradeStyle": "Free",
+            "height": [
+              "20",
+              "m"
+            ],
+            "hide": {},
+            "id": 277863564,
+            "name": "Have a Good Flight Direct Start",
+            "objectID": 277863564,
+            "objectType": "Route",
+            "parentID": 11962579,
+            "parentObjectID": 11962579,
+            "pitches": 1,
+            "points": "260 405 label,240 328,242.1 252.2,210.3 185.6,237 147 label,226 60",
+            "popularity": 51,
+            "priceCategory": "Medium",
+            "qualityScore": 67,
+            "rawGrade": [
+              326,
+              338
+            ],
+            "relativePopularity": 51,
+            "siblingLabel": 1,
+            "stars": 2,
+            "style": "Sport",
+            "styleStub": "sport",
+            "systems": {
+              "7510852": [
+                "27"
+              ]
+            },
+            "tlc": {
+              "node": {
+                "id": 11740915
+              }
+            },
+            "type": "route",
+            "urlAncestorStub": "australia/arapiles/atridae"
+          },
+          {
+            "ascentCount": 33,
+            "asciiName": "Jet Lag",
+            "beta": [
+              {
+                "attribute": {
+                  "foreignID": "bomber pro",
+                  "publication": {
+                    "id": 126466845,
+                    "name": "ACA Route Register"
+                  },
+                  "url": "http://www.climb.org.au/index.php?page_id=10&action=route&route_id=8073"
+                },
+                "copyrightID": "126454854",
+                "markdown": "Start: Start left of the big corner of \"Orestes\", about 4m Left of It'll Never Fly.",
+                "name": "Description",
+                "publisherID": "126454860"
+              }
+            ],
+            "bolts": 8,
+            "context": "AU",
+            "cragScore": 9.06,
+            "depth": 8,
+            "displayHeight": [
+              18,
+              "m"
+            ],
+            "flags": {
+              "IsFree": 1,
+              "IsSport": 1
+            },
+            "grade": "29",
+            "gradeAtom": {
+              "context": "AU",
+              "grade": "29",
+              "gradeBand": 4,
+              "gradeInContext": "29",
+              "gradeStyle": "Free",
+              "internal": [
+                351,
+                363
+              ],
+              "type": "grade"
+            },
+            "gradeBand": 4,
+            "gradeInContext": "29",
+            "gradeStyle": "Free",
+            "height": [
+              "18",
+              "m"
+            ],
+            "hide": {},
+            "id": 12872971,
+            "name": "Jet Lag",
+            "objectID": 12872971,
+            "objectType": "Route",
+            "parentID": 11962579,
+            "parentObjectID": 11962579,
+            "points": "260 405,240 328,242.1 264.8,252 205 label,262 99,254 80,226 60",
+            "popularity": 43,
+            "priceCategory": "Medium",
+            "qualityScore": 74,
+            "rawGrade": [
+              351,
+              363
+            ],
+            "relativePopularity": 43,
+            "siblingLabel": 3,
+            "stars": 2,
+            "style": "Sport",
+            "styleStub": "sport",
+            "systems": {
+              "7510852": [
+                "29"
+              ]
+            },
+            "tlc": {
+              "node": {
+                "id": 11740915
+              }
+            },
+            "type": "route",
+            "urlAncestorStub": "australia/arapiles/atridae"
+          },
+          {
+            "ascentCount": 4,
+            "asciiName": "Afterburner",
+            "beta": [
+              {
+                "attribute": {
+                  "foreignID": "boardlord",
+                  "publication": {
+                    "id": 126466845,
+                    "name": "ACA Route Register"
+                  },
+                  "url": "http://www.climb.org.au/index.php?page_id=10&action=route&route_id=5947"
+                },
+                "copyrightID": "126454854",
+                "markdown": "Climb all of 'Jet Lag' (via the original direct start) then launch onwards into a final boulder problem above the chains.\n\nStart: Start as for JL.",
+                "name": "Description",
+                "publisherID": "126454860"
+              }
+            ],
+            "bolts": 7,
+            "context": "AU",
+            "cragScore": 14.76,
+            "depth": 8,
+            "displayHeight": [
+              25,
+              "m"
+            ],
+            "flags": {
+              "IsFree": 1,
+              "IsTrad": 1
+            },
+            "grade": "30",
+            "gradeAtom": {
+              "context": "AU",
+              "grade": "30",
+              "gradeBand": 4,
+              "gradeInContext": "30",
+              "gradeStyle": "Free",
+              "internal": [
+                364,
+                375
+              ],
+              "type": "grade"
+            },
+            "gradeBand": 4,
+            "gradeInContext": "30",
+            "gradeStyle": "Free",
+            "height": [
+              "25",
+              "m"
+            ],
+            "hide": {},
+            "id": "12872911",
+            "name": "Afterburner",
+            "objectID": 12872911,
+            "objectType": "Route",
+            "parentID": 11962579,
+            "parentObjectID": 11962579,
+            "points": "254 80,258.8 39.2 label,261 4",
+            "popularity": 17,
+            "priceCategory": "Medium",
+            "qualityScore": 46,
+            "rawGrade": [
+              364,
+              375
+            ],
+            "relativePopularity": 17,
+            "siblingLabel": 2,
+            "stars": 1,
+            "style": "Trad",
+            "styleStub": "trad",
+            "systems": {
+              "7510852": [
+                "30"
+              ]
+            },
+            "tlc": {
+              "node": {
+                "id": 11740915
+              }
+            },
+            "type": "route",
+            "urlAncestorStub": "australia/arapiles/atridae"
+          },
+          {
+            "ascentCount": 95,
+            "asciiName": "It'll Never Fly",
+            "beta": [
+              {
+                "attribute": {
+                  "foreignID": "bomber pro",
+                  "publication": {
+                    "id": 126466845,
+                    "name": "ACA Route Register"
+                  },
+                  "url": "http://www.climb.org.au/index.php?page_id=10&action=route&route_id=8075"
+                },
+                "copyrightID": "126454854",
+                "markdown": "Thin steep face then traverse left to arete. Up arete (#2 BD cam) to lower-off.\n\nStart: Just left of 'Orestes'.",
+                "name": "Description",
+                "publisherID": "126454860"
+              }
+            ],
+            "bolts": 4,
+            "context": "AU",
+            "cragScore": 1.99,
+            "depth": 8,
+            "displayHeight": [
+              20,
+              "m"
+            ],
+            "flags": {
+              "IsFree": 1,
+              "IsSport": 1
+            },
+            "grade": "24",
+            "gradeAtom": {
+              "context": "AU",
+              "grade": "24",
+              "gradeBand": 3,
+              "gradeInContext": "24",
+              "gradeStyle": "Free",
+              "internal": [
+                284,
+                300
+              ],
+              "type": "grade"
+            },
+            "gradeBand": 3,
+            "gradeInContext": "24",
+            "gradeStyle": "Free",
+            "height": [
+              "20",
+              "m"
+            ],
+            "hide": {},
+            "id": 12873043,
+            "name": "It'll Never Fly",
+            "objectID": 12873043,
+            "objectType": "Route",
+            "parentID": 11962579,
+            "parentObjectID": 11962579,
+            "points": "298 401,283 292,257.4 251.8,161 167 label,151 145,186 56,226 60",
+            "popularity": 56,
+            "priceCategory": "Medium",
+            "qualityScore": 56,
+            "rawGrade": [
+              284,
+              300
+            ],
+            "relativePopularity": 56,
+            "siblingLabel": 4,
+            "stars": 1,
+            "style": "Sport",
+            "styleStub": "sport",
+            "systems": {
+              "7510852": [
+                "24"
+              ]
+            },
+            "tlc": {
+              "node": {
+                "id": 11740915
+              }
+            },
+            "type": "route",
+            "urlAncestorStub": "australia/arapiles/atridae"
+          },
+          {
+            "ascentCount": 740,
+            "asciiName": "Have A Good Flight",
+            "beta": [
+              {
+                "attribute": {
+                  "foreignID": "bomber pro",
+                  "publication": {
+                    "id": 126466845,
+                    "name": "ACA Route Register"
+                  },
+                  "url": "http://www.climb.org.au/index.php?page_id=10&action=route&route_id=8077"
+                },
+                "copyrightID": "126454854",
+                "markdown": "Climb It'll Never Fly almost to arete, then cut back diagonally right and up to another bolt (exciting) then up to anchor.\n\nStart: As for It'll Never Fly.",
+                "name": "Description",
+                "publisherID": "126454860"
+              }
+            ],
+            "bolts": 5,
+            "context": "AU",
+            "cragScore": 2.4,
+            "depth": 8,
+            "displayHeight": [
+              18,
+              "m"
+            ],
+            "flags": {
+              "IsFree": 1,
+              "IsSport": 1
+            },
+            "grade": "25",
+            "gradeAtom": {
+              "context": "AU",
+              "grade": "25",
+              "gradeBand": 4,
+              "gradeInContext": "25",
+              "gradeStyle": "Free",
+              "internal": [
+                301,
+                313
+              ],
+              "type": "grade"
+            },
+            "gradeBand": 4,
+            "gradeInContext": "25",
+            "gradeStyle": "Free",
+            "height": [
+              "18",
+              "m"
+            ],
+            "hide": {},
+            "id": "12873151",
+            "name": "Have A Good Flight",
+            "objectID": 12873151,
+            "objectType": "Route",
+            "parentID": 11962579,
+            "parentObjectID": 11962579,
+            "points": "298 401 label,283 292,257.4 251.8,210.3 185.6,237 147 label,229 77,226 60 lower",
+            "popularity": 81,
+            "priceCategory": "Medium",
+            "qualityScore": 83,
+            "rawGrade": [
+              301,
+              313
+            ],
+            "relativePopularity": 81,
+            "siblingLabel": 5,
+            "stars": 3,
+            "style": "Sport",
+            "styleStub": "sport",
+            "systems": {
+              "7510852": [
+                "25"
+              ]
+            },
+            "tlc": {
+              "node": {
+                "id": 11740915
+              }
+            },
+            "type": "route",
+            "urlAncestorStub": "australia/arapiles/atridae"
+          },
+          {
+            "ascentCount": 357,
+            "asciiName": "Orestes",
+            "beta": [
+              {
+                "attribute": {
+                  "foreignID": "bomber pro",
+                  "publication": {
+                    "id": 126466845,
+                    "name": "ACA Route Register"
+                  },
+                  "url": "http://www.climb.org.au/index.php?page_id=10&action=route&route_id=8078"
+                },
+                "copyrightID": "126454854",
+                "markdown": "You can climb all of pitch 1 and the good bit of pitch 2 in a single mega pitch, then step left to the anchor of 'Afterburner'. It's a great shame that this new anchor wasn't placed 2m to the R on the front of the arete, as this would have allowed the leader to clean their own gear, but as it is someone will need to second if you do this extended version.\n\nStart: Start at the big corner on the Flight Deck.\n\n1. 20m (23) Up corner to piton and continue stemming, after sustained bridging, to the big white blob of rock, hand traverse right past piton to belay stance and rap anchor. The loose LHV to this pitch goes L from the top of the corner to a ledge, back R over difficult bulge via shallow groove, then exits L.\n2. 20m (19) From ledge move back left and up corner crack to top, walk off.",
+                "name": "Description",
+                "publisherID": "126454860"
+              }
+            ],
+            "context": "AU",
+            "cragScore": 1.99,
+            "depth": 8,
+            "displayHeight": [
+              40,
+              "m"
+            ],
+            "flags": {
+              "IsFree": 1,
+              "IsMultipitch": 1,
+              "IsTrad": 1
+            },
+            "grade": "23",
+            "gradeAtom": {
+              "context": "AU",
+              "grade": "23",
+              "gradeBand": 3,
+              "gradeInContext": "23",
+              "gradeStyle": "Free",
+              "internal": [
+                268,
+                283
+              ],
+              "type": "grade"
+            },
+            "gradeBand": 3,
+            "gradeInContext": "23",
+            "gradeStyle": "Free",
+            "height": [
+              "40",
+              "m"
+            ],
+            "hide": {},
+            "id": 12873241,
+            "maybeMultipitch": 1,
+            "name": "Orestes",
+            "objectID": 12873241,
+            "objectType": "Route",
+            "parentID": 11962579,
+            "parentObjectID": 11962579,
+            "pitches": 2,
+            "points": "327 399,313 248 label,293 183,293 128,323 105,360 84,413 79,442 60,462 48 lower,400.2 70.6,356 69,340.3 7.6",
+            "popularity": 72,
+            "priceCategory": "Medium",
+            "qualityScore": 89,
+            "rawGrade": [
+              268,
+              283
+            ],
+            "relativePopularity": 72,
+            "siblingLabel": 6,
+            "stars": 3,
+            "style": "Trad",
+            "styleStub": "trad",
+            "systems": {
+              "7510852": [
+                "23"
+              ]
+            },
+            "tlc": {
+              "node": {
+                "id": 11740915
+              }
+            },
+            "type": "route",
+            "urlAncestorStub": "australia/arapiles/atridae"
+          },
+          {
+            "ascentCount": 13,
+            "asciiName": "Detestes",
+            "beta": [
+              {
+                "attribute": {
+                  "foreignID": "bomber pro",
+                  "publication": {
+                    "id": 126466845,
+                    "name": "ACA Route Register"
+                  },
+                  "url": "http://www.climb.org.au/index.php?page_id=10&action=route&route_id=8079"
+                },
+                "copyrightID": "126454854",
+                "markdown": "Start between 'Orestes' & 'Plimsoll Line'.",
+                "name": "Description",
+                "publisherID": "126454860"
+              }
+            ],
+            "bolts": 6,
+            "context": "AU",
+            "cragScore": 4.24,
+            "depth": 8,
+            "displayHeight": [
+              15,
+              "m"
+            ],
+            "flags": {
+              "IsFree": 1,
+              "IsTrad": 1
+            },
+            "grade": "27",
+            "gradeAtom": {
+              "context": "AU",
+              "grade": "27",
+              "gradeBand": 4,
+              "gradeInContext": "27",
+              "gradeStyle": "Free",
+              "internal": [
+                326,
+                338
+              ],
+              "type": "grade"
+            },
+            "gradeBand": 4,
+            "gradeInContext": "27",
+            "gradeStyle": "Free",
+            "height": [
+              "15",
+              "m"
+            ],
+            "hide": {},
+            "id": 12873343,
+            "name": "Detestes",
+            "objectID": 12873343,
+            "objectType": "Route",
+            "parentID": 11962579,
+            "parentObjectID": 11962579,
+            "points": "400 367,425 300,365 282,355 209 label,360 84,413 79,442 60,462 48",
+            "popularity": 32,
+            "priceCategory": "Medium",
+            "qualityScore": 54,
+            "rawGrade": [
+              326,
+              338
+            ],
+            "relativePopularity": 32,
+            "siblingLabel": 7,
+            "stars": 1,
+            "style": "Trad",
+            "styleStub": "trad",
+            "systems": {
+              "7510852": [
+                "27"
+              ]
+            },
+            "tlc": {
+              "node": {
+                "id": 11740915
+              }
+            },
+            "type": "route",
+            "urlAncestorStub": "australia/arapiles/atridae"
+          },
+          {
+            "ascentCount": 74,
+            "asciiName": "Plimsoll Line",
+            "beta": [
+              {
+                "attribute": {
+                  "foreignID": "bomber pro",
+                  "publication": {
+                    "id": 126466845,
+                    "name": "ACA Route Register"
+                  },
+                  "url": "http://www.climb.org.au/index.php?page_id=10&action=route&route_id=8080"
+                },
+                "copyrightID": "126454854",
+                "markdown": "Straight up to Orestes' first anchor. Beware, this route is often slimy, and the pro down low is fiddly mediocre RPs.  Originally had pitons, they were eventually replaced with bolts but those were ripped out by the ethics police, so good luck...\n\nStart: Start at the thin left-facing corner 4m right of 'Orestes'.",
+                "name": "Description",
+                "publisherID": "126454860"
+              }
+            ],
+            "context": "AU",
+            "cragScore": 1.53,
+            "depth": 8,
+            "displayHeight": [
+              15,
+              "m"
+            ],
+            "flags": {
+              "IsFree": 1,
+              "IsTrad": 1
+            },
+            "grade": "22 R",
+            "gradeAtom": {
+              "context": "AU",
+              "grade": "22 R",
+              "gradeBand": 3,
+              "gradeInContext": "22 R",
+              "gradeStyle": "Free",
+              "internal": [
+                251,
+                267
+              ],
+              "type": "grade"
+            },
+            "gradeBand": 3,
+            "gradeInContext": "22 R",
+            "gradeStyle": "Free",
+            "height": [
+              "15",
+              "m"
+            ],
+            "hide": {},
+            "id": 12873403,
+            "name": "Plimsoll Line",
+            "objectID": 12873403,
+            "objectType": "Route",
+            "parentID": 11962579,
+            "parentObjectID": 11962579,
+            "points": "456 357,446 257,428.4 157.3 label,413 79,442 60,462 48",
+            "popularity": 54,
+            "priceCategory": "Medium",
+            "qualityScore": 59,
+            "rawGrade": [
+              251,
+              267
+            ],
+            "relativePopularity": 54,
+            "siblingLabel": 8,
+            "stars": 2,
+            "style": "Trad",
+            "styleStub": "trad",
+            "systems": {
+              "7510852": [
+                "22"
+              ],
+              "7511020": [
+                "R"
+              ]
+            },
+            "tlc": {
+              "node": {
+                "id": 11740915
+              }
+            },
+            "type": "route",
+            "urlAncestorStub": "australia/arapiles/atridae"
+          },
+          {
+            "ascentCount": 12,
+            "asciiName": "Celine and Julie Go Bolting",
+            "beta": [
+              {
+                "markdown": "There is good small gear and a peg at the start of Plimsoll to get going. Traverses right past a bolt to a rest then up past a second to a runout section. Airy.",
+                "multiple": 1,
+                "name": "Description"
+              }
+            ],
+            "bolts": 2,
+            "context": "AU",
+            "cragScore": 2.4,
+            "depth": 8,
+            "displayHeight": [
+              15,
+              "m"
+            ],
+            "flags": {
+              "IsFree": 1,
+              "IsTrad": 1
+            },
+            "grade": "26 R",
+            "gradeAtom": {
+              "context": "AU",
+              "grade": "26 R",
+              "gradeBand": 4,
+              "gradeInContext": "26 R",
+              "gradeStyle": "Free",
+              "internal": [
+                314,
+                325
+              ],
+              "type": "grade"
+            },
+            "gradeBand": 4,
+            "gradeInContext": "26 R",
+            "gradeStyle": "Free",
+            "height": [
+              "15",
+              "m"
+            ],
+            "hide": {},
+            "id": "12873475",
+            "name": "Celine and Julie Go Bolting",
+            "objectID": 12873475,
+            "objectType": "Route",
+            "parentID": 11962579,
+            "parentObjectID": 11962579,
+            "pitches": 1,
+            "points": "456 357,454 289,488 257,510 224,476 194,455 138 label,442 60,462 48",
+            "popularity": 32,
+            "priceCategory": "Medium",
+            "qualityScore": 43,
+            "rawGrade": [
+              314,
+              325
+            ],
+            "relativePopularity": 32,
+            "siblingLabel": 9,
+            "stars": 1,
+            "style": "Trad",
+            "styleStub": "trad",
+            "systems": {
+              "7510852": [
+                "26"
+              ],
+              "7511020": [
+                "R"
+              ]
+            },
+            "tlc": {
+              "node": {
+                "id": 11740915
+              }
+            },
+            "type": "route",
+            "urlAncestorStub": "australia/arapiles/atridae"
+          }
+        ],
+        "origHeight": 823,
+        "origWidth": 898,
+        "positionMaxLabel": 9,
+        "positionMinLabel": 1,
+        "type": "topo",
+        "width": 550
+      },
+      {
+        "aspectFlipped": 0,
+        "hashID": "83952b6a350bb4381f0af096a02000c3e8e04c6a",
+        "height": 550,
+        "id": "877390101",
+        "insideNode": {
+          "ascentCount": 1389,
+          "asciiName": "The Flight Deck",
+          "averageHeight": [
+            21,
+            "m"
+          ],
+          "beta": [
+            {
+              "markdown": "The open corner. Lots of chalk on the L wall\n\nEmergency Location: Mount Arapiles,The Flight Deck Area",
+              "multiple": 1,
+              "name": "Description"
+            },
+            {
+              "inheritedFrom": {
+                "id": "11740915",
+                "urlStub": "australia/arapiles"
+              },
+              "markdown": "Cultural Heritage closures now apply to some parts of Arapiles, and several climbs are now closed.  Please respect these closures.  For the latest advice (Oct 2026) please see the \"Access Changes Summary\" document at https://engage.vic.gov.au/dyurrite  \n\nBird Nesting September-December\nRaptors usually nest on the following climbs in Spring : Cassandra,\nEurydice, Harlequin Cracks, Revelations.\nNesting usually finishes mid-December. There may or may not be signs in place at these times. \nPlease keep 50m clear of these climbs if there appears to be nesting activity.\n\nState Park - no dogs. No fires allowed Oct-Apr (inclusive).",
+              "name": "Access Issues"
+            },
+            {
+              "markdown": "Steep scramble up the slabs below.",
+              "name": "Approach"
+            },
+            {
+              "markdown": "There is a rap station at the top of It'll Never Fly and one at the top of Orestes.",
+              "name": "Descent Notes"
+            },
+            {
+              "inheritedFrom": {
+                "id": "11740915",
+                "urlStub": "australia/arapiles"
+              },
+              "markdown": "Mount Arapiles is first and foremost a trad climbing area. The few sport climbs tend to be in the higher grades where no natural pro is available.\n\nBolting, particularly retro-bolting, is discouraged and should only be undertaken after extensive consultation with the local climbers, first ascensionists, etc. Inappropriately placed bolts have been chopped.\n\nDo not chip the rock.\n\nLook after the park.  \n\n- Stick to the paths. \n\n- Don't disturb the wildlife. \n\n- Routes near peregrine falcon nesting sites are closed in the spring.\n\n- Minimise the impact of your camping (fuel stoves not fires, take your rubbish with you, etc).",
+              "name": "Ethic"
+            }
+          ],
+          "depth": 7,
+          "displayAverageHeight": [
+            21,
+            "m"
+          ],
+          "hasUnarchivedChildren": 1,
+          "hide": {},
+          "id": 11962579,
+          "kudos": 5463,
+          "locatedness": 23,
+          "maxPop": 81,
+          "name": "The Flight Deck",
+          "numberPhotos": 6,
+          "numberRoutes": 9,
+          "numberTopos": 3,
+          "permitNode": {
+            "node": {
+              "id": 11764567
+            }
+          },
+          "priceCategory": "Medium",
+          "redirectStubs": [],
+          "siblingLabel": 2,
+          "subType": "Cliff",
+          "tlc": {
+            "node": {
+              "id": 11740915
+            }
+          },
+          "totalFavorites": 1,
+          "type": "area",
+          "urlAncestorStub": "australia/arapiles/atridae"
+        },
+        "lastUpdated": 1606788693,
+        "linked": "true",
+        "name": "",
+        "node": 11962579,
+        "objects": [
+          {
+            "ascentCount": 61,
+            "asciiName": "Have a Good Flight Direct Start",
+            "beta": [
+              {
+                "markdown": "Start as for Jetlag, 2m Left of the original but finish up HaGF instead.\nStill great climbing even though the Jetlag finish has been added.",
+                "name": "Description"
+              }
+            ],
+            "context": "AU",
+            "cragScore": 4.24,
+            "depth": 8,
+            "displayHeight": [
+              20,
+              "m"
+            ],
+            "flags": {
+              "IsFree": 1,
+              "IsSport": 1
+            },
+            "grade": "27",
+            "gradeAtom": {
+              "context": "AU",
+              "grade": "27",
+              "gradeBand": 4,
+              "gradeInContext": "27",
+              "gradeStyle": "Free",
+              "internal": [
+                326,
+                338
+              ],
+              "type": "grade"
+            },
+            "gradeBand": 4,
+            "gradeInContext": "27",
+            "gradeStyle": "Free",
+            "height": [
+              "20",
+              "m"
+            ],
+            "hide": {},
+            "id": 277863564,
+            "name": "Have a Good Flight Direct Start",
+            "objectID": 277863564,
+            "objectType": "Route",
+            "parentID": 11962579,
+            "parentObjectID": 11962579,
+            "pitches": 1,
+            "points": "177.3 342.6,180.8 285.8,187.7 251.3,167 241,175.6 208.2,173.9 160 lower",
+            "popularity": 51,
+            "priceCategory": "Medium",
+            "qualityScore": 67,
+            "rawGrade": [
+              326,
+              338
+            ],
+            "relativePopularity": 51,
+            "siblingLabel": 1,
+            "stars": 2,
+            "style": "Sport",
+            "styleStub": "sport",
+            "systems": {
+              "7510852": [
+                "27"
+              ]
+            },
+            "tlc": {
+              "node": {
+                "id": 11740915
+              }
+            },
+            "type": "route",
+            "urlAncestorStub": "australia/arapiles/atridae"
+          },
+          {
+            "ascentCount": 4,
+            "asciiName": "Afterburner",
+            "beta": [
+              {
+                "attribute": {
+                  "foreignID": "boardlord",
+                  "publication": {
+                    "id": 126466845,
+                    "name": "ACA Route Register"
+                  },
+                  "url": "http://www.climb.org.au/index.php?page_id=10&action=route&route_id=5947"
+                },
+                "copyrightID": "126454854",
+                "markdown": "Climb all of 'Jet Lag' (via the original direct start) then launch onwards into a final boulder problem above the chains.\n\nStart: Start as for JL.",
+                "name": "Description",
+                "publisherID": "126454860"
+              }
+            ],
+            "bolts": 7,
+            "context": "AU",
+            "cragScore": 14.76,
+            "depth": 8,
+            "displayHeight": [
+              25,
+              "m"
+            ],
+            "flags": {
+              "IsFree": 1,
+              "IsTrad": 1
+            },
+            "grade": "30",
+            "gradeAtom": {
+              "context": "AU",
+              "grade": "30",
+              "gradeBand": 4,
+              "gradeInContext": "30",
+              "gradeStyle": "Free",
+              "internal": [
+                364,
+                375
+              ],
+              "type": "grade"
+            },
+            "gradeBand": 4,
+            "gradeInContext": "30",
+            "gradeStyle": "Free",
+            "height": [
+              "25",
+              "m"
+            ],
+            "hide": {},
+            "id": "12872911",
+            "name": "Afterburner",
+            "objectID": 12872911,
+            "objectType": "Route",
+            "parentID": 11962579,
+            "parentObjectID": 11962579,
+            "points": "192.8 173.8,196.3 115.2,189.4 79 lower",
+            "popularity": 17,
+            "priceCategory": "Medium",
+            "qualityScore": 46,
+            "rawGrade": [
+              364,
+              375
+            ],
+            "relativePopularity": 17,
+            "siblingLabel": 2,
+            "stars": 1,
+            "style": "Trad",
+            "styleStub": "trad",
+            "systems": {
+              "7510852": [
+                "30"
+              ]
+            },
+            "tlc": {
+              "node": {
+                "id": 11740915
+              }
+            },
+            "type": "route",
+            "urlAncestorStub": "australia/arapiles/atridae"
+          },
+          {
+            "ascentCount": 33,
+            "asciiName": "Jet Lag",
+            "beta": [
+              {
+                "attribute": {
+                  "foreignID": "bomber pro",
+                  "publication": {
+                    "id": 126466845,
+                    "name": "ACA Route Register"
+                  },
+                  "url": "http://www.climb.org.au/index.php?page_id=10&action=route&route_id=8073"
+                },
+                "copyrightID": "126454854",
+                "markdown": "Start: Start left of the big corner of \"Orestes\", about 4m Left of It'll Never Fly.",
+                "name": "Description",
+                "publisherID": "126454860"
+              }
+            ],
+            "bolts": 8,
+            "context": "AU",
+            "cragScore": 9.06,
+            "depth": 8,
+            "displayHeight": [
+              18,
+              "m"
+            ],
+            "flags": {
+              "IsFree": 1,
+              "IsSport": 1
+            },
+            "grade": "29",
+            "gradeAtom": {
+              "context": "AU",
+              "grade": "29",
+              "gradeBand": 4,
+              "gradeInContext": "29",
+              "gradeStyle": "Free",
+              "internal": [
+                351,
+                363
+              ],
+              "type": "grade"
+            },
+            "gradeBand": 4,
+            "gradeInContext": "29",
+            "gradeStyle": "Free",
+            "height": [
+              "18",
+              "m"
+            ],
+            "hide": {},
+            "id": 12872971,
+            "name": "Jet Lag",
+            "objectID": 12872971,
+            "objectType": "Route",
+            "parentID": 11962579,
+            "parentObjectID": 11962579,
+            "points": "187.7 251.3,192.8 206.5,192.8 173.8,173.9 160 lower",
+            "popularity": 43,
+            "priceCategory": "Medium",
+            "qualityScore": 74,
+            "rawGrade": [
+              351,
+              363
+            ],
+            "relativePopularity": 43,
+            "siblingLabel": 3,
+            "stars": 2,
+            "style": "Sport",
+            "styleStub": "sport",
+            "systems": {
+              "7510852": [
+                "29"
+              ]
+            },
+            "tlc": {
+              "node": {
+                "id": 11740915
+              }
+            },
+            "type": "route",
+            "urlAncestorStub": "australia/arapiles/atridae"
+          },
+          {
+            "ascentCount": 95,
+            "asciiName": "It'll Never Fly",
+            "beta": [
+              {
+                "attribute": {
+                  "foreignID": "bomber pro",
+                  "publication": {
+                    "id": 126466845,
+                    "name": "ACA Route Register"
+                  },
+                  "url": "http://www.climb.org.au/index.php?page_id=10&action=route&route_id=8075"
+                },
+                "copyrightID": "126454854",
+                "markdown": "Thin steep face then traverse left to arete. Up arete (#2 BD cam) to lower-off.\n\nStart: Just left of 'Orestes'.",
+                "name": "Description",
+                "publisherID": "126454860"
+              }
+            ],
+            "bolts": 4,
+            "context": "AU",
+            "cragScore": 1.99,
+            "depth": 8,
+            "displayHeight": [
+              20,
+              "m"
+            ],
+            "flags": {
+              "IsFree": 1,
+              "IsSport": 1
+            },
+            "grade": "24",
+            "gradeAtom": {
+              "context": "AU",
+              "grade": "24",
+              "gradeBand": 3,
+              "gradeInContext": "24",
+              "gradeStyle": "Free",
+              "internal": [
+                284,
+                300
+              ],
+              "type": "grade"
+            },
+            "gradeBand": 3,
+            "gradeInContext": "24",
+            "gradeStyle": "Free",
+            "height": [
+              "20",
+              "m"
+            ],
+            "hide": {},
+            "id": 12873043,
+            "name": "It'll Never Fly",
+            "objectID": 12873043,
+            "objectType": "Route",
+            "parentID": 11962579,
+            "parentObjectID": 11962579,
+            "points": "198 335.7,199.7 282.3,187.7 251.3,167 241,146.3 230.6,153.2 175.5,173.9 160 lower",
+            "popularity": 56,
+            "priceCategory": "Medium",
+            "qualityScore": 56,
+            "rawGrade": [
+              284,
+              300
+            ],
+            "relativePopularity": 56,
+            "siblingLabel": 4,
+            "stars": 1,
+            "style": "Sport",
+            "styleStub": "sport",
+            "systems": {
+              "7510852": [
+                "24"
+              ]
+            },
+            "tlc": {
+              "node": {
+                "id": 11740915
+              }
+            },
+            "type": "route",
+            "urlAncestorStub": "australia/arapiles/atridae"
+          },
+          {
+            "ascentCount": 740,
+            "asciiName": "Have A Good Flight",
+            "beta": [
+              {
+                "attribute": {
+                  "foreignID": "bomber pro",
+                  "publication": {
+                    "id": 126466845,
+                    "name": "ACA Route Register"
+                  },
+                  "url": "http://www.climb.org.au/index.php?page_id=10&action=route&route_id=8077"
+                },
+                "copyrightID": "126454854",
+                "markdown": "Climb It'll Never Fly almost to arete, then cut back diagonally right and up to another bolt (exciting) then up to anchor.\n\nStart: As for It'll Never Fly.",
+                "name": "Description",
+                "publisherID": "126454860"
+              }
+            ],
+            "bolts": 5,
+            "context": "AU",
+            "cragScore": 2.4,
+            "depth": 8,
+            "displayHeight": [
+              18,
+              "m"
+            ],
+            "flags": {
+              "IsFree": 1,
+              "IsSport": 1
+            },
+            "grade": "25",
+            "gradeAtom": {
+              "context": "AU",
+              "grade": "25",
+              "gradeBand": 4,
+              "gradeInContext": "25",
+              "gradeStyle": "Free",
+              "internal": [
+                301,
+                313
+              ],
+              "type": "grade"
+            },
+            "gradeBand": 4,
+            "gradeInContext": "25",
+            "gradeStyle": "Free",
+            "height": [
+              "18",
+              "m"
+            ],
+            "hide": {},
+            "id": "12873151",
+            "name": "Have A Good Flight",
+            "objectID": 12873151,
+            "objectType": "Route",
+            "parentID": 11962579,
+            "parentObjectID": 11962579,
+            "points": "167 241,175.6 208.2,173.9 160 lower",
+            "popularity": 81,
+            "priceCategory": "Medium",
+            "qualityScore": 83,
+            "rawGrade": [
+              301,
+              313
+            ],
+            "relativePopularity": 81,
+            "siblingLabel": 5,
+            "stars": 3,
+            "style": "Sport",
+            "styleStub": "sport",
+            "systems": {
+              "7510852": [
+                "25"
+              ]
+            },
+            "tlc": {
+              "node": {
+                "id": 11740915
+              }
+            },
+            "type": "route",
+            "urlAncestorStub": "australia/arapiles/atridae"
+          },
+          {
+            "ascentCount": 357,
+            "asciiName": "Orestes",
+            "beta": [
+              {
+                "attribute": {
+                  "foreignID": "bomber pro",
+                  "publication": {
+                    "id": 126466845,
+                    "name": "ACA Route Register"
+                  },
+                  "url": "http://www.climb.org.au/index.php?page_id=10&action=route&route_id=8078"
+                },
+                "copyrightID": "126454854",
+                "markdown": "You can climb all of pitch 1 and the good bit of pitch 2 in a single mega pitch, then step left to the anchor of 'Afterburner'. It's a great shame that this new anchor wasn't placed 2m to the R on the front of the arete, as this would have allowed the leader to clean their own gear, but as it is someone will need to second if you do this extended version.\n\nStart: Start at the big corner on the Flight Deck.\n\n1. 20m (23) Up corner to piton and continue stemming, after sustained bridging, to the big white blob of rock, hand traverse right past piton to belay stance and rap anchor. The loose LHV to this pitch goes L from the top of the corner to a ledge, back R over difficult bulge via shallow groove, then exits L.\n2. 20m (19) From ledge move back left and up corner crack to top, walk off.",
+                "name": "Description",
+                "publisherID": "126454860"
+              }
+            ],
+            "context": "AU",
+            "cragScore": 1.99,
+            "depth": 8,
+            "displayHeight": [
+              40,
+              "m"
+            ],
+            "flags": {
+              "IsFree": 1,
+              "IsMultipitch": 1,
+              "IsTrad": 1
+            },
+            "grade": "23",
+            "gradeAtom": {
+              "context": "AU",
+              "grade": "23",
+              "gradeBand": 3,
+              "gradeInContext": "23",
+              "gradeStyle": "Free",
+              "internal": [
+                268,
+                283
+              ],
+              "type": "grade"
+            },
+            "gradeBand": 3,
+            "gradeInContext": "23",
+            "gradeStyle": "Free",
+            "height": [
+              "40",
+              "m"
+            ],
+            "hide": {},
+            "id": 12873241,
+            "maybeMultipitch": 1,
+            "name": "Orestes",
+            "objectID": 12873241,
+            "objectType": "Route",
+            "parentID": 11962579,
+            "parentObjectID": 11962579,
+            "pitches": 2,
+            "points": "208.4 330.6,213.5 268.5,203.2 189.3,225.6 170.3,249.7 168.6,261.8 153.1 lower,225.6 170.3,218.7 123.8,211.8 82.4,206.6 4.9",
+            "popularity": 72,
+            "priceCategory": "Medium",
+            "qualityScore": 89,
+            "rawGrade": [
+              268,
+              283
+            ],
+            "relativePopularity": 72,
+            "siblingLabel": 6,
+            "stars": 3,
+            "style": "Trad",
+            "styleStub": "trad",
+            "systems": {
+              "7510852": [
+                "23"
+              ]
+            },
+            "tlc": {
+              "node": {
+                "id": 11740915
+              }
+            },
+            "type": "route",
+            "urlAncestorStub": "australia/arapiles/atridae"
+          },
+          {
+            "ascentCount": 13,
+            "asciiName": "Detestes",
+            "beta": [
+              {
+                "attribute": {
+                  "foreignID": "bomber pro",
+                  "publication": {
+                    "id": 126466845,
+                    "name": "ACA Route Register"
+                  },
+                  "url": "http://www.climb.org.au/index.php?page_id=10&action=route&route_id=8079"
+                },
+                "copyrightID": "126454854",
+                "markdown": "Start between 'Orestes' & 'Plimsoll Line'.",
+                "name": "Description",
+                "publisherID": "126454860"
+              }
+            ],
+            "bolts": 6,
+            "context": "AU",
+            "cragScore": 4.24,
+            "depth": 8,
+            "displayHeight": [
+              15,
+              "m"
+            ],
+            "flags": {
+              "IsFree": 1,
+              "IsTrad": 1
+            },
+            "grade": "27",
+            "gradeAtom": {
+              "context": "AU",
+              "grade": "27",
+              "gradeBand": 4,
+              "gradeInContext": "27",
+              "gradeStyle": "Free",
+              "internal": [
+                326,
+                338
+              ],
+              "type": "grade"
+            },
+            "gradeBand": 4,
+            "gradeInContext": "27",
+            "gradeStyle": "Free",
+            "height": [
+              "15",
+              "m"
+            ],
+            "hide": {},
+            "id": 12873343,
+            "name": "Detestes",
+            "objectID": 12873343,
+            "objectType": "Route",
+            "parentID": 11962579,
+            "parentObjectID": 11962579,
+            "points": "225.6 328.8,235.9 273.7,222.1 218.6,225.6 170.3",
+            "popularity": 32,
+            "priceCategory": "Medium",
+            "qualityScore": 54,
+            "rawGrade": [
+              326,
+              338
+            ],
+            "relativePopularity": 32,
+            "siblingLabel": 7,
+            "stars": 1,
+            "style": "Trad",
+            "styleStub": "trad",
+            "systems": {
+              "7510852": [
+                "27"
+              ]
+            },
+            "tlc": {
+              "node": {
+                "id": 11740915
+              }
+            },
+            "type": "route",
+            "urlAncestorStub": "australia/arapiles/atridae"
+          },
+          {
+            "ascentCount": 74,
+            "asciiName": "Plimsoll Line",
+            "beta": [
+              {
+                "attribute": {
+                  "foreignID": "bomber pro",
+                  "publication": {
+                    "id": 126466845,
+                    "name": "ACA Route Register"
+                  },
+                  "url": "http://www.climb.org.au/index.php?page_id=10&action=route&route_id=8080"
+                },
+                "copyrightID": "126454854",
+                "markdown": "Straight up to Orestes' first anchor. Beware, this route is often slimy, and the pro down low is fiddly mediocre RPs.  Originally had pitons, they were eventually replaced with bolts but those were ripped out by the ethics police, so good luck...\n\nStart: Start at the thin left-facing corner 4m right of 'Orestes'.",
+                "name": "Description",
+                "publisherID": "126454860"
+              }
+            ],
+            "context": "AU",
+            "cragScore": 1.53,
+            "depth": 8,
+            "displayHeight": [
+              15,
+              "m"
+            ],
+            "flags": {
+              "IsFree": 1,
+              "IsTrad": 1
+            },
+            "grade": "22 R",
+            "gradeAtom": {
+              "context": "AU",
+              "grade": "22 R",
+              "gradeBand": 3,
+              "gradeInContext": "22 R",
+              "gradeStyle": "Free",
+              "internal": [
+                251,
+                267
+              ],
+              "type": "grade"
+            },
+            "gradeBand": 3,
+            "gradeInContext": "22 R",
+            "gradeStyle": "Free",
+            "height": [
+              "15",
+              "m"
+            ],
+            "hide": {},
+            "id": 12873403,
+            "name": "Plimsoll Line",
+            "objectID": 12873403,
+            "objectType": "Route",
+            "parentID": 11962579,
+            "parentObjectID": 11962579,
+            "points": "251.4 328.8,251.4 263.4,249.7 168.6",
+            "popularity": 54,
+            "priceCategory": "Medium",
+            "qualityScore": 59,
+            "rawGrade": [
+              251,
+              267
+            ],
+            "relativePopularity": 54,
+            "siblingLabel": 8,
+            "stars": 2,
+            "style": "Trad",
+            "styleStub": "trad",
+            "systems": {
+              "7510852": [
+                "22"
+              ],
+              "7511020": [
+                "R"
+              ]
+            },
+            "tlc": {
+              "node": {
+                "id": 11740915
+              }
+            },
+            "type": "route",
+            "urlAncestorStub": "australia/arapiles/atridae"
+          },
+          {
+            "ascentCount": 12,
+            "asciiName": "Celine and Julie Go Bolting",
+            "beta": [
+              {
+                "markdown": "There is good small gear and a peg at the start of Plimsoll to get going. Traverses right past a bolt to a rest then up past a second to a runout section. Airy.",
+                "multiple": 1,
+                "name": "Description"
+              }
+            ],
+            "bolts": 2,
+            "context": "AU",
+            "cragScore": 2.4,
+            "depth": 8,
+            "displayHeight": [
+              15,
+              "m"
+            ],
+            "flags": {
+              "IsFree": 1,
+              "IsTrad": 1
+            },
+            "grade": "26 R",
+            "gradeAtom": {
+              "context": "AU",
+              "grade": "26 R",
+              "gradeBand": 4,
+              "gradeInContext": "26 R",
+              "gradeStyle": "Free",
+              "internal": [
+                314,
+                325
+              ],
+              "type": "grade"
+            },
+            "gradeBand": 4,
+            "gradeInContext": "26 R",
+            "gradeStyle": "Free",
+            "height": [
+              "15",
+              "m"
+            ],
+            "hide": {},
+            "id": "12873475",
+            "name": "Celine and Julie Go Bolting",
+            "objectID": 12873475,
+            "objectType": "Route",
+            "parentID": 11962579,
+            "parentObjectID": 11962579,
+            "pitches": 1,
+            "points": "251.4 263.4,270.4 246.1,273.8 192.7,261.8 153.1 lower",
+            "popularity": 32,
+            "priceCategory": "Medium",
+            "qualityScore": 43,
+            "rawGrade": [
+              314,
+              325
+            ],
+            "relativePopularity": 32,
+            "siblingLabel": 9,
+            "stars": 1,
+            "style": "Trad",
+            "styleStub": "trad",
+            "systems": {
+              "7510852": [
+                "26"
+              ],
+              "7511020": [
+                "R"
+              ]
+            },
+            "tlc": {
+              "node": {
+                "id": 11740915
+              }
+            },
+            "type": "route",
+            "urlAncestorStub": "australia/arapiles/atridae"
+          }
+        ],
+        "origHeight": 700,
+        "origWidth": 428,
+        "positionMaxLabel": 9,
+        "positionMinLabel": 1,
+        "type": "topo",
+        "width": 336
+      }
+    ]
+  }
+}

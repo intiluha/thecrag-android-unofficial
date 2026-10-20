@@ -33,7 +33,7 @@ class CacheHeaderInterceptor : Interceptor {
             .build()
     }
 
-    private fun isCacheable(path: String) = path.startsWith("/api/") || path.startsWith("/en/climbing/")
+    private fun isCacheable(path: String) = path.startsWith("/api/")
 }
 
 /**

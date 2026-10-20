@@ -42,7 +42,7 @@ class AreaViewModel(
             if (area.numberTopos > 0) {
                 _topos.value = UiState.Loading
                 _topos.value = try {
-                    UiState.Ready(topoRepo.toposFor(NodeKind.AREA, id, force))
+                    UiState.Ready(topoRepo.toposFor(id, force))
                 } catch (e: Exception) {
                     UiState.Error(e.describe())
                 }
