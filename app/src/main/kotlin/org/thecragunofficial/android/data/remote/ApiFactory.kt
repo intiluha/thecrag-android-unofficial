@@ -5,6 +5,8 @@ import okhttp3.Cache
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import org.thecragunofficial.android.data.offline.OfflineInterceptor
+import org.thecragunofficial.android.data.offline.OfflineStore
 import retrofit2.Retrofit
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
 import java.io.File
@@ -21,16 +23,18 @@ object ApiFactory {
     /**
      * Interceptor order matters: headers first, then the offline fallback wraps
      * the session recovery so a failed bootstrap still ends in a cache lookup.
-     * Rate limiting and cache stamping are network interceptors, so cache hits
+     * The pinned store of starred areas answers before any of that. Rate limiting
+     * and cache stamping are network interceptors, so cache hits
      * cost no tokens.
      */
-    fun okHttp(cookies: PersistentCookieJar, cacheDir: File?, debug: Boolean): OkHttpClient {
+    fun okHttp(cookies: PersistentCookieJar, cacheDir: File?, debug: Boolean, offline: OfflineStore? = null): OkHttpClient {
         val b = OkHttpClient.Builder()
             .cookieJar(cookies)
             .connectTimeout(20, TimeUnit.SECONDS)
             .readTimeout(30, TimeUnit.SECONDS)
             .addInterceptor(SessionInterceptor())
-            .addInterceptor(OfflineFallbackInterceptor())
+        if (offline != null) b.addInterceptor(OfflineInterceptor(offline))
+        b.addInterceptor(OfflineFallbackInterceptor())
             .addInterceptor(SessionRecoveryInterceptor(cookies))
             .addNetworkInterceptor(RateLimitInterceptor())
             .addNetworkInterceptor(CacheHeaderInterceptor())

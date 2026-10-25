@@ -72,6 +72,7 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.coil.okhttp)
     implementation(libs.maplibre)
+    implementation(libs.androidx.work)
     debugImplementation(libs.androidx.compose.ui.tooling)
 
     testImplementation(libs.junit)

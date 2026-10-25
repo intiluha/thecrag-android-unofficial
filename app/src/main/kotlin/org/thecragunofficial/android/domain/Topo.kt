@@ -36,7 +36,13 @@ data class Topo(
 ) {
     val aspect: Float get() = if (baseHeight > 0f) baseWidth / baseHeight else 1f
 
-    /** theCrag scales to fit [w]x[h] keeping aspect; without a size it serves the original. */
-    fun imageUrl(w: Int = 1200, h: Int = 1600): String =
-        IMAGE_BASE + "${w}x$h/" + hashId.substring(0, 2) + "/" + hashId.substring(2, 4) + "/" + hashId
+    fun imageUrl(w: Int = TOPO_IMAGE_W, h: Int = TOPO_IMAGE_H): String = topoImageUrl(hashId, w, h)
 }
+
+/** The size every topo image is requested at; the offline downloader pins the same URL. */
+const val TOPO_IMAGE_W = 1200
+const val TOPO_IMAGE_H = 1600
+
+/** theCrag scales to fit [w]x[h] keeping aspect; without a size it serves the original. */
+fun topoImageUrl(hashId: String, w: Int = TOPO_IMAGE_W, h: Int = TOPO_IMAGE_H): String =
+    IMAGE_BASE + "${w}x$h/" + hashId.substring(0, 2) + "/" + hashId.substring(2, 4) + "/" + hashId

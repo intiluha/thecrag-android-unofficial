@@ -1,10 +1,11 @@
 package org.thecragunofficial.android.data.repo
 
-import android.util.LruCache
+import androidx.collection.LruCache
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import org.thecragunofficial.android.data.remote.NO_CACHE
 import org.thecragunofficial.android.data.remote.TheCragApi
+import org.thecragunofficial.android.data.remote.dto.NodeDto
 import org.thecragunofficial.android.domain.AreaDetail
 import org.thecragunofficial.android.domain.NodeKind
 import org.thecragunofficial.android.domain.RouteDetail
@@ -12,9 +13,9 @@ import org.thecragunofficial.android.domain.SearchHit
 import org.thecragunofficial.android.domain.WORLD_ID
 
 /**
- * Online-first (Stage 1). An in-memory cache keeps back navigation free; the
- * OkHttp disk cache behind the API serves recently seen nodes offline. Room
- * persistence for favourites arrives with Stage 3.
+ * Online-first. An in-memory cache keeps back navigation free; the OkHttp disk
+ * cache behind the API serves recently seen nodes offline; starred areas are
+ * answered from the pinned store by `OfflineInterceptor` (Stage 3).
  */
 class NodeRepository(private val api: TheCragApi) {
     private val areas = LruCache<Long, AreaDetail>(64)
@@ -24,11 +25,10 @@ class NodeRepository(private val api: TheCragApi) {
         if (!force) areas.get(id)?.let { return it }
         val cc = if (force) NO_CACHE else null
         val detail = coroutineScope {
-            val node = async { api.node(id, show = listOf("ancestors", "info", "location"), cacheControl = cc).data }
+            val node = async { api.node(id, show = AREA_SHOW, cacheControl = cc).data }
             val subAreas = async { api.childAreas(id, cc).data }
             val n = node.await()
-            // Regions have no direct routes; skip the call unless the node says it may have some.
-            val routeList = if ((n.subAreaCount ?: 0) == 0 || n.subType in LEAFY) api.childRoutes(id, cc).data else emptyList()
+            val routeList = if (mayHaveRoutes(n)) api.childRoutes(id, cc).data else emptyList()
             n.toAreaDetail(subAreas.await(), routeList)
         }
         areas.put(id, detail)
@@ -37,7 +37,7 @@ class NodeRepository(private val api: TheCragApi) {
 
     suspend fun route(id: Long, force: Boolean = false): RouteDetail {
         if (!force) routes.get(id)?.let { return it }
-        val detail = api.node(id, show = listOf("ancestors", "info"), cacheControl = if (force) NO_CACHE else null).data.toRouteDetail()
+        val detail = api.node(id, show = ROUTE_SHOW, cacheControl = if (force) NO_CACHE else null).data.toRouteDetail()
         routes.put(id, detail)
         return detail
     }
@@ -54,8 +54,15 @@ class NodeRepository(private val api: TheCragApi) {
         routes.evictAll()
     }
 
-    private companion object {
+    companion object {
+        /** `show=` lists of the two node reads; the offline downloader pins responses under the same URLs. */
+        val AREA_SHOW = listOf("ancestors", "info", "location")
+        val ROUTE_SHOW = listOf("ancestors", "info")
+
         /** Sub types that commonly hold routes directly, even with sub areas. */
-        val LEAFY = setOf("Crag", "Cliff", "Sector", "Boulder", "Field", "Area", "Gym", "Wall")
+        private val LEAFY = setOf("Crag", "Cliff", "Sector", "Boulder", "Field", "Area", "Gym", "Wall")
+
+        /** Regions have no direct routes; the children/route call is skipped unless the node says it may have some. */
+        fun mayHaveRoutes(n: NodeDto): Boolean = (n.subAreaCount ?: 0) == 0 || n.subType in LEAFY
     }
 }

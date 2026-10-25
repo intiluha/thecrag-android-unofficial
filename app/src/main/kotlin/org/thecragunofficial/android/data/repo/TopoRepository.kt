@@ -1,6 +1,6 @@
 package org.thecragunofficial.android.data.repo
 
-import android.util.LruCache
+import androidx.collection.LruCache
 import org.thecragunofficial.android.data.remote.NO_CACHE
 import org.thecragunofficial.android.data.remote.TheCragApi
 import org.thecragunofficial.android.domain.Topo
@@ -11,11 +11,15 @@ class TopoRepository(private val api: TheCragApi) {
 
     suspend fun toposFor(id: Long, force: Boolean = false): List<Topo> {
         if (!force) cache.get(id)?.let { return it }
-        val dto = api.node(id, show = listOf("topo"), cacheControl = if (force) NO_CACHE else null).data
+        val dto = api.node(id, show = TOPO_SHOW, cacheControl = if (force) NO_CACHE else null).data
         val topos = dto.topos.mapNotNull(TopoMapper::fromDto)
         cache.put(id, topos)
         return topos
     }
 
     fun clear() = cache.evictAll()
+
+    companion object {
+        val TOPO_SHOW = listOf("topo")
+    }
 }

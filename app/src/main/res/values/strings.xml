@@ -17,7 +17,7 @@
     <string name="topos">Topos</string>
     <string name="topos_failed">Topos could not be loaded: %1$s</string>
     <string name="about_blurb">An unofficial, personal client for thecrag.com. Not affiliated with theCrag. Everything shown comes live from thecrag.com; nothing is bundled with the app.</string>
-    <string name="about_storage">Pages, topos and images you have opened stay cached on this device and are shown again when the network is unreachable.</string>
+    <string name="about_storage">Pages, topos and images you have opened stay cached on this device and are shown again when the network is unreachable. Starred areas are kept separately until you remove them; clearing the cache leaves them alone.</string>
     <string name="clear_cache">Clear cached data</string>
     <string name="cache_cleared">Cache cleared</string>
     <string name="account">Account</string>
@@ -38,4 +38,21 @@
     <string name="delete_ascent">Delete this ascent on theCrag?</string>
     <string name="delete">Delete</string>
     <string name="cancel">Cancel</string>
+    <string name="offline">Offline</string>
+    <string name="star">Keep offline</string>
+    <string name="starred">Kept offline</string>
+    <string name="offline_blurb">Starred areas are downloaded with all their sub-areas, routes and topos and shown from this device, online or not. Refresh an area to fetch it live and update the copy; Update re-downloads everything.</string>
+    <string name="offline_empty">No starred areas yet. Open a crag and tap the star.</string>
+    <string name="offline_confirm_title">Keep %1$s offline?</string>
+    <string name="offline_confirm">About %1$d routes and %2$d topos, roughly %3$s to download. Map tiles stay online.</string>
+    <string name="offline_too_large">%1$s has %2$d routes; areas above %3$d routes cannot be kept offline. Star a crag or sector instead.</string>
+    <string name="download">Download</string>
+    <string name="update">Update</string>
+    <string name="remove">Remove</string>
+    <string name="remove_favourite">Remove the offline copy of %1$s?</string>
+    <string name="status_queued">Waiting to download</string>
+    <string name="status_downloading">Downloading %1$d / %2$d</string>
+    <string name="status_scanning">Scanning area</string>
+    <string name="status_failed">Failed: %1$s</string>
+    <string name="offline_total">%1$s on this device</string>
 </resources>

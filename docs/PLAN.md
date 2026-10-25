@@ -1,6 +1,6 @@
 # theCrag Android client: plan
 
-Status: Stage 1 feature-complete (2026-10-20). M1–M5 run on a phone (browse, routes, search, topos, map). M6 polish added recent items, a disk-cache offline fallback, scoped search, an About screen and a minified release build; the release build has not run on a device yet. Next: Stage 2 (login, logbook, ticks). Research is in `research/api.md`; sample
+Status (2026-10-25): Stages 1–3 implemented. Stage 1 (browse, routes, search, topos, map) and Stage 2 (login, logbook, ticks) run on a phone; Stage 3 (starred areas kept offline) is unit-tested end to end against a mock server and awaits its first device run. Research is in `research/api.md`; sample
 payloads in `api-samples/`.
 
 ## 1. Decisions (settled 2026-10-20)
@@ -47,8 +47,7 @@ app/
     remote/     OkHttp + Retrofit, kotlinx.serialization (lenient Long ids), interceptors:
                 UA + Referer + cookie jar, rate limiter, session bootstrap/retry
     repo/       NodeRepository, TopoRepository + TopoMapper, MapRepository, RecentStore
-    local/      Room: nodes, children edges, topos, topo objects, favourites (Stage 3)
-    repo/       NodeRepository, SearchRepository, MapRepository, TopoRepository
+    offline/    OfflineStore (pinned responses by URL), OfflineInterceptor, FavouriteDownloader, WorkManager job
   domain/       Node (Area|Route), Grade (context + systems), Topo, TopoPath, GeoBox
   ui/           Jetpack Compose + Material 3, single-activity, type-safe navigation
     browse/     area screen: header, breadcrumb, sub-areas, routes table (grade band colour, stars, style, height, bolts)
@@ -93,7 +92,7 @@ OkHttp 4, kotlinx.serialization, Room 2.7, Coil 3, MapLibre Native Android
 - Everything needed is at the `authweb` access level (session cookie + `cookieAuth=1`),
   and the live replies are saved as `api-samples/account_me*.json` and `ascent_*_reply.json`;
   the ascent parser still reads fields defensively with fallbacks.
-- Logbook: `GET /api/climber/id/me/ascents?cookieAuth=1### Stage 3page=N### Stage 3page-size=250` on request
+- Logbook: `GET /api/climber/id/me/ascents?cookieAuth=1&page=N&page-size=250` on request
   only, stored as JSON in private storage. Ticks: `POST /api/ascent/create?cookieAuth=1`
   with the documented v2 schema; `/create/validate` as a dry run; network failures park
   the tick in an outbox with manual retry.
@@ -103,14 +102,30 @@ OkHttp 4, kotlinx.serialization, Room 2.7, Coil 3, MapLibre Native Android
   list beyond one page (no `query.page` seen in the reply), the
   partner-key OAuth path if theCrag ever grants one.
 
-### Stage 3: offline favourites
-- "Star" an area: background WorkManager job walks the subtree (children/area +
-  children/route, batched with `node/ids`), stores nodes + topos in Room, prefetches
-  topo images into Coil's disk cache at 1200px, parses and stores route lines.
-- Size guard and progress UI; manual refresh with `lastUpdated` comparisons.
-- Map tiles stay online unless a prefetch-friendly tile source is adopted.
-- This stage is the one most clearly outside theCrag's written terms; gate it on
-  their answer (see decision 3).
+### Stage 3: offline favourites (implemented 2026-10-25)
+- No Room after all. The pinned store (`data/offline/OfflineStore`) keeps whole HTTP
+  responses keyed by request URL under `filesDir/offline/` (`index.json`, one manifest
+  per favourite, `blobs/sha1(url)`), and `OfflineInterceptor` answers those URLs before
+  the OkHttp cache. Nothing in the repositories or UI knows about offline: they issue
+  the same requests as always. `OfflineKeysTest` pins the hand-built URLs to what
+  Retrofit sends.
+- Starring an area (star in the top bar; World cannot be starred; areas above 3000
+  routes are refused) walks the subtree: the area and every sub-area (detail + topos),
+  their `children/area` and `children/route` listings, every route (detail + topos)
+  and every topo image at 1200x1600. Nodes come in batches of 50 from
+  `/api/node/ids?id=…&show=ancestors,info,location,topo` (verified live with 105 ids,
+  600 kB) and are split into `{"data": node}` bodies stored under both the detail and
+  the `show=topo` key. A 300-route crag is about a dozen JSON calls plus one per image
+  (~400 kB each); all through the normal client and its rate limiter.
+- Runs as a foreground WorkManager job with a progress notification (`dataSync`
+  foreground service type, POST_NOTIFICATIONS asked for on first star). Plain network
+  failures retry with backoff; the Offline screen shows status, size, Update (full
+  re-download) and Remove. A download resumes where it stopped.
+- Refresh on a starred area fetches live and replaces the pinned copy. Clearing the
+  cache leaves starred areas alone; removing a favourite deletes blobs no other
+  favourite references.
+- Not done: offline map tiles (the map stays online; PMTiles extracts remain the
+  option), offline search (lookup is live only), a size cap across favourites.
 
 ## 5. Risks
 

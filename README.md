@@ -5,8 +5,8 @@ browse areas and crags, list routes, view topos, see locations on a map. Everyth
 comes from the JSON endpoints the website itself uses; no HTML scraping.
 Not affiliated with theCrag. Data is theirs and their contributors' (CC BY-NC-SA).
 
-Status: Stage 1 (anonymous online guide) done; Stage 2 (login, logbook, ticks) works,
-verified against theCrag with a throwaway account. Opened pages, topos and
+Status: Stage 1 (anonymous online guide) and Stage 2 (login, logbook, ticks) run on a phone, Stage 2
+verified against theCrag with a throwaway account. Stage 3: star an area to keep it, its routes and topos on the device (foreground download, served offline). Opened pages, topos and
 images stay cached and are shown offline. See `docs/PLAN.md` and
 `docs/research/api.md`.
 

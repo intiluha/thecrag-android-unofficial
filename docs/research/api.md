@@ -49,7 +49,7 @@ Base `https://www.thecrag.com`. All return `{"data": …, "query": {…}}`.
 | Endpoint | Notes | Sample |
 |---|---|---|
 | `GET /api/node/id/{id}` | area or route. `show=` is repeatable: `ancestors` (breadcrumb from World), `children`, `info` (beta sections: Description, Access Issues, Approach, Descent Notes, Ethic; `inheritedFrom` marks text inherited from an ancestor), `location` (`geometry`: `center`, `lat`/`long`, `point`, `bbox`, `boundary` polygon, `altitude`), `topo` (see §4), `tags`, `karma`. `markupType=html` renders markdown to `markupHTML`, default gives `markdown`. Aliases: `/api/area/id/`, `/api/route/id/`, `/api/climb/id/`. | `area_11740915_show_ancestors.json`, `area_11962579_show_location_geometry.json`, `route_12873151_show_all.json` |
-| `GET /api/node/ids?id=a,b,c&show=…` | batch form | |
+| `GET /api/node/ids?id=a,b,c&show=…` | batch form, `data` is an array; `show` comma-separated. Verified 2026-10-25 with 105 ids and `show=topo,info,ancestors`: 600 kB in 0.3 s, ~5.7 kB per route. The offline downloader uses it in batches of 50 | |
 | `GET /api/node/id/{id}/children` `/children/area` `/children/route` | sub-areas (with `geometry`) or routes; `flatten=data[id,name,…]` trims fields | `area_11764567_children_area.json`, `area_11962579_children_route.json` |
 | `GET /api/country/list` | country → node id + default grade context | `country_list.json` |
 | `GET /api/lookup/node?search=&ancestor={id}&page-size=&page=` | search box; `ancestor` is mandatory (World = `7546063`); route `qualifier` is the grade | `lookup_node.json` |
@@ -168,3 +168,14 @@ API (`/api/node/...`, `/api/map/...`) and node page responses carry no
 stamps `Cache-Control: public, max-age=3600` on successful GETs in a network
 interceptor so OkHttp's disk cache keeps them, and retries with
 `only-if-cached, max-stale=90d` when the network fails.
+
+## Offline copies (2026-10-25)
+
+Starred areas are not re-modelled: the app pins the raw responses of the exact URLs
+the UI requests (node detail with its `show=` list, `show=topo`, the two children
+listings, topo images at 1200x1600) and an application interceptor answers them
+from disk. Node bodies come from the batch endpoint above and are split into
+`{"data": node}` per id; a body fetched with `show=ancestors,info,location,topo`
+parses fine for both the detail and the topo request since unknown keys are
+ignored. Topo images at 1200x1600 are ~400 kB (`content-type: image/jpeg`,
+`max-age=172800`).

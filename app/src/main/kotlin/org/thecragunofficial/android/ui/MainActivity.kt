@@ -16,6 +16,7 @@ import org.thecragunofficial.android.ui.about.AboutScreen
 import org.thecragunofficial.android.ui.account.AccountScreen
 import org.thecragunofficial.android.ui.logbook.LogbookScreen
 import org.thecragunofficial.android.ui.browse.AreaScreen
+import org.thecragunofficial.android.ui.favourites.FavouritesScreen
 import org.thecragunofficial.android.ui.map.MapScreen
 import org.thecragunofficial.android.ui.route.RouteScreen
 import org.thecragunofficial.android.ui.search.SearchScreen
@@ -44,6 +45,7 @@ fun AppNav() {
                     nav.navigate("map/${loc?.lat ?: 20.0}/${loc?.lon ?: 0.0}/${if (loc == null) 1 else zoom}")
                 },
                 onAbout = { nav.navigate("about") },
+                onFavourites = { nav.navigate("favourites") },
                 onLogbook = { nav.navigate("logbook") },
                 onAccount = { nav.navigate("account") },
                 onBack = if (nav.previousBackStackEntry != null) ({ nav.popBackStack() }) else null,
@@ -92,6 +94,7 @@ fun AppNav() {
             )
         }
         composable("about") { AboutScreen(onBack = { nav.popBackStack() }) }
+        composable("favourites") { FavouritesScreen(onOpenArea = { nav.navigate("area/$it") }, onBack = { nav.popBackStack() }) }
         composable("account") { AccountScreen(onBack = { nav.popBackStack() }, onLogbook = { nav.navigate("logbook") }) }
         composable("logbook") {
             LogbookScreen(onOpenRoute = { nav.navigate("route/$it") }, onAccount = { nav.navigate("account") }, onBack = { nav.popBackStack() })

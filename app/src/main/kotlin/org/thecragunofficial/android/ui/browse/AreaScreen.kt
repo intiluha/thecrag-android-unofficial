@@ -1,5 +1,10 @@
 package org.thecragunofficial.android.ui.browse
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,6 +19,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.StarBorder
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -21,19 +29,30 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlinx.coroutines.launch
 import org.thecragunofficial.android.R
 import org.thecragunofficial.android.TheCragApp
+import org.thecragunofficial.android.data.offline.FavouriteDownloadWorker
+import org.thecragunofficial.android.data.offline.FavouritesRepository
 import org.thecragunofficial.android.data.repo.RecentItem
 import org.thecragunofficial.android.domain.AreaDetail
 import org.thecragunofficial.android.domain.AreaSummary
@@ -51,6 +70,7 @@ import org.thecragunofficial.android.ui.common.SectionHeader
 import org.thecragunofficial.android.ui.common.Stars
 import org.thecragunofficial.android.ui.common.StateBox
 import org.thecragunofficial.android.ui.common.UiState
+import org.thecragunofficial.android.ui.common.formatBytes
 import org.thecragunofficial.android.ui.topo.TopoView
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -62,6 +82,7 @@ fun AreaScreen(
     onSearch: (ancestorId: Long, ancestorName: String) -> Unit,
     onOpenMap: (LatLon?, Int) -> Unit,
     onAbout: () -> Unit,
+    onFavourites: () -> Unit,
     onLogbook: () -> Unit,
     onAccount: () -> Unit,
     onBack: (() -> Unit)?,
@@ -72,10 +93,18 @@ fun AreaScreen(
     val state by vm.state.collectAsState()
     val topos by vm.topos.collectAsState()
     val recents by graph.recents.items.collectAsState()
+    val favourites by graph.favourites.favourites.collectAsState()
     val area = (state as? UiState.Ready)?.value
     val title = area?.name ?: stringResource(R.string.world)
+    val starred = favourites.any { it.id == areaId }
+    val snackbar = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
+    var confirmStar by remember { mutableStateOf(false) }
+    val askNotifications = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { }
+    val tooLarge = area?.let { stringResource(R.string.offline_too_large, it.name, it.numberRoutes, FavouritesRepository.MAX_ROUTES) }
 
     Scaffold(
+        snackbarHost = { SnackbarHost(snackbar) },
         topBar = {
             TopAppBar(
                 title = { Text(title, maxLines = 1) },
@@ -83,12 +112,27 @@ fun AreaScreen(
                     if (onBack != null) IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, null) }
                 },
                 actions = {
+                    if (area != null && area.id != WORLD_ID) {
+                        IconButton(onClick = {
+                            when {
+                                starred -> onFavourites()
+                                area.numberRoutes > FavouritesRepository.MAX_ROUTES -> scope.launch { snackbar.showSnackbar(tooLarge ?: "") }
+                                else -> confirmStar = true
+                            }
+                        }) {
+                            Icon(
+                                if (starred) Icons.Default.Star else Icons.Default.StarBorder,
+                                stringResource(if (starred) R.string.starred else R.string.star),
+                            )
+                        }
+                    }
                     if (area != null && (area.location != null || area.id == WORLD_ID)) {
                         IconButton(onClick = { onOpenMap(area.location, mapZoomFor(area.subType)) }) { Icon(Icons.Default.Map, "Map") }
                     }
                     IconButton(onClick = { onSearch(areaId, title) }) { Icon(Icons.Default.Search, stringResource(R.string.search)) }
                     OverflowMenu(
                         stringResource(R.string.refresh) to vm::reload,
+                        stringResource(R.string.offline) to onFavourites,
                         stringResource(R.string.logbook) to onLogbook,
                         stringResource(R.string.account) to onAccount,
                         stringResource(R.string.about) to onAbout,
@@ -100,6 +144,28 @@ fun AreaScreen(
         StateBox(state, onRetry = vm::reload) { a ->
             AreaBody(a, topos, if (a.id == WORLD_ID) recents else emptyList(), onOpenArea, onOpenRoute, Modifier.padding(padding))
         }
+    }
+
+    if (confirmStar && area != null) {
+        val size = formatBytes(FavouritesRepository.estimateBytes(area.numberRoutes, area.numberTopos))
+        AlertDialog(
+            onDismissRequest = { confirmStar = false },
+            title = { Text(stringResource(R.string.offline_confirm_title, area.name)) },
+            text = { Text(stringResource(R.string.offline_confirm, area.numberRoutes, area.numberTopos, size)) },
+            confirmButton = {
+                TextButton(onClick = {
+                    confirmStar = false
+                    graph.favourites.add(area)
+                    if (Build.VERSION.SDK_INT >= 33 &&
+                        ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
+                    ) {
+                        askNotifications.launch(Manifest.permission.POST_NOTIFICATIONS)
+                    }
+                    FavouriteDownloadWorker.enqueue(context, area.id, refresh = false)
+                }) { Text(stringResource(R.string.download)) }
+            },
+            dismissButton = { TextButton(onClick = { confirmStar = false }) { Text(stringResource(R.string.cancel)) } },
+        )
     }
 }
 

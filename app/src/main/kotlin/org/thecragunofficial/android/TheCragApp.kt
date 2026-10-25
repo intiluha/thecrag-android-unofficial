@@ -12,6 +12,9 @@ import okhttp3.OkHttpClient
 import org.thecragunofficial.android.data.auth.AuthApi
 import org.thecragunofficial.android.data.auth.AuthRepository
 import org.thecragunofficial.android.data.logbook.LogbookRepository
+import org.thecragunofficial.android.data.offline.FavouriteDownloader
+import org.thecragunofficial.android.data.offline.FavouritesRepository
+import org.thecragunofficial.android.data.offline.OfflineStore
 import org.thecragunofficial.android.data.remote.ApiFactory
 import org.thecragunofficial.android.data.remote.authHttp
 import org.thecragunofficial.android.data.remote.KeyValueStore
@@ -21,6 +24,7 @@ import org.thecragunofficial.android.data.repo.MapRepository
 import org.thecragunofficial.android.data.repo.NodeRepository
 import org.thecragunofficial.android.data.repo.RecentStore
 import org.thecragunofficial.android.data.repo.TopoRepository
+import java.io.File
 
 /** Hand-rolled dependency graph; small enough not to need a DI framework. */
 class AppGraph(app: Application) {
@@ -30,12 +34,15 @@ class AppGraph(app: Application) {
         override fun put(key: String, value: String) { prefs.edit().putString(key, value).apply() }
     }
     val cookies = PersistentCookieJar(store)
-    val okHttp: OkHttpClient = ApiFactory.okHttp(cookies, app.cacheDir, BuildConfig.DEBUG)
+    val offline = OfflineStore(File(app.filesDir, "offline"), ApiFactory.json)
+    val okHttp: OkHttpClient = ApiFactory.okHttp(cookies, app.cacheDir, BuildConfig.DEBUG, offline)
     val api: TheCragApi = ApiFactory.api(ApiFactory.retrofit(okHttp))
     val nodes = NodeRepository(api)
     val topos = TopoRepository(api)
     val map = MapRepository(api, ApiFactory.json)
     val recents = RecentStore(store, ApiFactory.json)
+    // Stage 3: starred areas, pinned in the offline store and served by OfflineInterceptor.
+    val favourites = FavouritesRepository(offline, FavouriteDownloader(okHttp, offline, ApiFactory.json))
 
     // Stage 2: the account. Separate client and cookie jar; browsing above never sees it.
     val authCookies = PersistentCookieJar(store, PersistentCookieJar.AUTH_KEY)
@@ -44,7 +51,7 @@ class AppGraph(app: Application) {
     val auth = AuthRepository(authApi, authCookies, store, ApiFactory.json)
     val logbook = LogbookRepository(authApi, auth, app.filesDir, ApiFactory.json)
 
-    /** Drops everything fetched from theCrag: in-memory copies and the HTTP disk cache. Blocking; call off the main thread. */
+    /** Drops everything fetched from theCrag except starred areas: in-memory copies and the HTTP disk cache. Blocking; call off the main thread. */
     fun clearCaches() {
         nodes.clear()
         topos.clear()
