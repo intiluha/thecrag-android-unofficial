@@ -42,18 +42,23 @@ class LogbookRepository(
     fun ascentsOf(routeId: Long): List<Ascent> = _ascents.value.filter { it.routeId == routeId }
     fun pendingFor(routeId: Long): List<TickRequest> = _outbox.value.filter { it.routeId == routeId }
 
-    /** Replaces the local copy with everything the server lists. Returns the count. */
+    /**
+     * Replaces the local copy with everything the server lists. Returns the count.
+     * The reply carries no paging info, so pages are read until one comes back
+     * short or adds no ascent not seen before (in case `page` were ignored).
+     */
     suspend fun refresh(): Int {
         check(auth.account != null) { "Not logged in" }
-        val all = ArrayList<Ascent>()
+        val all = LinkedHashMap<Long, Ascent>()
         var page = 1
         while (page <= MAX_PAGES) {
             val batch = AscentParser.parseList(api.ascents(page, pageSize))
-            all += batch
-            if (batch.size < pageSize) break
+            val before = all.size
+            batch.forEach { all[it.id] = it }
+            if (batch.size < pageSize || all.size == before) break
             page++
         }
-        _ascents.value = all.distinctBy { it.id }
+        _ascents.value = all.values.toList()
         save(logbookFile, Ascent.serializer(), _ascents.value)
         refreshedAt.value = clock()
         return _ascents.value.size

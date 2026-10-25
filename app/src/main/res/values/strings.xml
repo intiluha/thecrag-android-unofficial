@@ -55,4 +55,7 @@
     <string name="status_scanning">Scanning area</string>
     <string name="status_failed">Failed: %1$s</string>
     <string name="offline_total">%1$s on this device</string>
+    <string name="export_csv">Export CSV</string>
+    <string name="exported">Logbook exported: %1$d ascents.</string>
+    <string name="export_failed">Export failed: %1$s</string>
 </resources>

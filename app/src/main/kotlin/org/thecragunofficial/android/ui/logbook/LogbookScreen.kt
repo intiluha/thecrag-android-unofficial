@@ -14,7 +14,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -42,11 +45,13 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import org.thecragunofficial.android.R
 import org.thecragunofficial.android.TheCragApp
 import org.thecragunofficial.android.data.logbook.Ascent
+import org.thecragunofficial.android.data.logbook.LogbookCsv
 import org.thecragunofficial.android.data.logbook.TickRequest
 import org.thecragunofficial.android.data.logbook.TickTypes
 import org.thecragunofficial.android.ui.account.AccountViewModel
 import org.thecragunofficial.android.ui.common.GradeChip
 import org.thecragunofficial.android.ui.common.SectionHeader
+import java.time.LocalDate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -60,6 +65,18 @@ fun LogbookScreen(onOpenRoute: (Long) -> Unit, onAccount: () -> Unit, onBack: ()
     val busy by vm.busy.collectAsState()
     val message by vm.message.collectAsState()
     var confirmDelete by remember { mutableStateOf<Ascent?>(null) }
+    var exportMessage by remember { mutableStateOf<String?>(null) }
+    val exportedText = stringResource(R.string.exported, ascents.size)
+    // A save dialog (defaults to Downloads); the CSV is written from the local copy, nothing is fetched.
+    val exportCsv = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("text/csv")) { uri ->
+        if (uri == null) return@rememberLauncherForActivityResult
+        exportMessage = try {
+            context.contentResolver.openOutputStream(uri)!!.bufferedWriter().use { LogbookCsv.write(ascents, it) }
+            exportedText
+        } catch (e: Exception) {
+            context.getString(R.string.export_failed, e.message ?: e.javaClass.simpleName)
+        }
+    }
     confirmDelete?.let { a ->
         AlertDialog(
             onDismissRequest = { confirmDelete = null },
@@ -78,6 +95,11 @@ fun LogbookScreen(onOpenRoute: (Long) -> Unit, onAccount: () -> Unit, onBack: ()
                 navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, null) } },
                 actions = {
                     if (account != null) IconButton(onClick = vm::refresh, enabled = !busy) { Icon(Icons.Default.Refresh, stringResource(R.string.refresh_logbook)) }
+                    if (ascents.isNotEmpty()) {
+                        IconButton(onClick = { exportCsv.launch(LogbookCsv.fileName(LocalDate.now().toString())) }) {
+                            Icon(Icons.Default.Download, stringResource(R.string.export_csv))
+                        }
+                    }
                     IconButton(onClick = onAccount) { Icon(Icons.Default.AccountCircle, stringResource(R.string.account)) }
                 },
             )
@@ -85,7 +107,7 @@ fun LogbookScreen(onOpenRoute: (Long) -> Unit, onAccount: () -> Unit, onBack: ()
     ) { padding ->
         Column(Modifier.fillMaxSize().padding(padding)) {
             if (busy) LinearProgressIndicator(Modifier.fillMaxWidth())
-            message?.let { Text(it, Modifier.padding(16.dp), style = MaterialTheme.typography.bodyMedium) }
+            (exportMessage ?: message)?.let { Text(it, Modifier.padding(16.dp), style = MaterialTheme.typography.bodyMedium) }
             if (account == null) {
                 Column(Modifier.padding(16.dp)) {
                     Text(stringResource(R.string.not_logged_in))

@@ -97,6 +97,11 @@ OkHttp 4, kotlinx.serialization, Room 2.7, Coil 3, MapLibre Native Android
   with the documented v2 schema; `/create/validate` as a dry run; network failures park
   the tick in an outbox with manual retry.
 - Delete: `POST /api/ascent/delete?cookieAuth=1` with `{"data":{"ascent":id}}` (long-press in the logbook).
+- Export (2026-10-25): the Logbook screen writes the local copy as RFC 4180 CSV through a
+  save dialog (`ACTION_CREATE_DOCUMENT`, no storage permission, no network). The
+  website also offers `/climber/<slug>/logbook?format=csv` to logged-in users who have
+  accepted the terms, and supporters get a personal read key (`/api/logbook/ascents`).
+  Paging of the ascents list stops at a short page or when a page adds no new id.
 - Open: whether `climbedGearStyle`
   values beyond sport/trad/boulder are right, editing an ascent, paging of the ascents
   list beyond one page (no `query.page` seen in the reply), the
