@@ -99,8 +99,9 @@ Not available anonymously: `/api/index/summary|detail` (bulk sync), `/api/facet/
   area outlines). The JSON `width`/`height` is unreliable: it is the fitted size for old
   topos and the original size for newer ones; use `origWidth`/`origHeight`.
   The route number drawn on the topo is `siblingLabel`; `gradeBand` is the `gbN` class.
-- Image URL: `https://image.thecrag.com/{W}x{H}/{h[0:2]}/{h[2:4]}/{hashID}`; the server
-  scales to fit, keeps aspect, may answer webp or jpeg. Without the size segment it
+- Image URL: `https://image.thecrag.com/{W}x/{h[0:2]}/{h[2:4]}/{hashID}` scales to the width and
+  keeps the aspect (`x{H}/` by height). `{W}x{H}/` **crops to fill** that box, checked
+  2026-10-25 on an 8064x4536 topo: 1200x1600 returned its middle 42 percent. Without the size segment it
   returns the original. No auth; needs the realistic UA.
 
 ## 5. Auth, logbook, ticking (Stage 2 inputs)
@@ -173,9 +174,9 @@ interceptor so OkHttp's disk cache keeps them, and retries with
 
 Starred areas are not re-modelled: the app pins the raw responses of the exact URLs
 the UI requests (node detail with its `show=` list, `show=topo`, the two children
-listings, topo images at 1200x1600) and an application interceptor answers them
+listings, topo images at width 1200) and an application interceptor answers them
 from disk. Node bodies come from the batch endpoint above and are split into
 `{"data": node}` per id; a body fetched with `show=ancestors,info,location,topo`
 parses fine for both the detail and the topo request since unknown keys are
-ignored. Topo images at 1200x1600 are ~400 kB (`content-type: image/jpeg`,
+ignored. Topo images 1200 px wide are ~400 kB (`content-type: image/jpeg`,
 `max-age=172800`).

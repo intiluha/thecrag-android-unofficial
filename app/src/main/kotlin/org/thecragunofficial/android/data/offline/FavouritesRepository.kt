@@ -58,7 +58,7 @@ class FavouritesRepository(private val store: OfflineStore, private val download
         /** Areas with more routes than this cannot be starred: a region would mean thousands of calls. */
         const val MAX_ROUTES = 3000
 
-        /** Rough download size: topo images at 1200x1600 run about 400 kB, route JSON about 6 kB. */
+        /** Rough download size: topo images 1200 px wide run about 400 kB, route JSON about 6 kB. */
         fun estimateBytes(numberRoutes: Int, numberTopos: Int): Long = numberTopos * 400_000L + numberRoutes * 6_000L
     }
 }

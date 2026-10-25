@@ -28,7 +28,7 @@ class TopoMapperTest {
         assertEquals(550f, t.baseWidth, 0.6f)
         assertEquals(504f, t.baseHeight, 0.6f)
         assertEquals(40, t.hashId.length)
-        assertTrue(t.imageUrl().startsWith("https://image.thecrag.com/1200x1600/" + t.hashId.substring(0, 2) + "/"))
+        assertTrue(t.imageUrl().startsWith("https://image.thecrag.com/1200x/" + t.hashId.substring(0, 2) + "/"))
         assertEquals(9, t.routes.size)
         val r = t.routes.first { it.id == 12873151L }
         assertEquals("Have A Good Flight", r.name)

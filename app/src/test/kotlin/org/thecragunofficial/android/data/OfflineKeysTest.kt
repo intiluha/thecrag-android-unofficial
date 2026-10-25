@@ -44,6 +44,6 @@ class OfflineKeysTest {
     fun imageKeyMatchesTheTopoModel() {
         val topo = Topo(1, "8eab551bbf6e736c31c985beddf724f41886fff2", 550f, 400f, emptyList(), emptyList())
         assertEquals(topo.imageUrl(), OfflineKeys.image(topo.hashId))
-        assertEquals("https://image.thecrag.com/1200x1600/8e/ab/8eab551bbf6e736c31c985beddf724f41886fff2", topo.imageUrl())
+        assertEquals("https://image.thecrag.com/1200x/8e/ab/8eab551bbf6e736c31c985beddf724f41886fff2", topo.imageUrl())
     }
 }

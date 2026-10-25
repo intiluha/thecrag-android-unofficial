@@ -117,7 +117,7 @@ OkHttp 4, kotlinx.serialization, Room 2.7, Coil 3, MapLibre Native Android
 - Starring an area (star in the top bar; World cannot be starred; areas above 3000
   routes are refused) walks the subtree: the area and every sub-area (detail + topos),
   their `children/area` and `children/route` listings, every route (detail + topos)
-  and every topo image at 1200x1600. Nodes come in batches of 50 from
+  and every topo image at width 1200. Nodes come in batches of 50 from
   `/api/node/ids?id=…&show=ancestors,info,location,topo` (verified live with 105 ids,
   600 kB) and are split into `{"data": node}` bodies stored under both the detail and
   the `show=topo` key. A 300-route crag is about a dozen JSON calls plus one per image

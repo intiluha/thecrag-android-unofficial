@@ -36,13 +36,16 @@ data class Topo(
 ) {
     val aspect: Float get() = if (baseHeight > 0f) baseWidth / baseHeight else 1f
 
-    fun imageUrl(w: Int = TOPO_IMAGE_W, h: Int = TOPO_IMAGE_H): String = topoImageUrl(hashId, w, h)
+    fun imageUrl(w: Int = TOPO_IMAGE_W): String = topoImageUrl(hashId, w)
 }
 
-/** The size every topo image is requested at; the offline downloader pins the same URL. */
+/** The width every topo image is requested at; the offline downloader pins the same URL. */
 const val TOPO_IMAGE_W = 1200
-const val TOPO_IMAGE_H = 1600
 
-/** theCrag scales to fit [w]x[h] keeping aspect; without a size it serves the original. */
-fun topoImageUrl(hashId: String, w: Int = TOPO_IMAGE_W, h: Int = TOPO_IMAGE_H): String =
-    IMAGE_BASE + "${w}x$h/" + hashId.substring(0, 2) + "/" + hashId.substring(2, 4) + "/" + hashId
+/**
+ * `{w}x/` scales to the width keeping the aspect. Giving both sides (`{w}x{h}/`)
+ * makes the server crop to fill that box: a 16:9 photo asked for as 1200x1600 came
+ * back as its middle 42 percent (checked 2026-10-25). Without a size it serves the original.
+ */
+fun topoImageUrl(hashId: String, w: Int = TOPO_IMAGE_W): String =
+    IMAGE_BASE + "${w}x/" + hashId.substring(0, 2) + "/" + hashId.substring(2, 4) + "/" + hashId

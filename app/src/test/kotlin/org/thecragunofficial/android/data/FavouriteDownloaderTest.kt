@@ -52,8 +52,8 @@ class FavouriteDownloaderTest {
                 "/api/node/id/200/children/route" -> json.setBody("""{"data":[${route(2)},${route(3)}]}""")
                 "/api/node/ids?id=1,2,3&show=ancestors,info,topo" -> json.setBody("""{"data":[${route(1)},${route(2, topo(2, h2))},${route(3)}]}""")
                 "/api/node/id/100?show=ancestors&show=info&show=location" -> json.setBody("""{"data":${area(100, "Crag renamed", "Crag", 1, 3)}}""")
-                "/1200x1600/11/11/$h1" -> MockResponse().addHeader("Content-Type", "image/jpeg").setBody("JPEG1")
-                "/1200x1600/22/22/$h2" -> MockResponse().addHeader("Content-Type", "image/jpeg").setBody("JPEG2")
+                "/1200x/11/11/$h1" -> MockResponse().addHeader("Content-Type", "image/jpeg").setBody("JPEG1")
+                "/1200x/22/22/$h2" -> MockResponse().addHeader("Content-Type", "image/jpeg").setBody("JPEG2")
                 else -> MockResponse().setResponseCode(404).setBody("no route for ${request.path}")
             }
         }
