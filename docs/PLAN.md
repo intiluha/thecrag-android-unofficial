@@ -102,6 +102,10 @@ OkHttp 4, kotlinx.serialization, Room 2.7, Coil 3, MapLibre Native Android
   website also offers `/climber/<slug>/logbook?format=csv` to logged-in users who have
   accepted the terms, and supporters get a personal read key (`/api/logbook/ascents`).
   Paging of the ascents list stops at a short page or when a page adds no new id.
+- Unclimbed view (2026-10-26): once a logbook is loaded, the Routes header of an area offers two
+  views of the list, All and Unclimbed; the latter drops routes with a clean ascent (onsight, flash,
+  redpoint and variants, clean, send, repeat, plain tick; not hang dog, working, attempt, retreat,
+  dab). A view, not a setting: nothing is persisted. See `TickTypes.SENDS`.
 - Open: whether `climbedGearStyle`
   values beyond sport/trad/boulder are right, editing an ascent, paging of the ascents
   list beyond one page (no `query.page` seen in the reply), the

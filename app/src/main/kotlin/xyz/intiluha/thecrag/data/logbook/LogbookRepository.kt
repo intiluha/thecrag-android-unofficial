@@ -163,7 +163,11 @@ class LogbookRepository(
         file.writeText(json.encodeToString(ListSerializer(s), items))
     }
 
-    private companion object {
-        const val MAX_PAGES = 40
+    companion object {
+        private const val MAX_PAGES = 40
+
+        /** Routes with at least one clean ascent ([TickTypes.isSend]); what the area screen can hide. */
+        fun sentRouteIds(ascents: List<Ascent>): Set<Long> =
+            ascents.asSequence().filter { TickTypes.isSend(it.tick) }.mapNotNull { it.routeId }.toSet()
     }
 }

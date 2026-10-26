@@ -30,6 +30,9 @@
     <string name="log_ascent">Log ascent</string>
     <string name="dry_run">Dry run</string>
     <string name="your_ascents">Your ascents</string>
+    <string name="view_all">All</string>
+    <string name="view_unclimbed">Unclimbed</string>
+    <string name="all_climbed">Every route here is climbed.</string>
     <string name="pending">pending</string>
     <string name="refresh_logbook">Refresh logbook</string>
     <string name="retry_outbox">Retry pending</string>

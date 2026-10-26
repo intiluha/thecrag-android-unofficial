@@ -122,4 +122,17 @@ object TickTypes {
     )
 
     fun name(label: String): String = NAMES[label] ?: label.replaceFirstChar { it.uppercase() }
+
+    /**
+     * Ticks that mean the route was climbed clean: onsight, flash, redpoint and their
+     * variants, top-rope/second "clean", boulder sends and repeats, plain "tick" (climbed,
+     * no details). Hang dog, working, attempt, retreat, dab and ghost do not count.
+     */
+    val SENDS = setOf(
+        "onsight", "flash", "redpoint", "pinkpoint", "greenpoint", "greenpointonsight", "greenpointflash",
+        "groundupredpoint", "leadsolo", "ropedsolo", "aidsolo", "clean", "secondclean", "send", "repeat", "tick",
+        "firstascent", "firstfreeascent",
+    )
+
+    fun isSend(label: String): Boolean = label.lowercase() in SENDS
 }

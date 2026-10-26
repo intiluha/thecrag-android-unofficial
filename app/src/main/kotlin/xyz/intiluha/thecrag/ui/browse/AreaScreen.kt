@@ -6,6 +6,7 @@ import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -23,12 +24,16 @@ import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.StarBorder
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -40,17 +45,20 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
 import xyz.intiluha.thecrag.R
 import xyz.intiluha.thecrag.TheCragApp
+import xyz.intiluha.thecrag.data.logbook.LogbookRepository
 import xyz.intiluha.thecrag.data.offline.FavouriteDownloadWorker
 import xyz.intiluha.thecrag.data.offline.FavouritesRepository
 import xyz.intiluha.thecrag.data.repo.RecentItem
@@ -94,6 +102,10 @@ fun AreaScreen(
     val topos by vm.topos.collectAsState()
     val recents by graph.recents.items.collectAsState()
     val favourites by graph.favourites.favourites.collectAsState()
+    val ascents by graph.logbook.ascents.collectAsState()
+    val sentIds = remember(ascents) { LogbookRepository.sentRouteIds(ascents) }
+    // A view of the list, not a setting: nothing stored, survives rotation only.
+    var unclimbedOnly by rememberSaveable { mutableStateOf(false) }
     val area = (state as? UiState.Ready)?.value
     val title = area?.name ?: stringResource(R.string.world)
     val starred = favourites.any { it.id == areaId }
@@ -142,7 +154,10 @@ fun AreaScreen(
         },
     ) { padding ->
         StateBox(state, onRetry = vm::reload) { a ->
-            AreaBody(a, topos, if (a.id == WORLD_ID) recents else emptyList(), onOpenArea, onOpenRoute, Modifier.padding(padding))
+            AreaBody(
+                a, topos, if (a.id == WORLD_ID) recents else emptyList(), onOpenArea, onOpenRoute,
+                if (ascents.isEmpty()) null else sentIds, unclimbedOnly, { unclimbedOnly = it }, Modifier.padding(padding),
+            )
         }
     }
 
@@ -176,6 +191,10 @@ private fun AreaBody(
     recents: List<RecentItem>,
     onOpenArea: (Long) -> Unit,
     onOpenRoute: (Long) -> Unit,
+    /** Routes with a clean ascent in the logbook; null when there is no logbook, which hides the view switch. */
+    sentIds: Set<Long>?,
+    unclimbedOnly: Boolean,
+    onUnclimbedOnly: (Boolean) -> Unit,
     modifier: Modifier,
 ) {
     LazyColumn(modifier.fillMaxSize()) {
@@ -224,8 +243,12 @@ private fun AreaBody(
             items(area.subAreas, key = { "a${it.id}" }) { AreaRow(it) { onOpenArea(it.id) } }
         }
         if (area.routes.isNotEmpty()) {
-            item { SectionHeader("Routes") }
-            items(area.routes, key = { "r${it.id}" }) { RouteRow(it) { onOpenRoute(it.id) } }
+            val shown = if (unclimbedOnly && sentIds != null) area.routes.filter { it.id !in sentIds } else area.routes
+            item { RoutesHeader(sentIds != null, unclimbedOnly, onUnclimbedOnly) }
+            if (shown.isEmpty()) {
+                item { Text(stringResource(R.string.all_climbed), Modifier.padding(16.dp), style = MaterialTheme.typography.bodyMedium) }
+            }
+            items(shown, key = { "r${it.id}" }) { RouteRow(it) { onOpenRoute(it.id) } }
         }
         area.beta.forEach { section ->
             item {
@@ -237,6 +260,39 @@ private fun AreaBody(
             }
         }
         item { Attribution() }
+    }
+}
+
+/**
+ * "Routes" with, once a logbook is loaded, a two-way view of the list: all routes, or only
+ * those without a clean ascent. A view, not a setting: nothing is stored.
+ */
+@Composable
+private fun RoutesHeader(hasLogbook: Boolean, unclimbedOnly: Boolean, onUnclimbedOnly: (Boolean) -> Unit) {
+    Column {
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                "Routes",
+                Modifier.padding(start = 16.dp, top = 16.dp, bottom = 4.dp),
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold,
+            )
+            if (hasLogbook) {
+                SingleChoiceSegmentedButtonRow(Modifier.padding(end = 16.dp, top = 8.dp)) {
+                    SegmentedButton(
+                        selected = !unclimbedOnly,
+                        onClick = { onUnclimbedOnly(false) },
+                        shape = SegmentedButtonDefaults.itemShape(0, 2),
+                    ) { Text(stringResource(R.string.view_all)) }
+                    SegmentedButton(
+                        selected = unclimbedOnly,
+                        onClick = { onUnclimbedOnly(true) },
+                        shape = SegmentedButtonDefaults.itemShape(1, 2),
+                    ) { Text(stringResource(R.string.view_unclimbed)) }
+                }
+            }
+        }
+        HorizontalDivider()
     }
 }
 
