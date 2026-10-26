@@ -1,4 +1,4 @@
-# thecrag-android-unofficial
+# thecrag-android
 
 Unofficial, personal-use Android client for [theCrag](https://www.thecrag.com):
 browse areas and crags, list routes, view topos, see locations on a map. Everything
@@ -10,19 +10,42 @@ verified against theCrag with a throwaway account; the logbook exports to CSV. S
 images stay cached and are shown offline. See `docs/PLAN.md` and
 `docs/research/api.md`.
 
-## Build
+## Build and install
 
-Recipes live in the `Justfile`; `shell.nix` provides JDK 17, Gradle and a lean
-Android SDK (platform 35, build-tools 35.0.0) through nix.
+The only requirement is [Nix](https://nixos.org). All recipes run inside the project's `nix-shell`,
+which provides JDK 17, Gradle, the Android SDK 35, `adb`, `gh` and `just` itself.
 
 ```sh
-just build     # debug APK -> app/build/outputs/apk/debug/app-debug.apk
-just release   # minified APK, debug-signed (own phone only) -> app/build/outputs/apk/release/app-release.apk
-just test      # unit tests
-just install   # adb install + launch the debug build on a connected phone
-just install-release   # same for the release build (coexists with the debug one)
-just clean
+nix-shell
+> just           # list all recipes
+> just build     # → app/build/outputs/apk/debug/app-debug.apk
+> just test      # unit tests: API parsing, session/cache/offline interceptors, topo mapping, logbook, CSV
+> just check     # lint + unit tests
+> just run       # build, adb install and launch on the USB-connected phone
 ```
 
-Without `just`: `nix-shell --run 'gradle --no-daemon assembleDebug'`.
-The Gradle wrapper (`./gradlew`) also works if you bring your own JDK and SDK.
+For a one-off from outside the shell, `nix-shell --run 'just check'` does the same.
+
+The dev build installs side by side with any release build as **theCrag Dev** (`xyz.intiluha.thecrag.dev`).
+
+## Release
+
+```sh
+just release            # signed app/build/outputs/apk/release/app-release.apk
+just release-install    # …and adb install it
+just publish v0.1.0     # …and attach it to a new GitHub Release tagged v0.1.0
+```
+
+Releases are signed with the committed PKCS12 keystore `release.p12` (key alias `thecrag`). Only its
+password is secret: `just release` prompts for it and hands it to Gradle as `KEYSTORE_PASSWORD`, which
+is read only when a release task runs, never for debug builds or tests. Set the variable yourself to
+skip the prompt. Keeping the keystore in the repo keeps the signing key stable across versions, which
+is what lets [Obtainium](https://github.com/ImranR98/Obtainium) update the app in place from this
+repository's GitHub Releases. There is no CI: releases are built locally.
+
+Setting up a fresh keystore (once, inside `nix-shell`):
+
+```sh
+> just keystore           # keytool prompts for a password; `just release` will ask for the same one
+> git add release.p12
+```

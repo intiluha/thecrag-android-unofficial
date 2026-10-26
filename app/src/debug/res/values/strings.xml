@@ -1,0 +1,4 @@
+<resources>
+    <!-- Debug build label; the release label lives in src/main. -->
+    <string name="app_name">theCrag Dev</string>
+</resources>

@@ -12,5 +12,5 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
-rootProject.name = "thecrag-android-unofficial"
+rootProject.name = "thecrag-android"
 include(":app")

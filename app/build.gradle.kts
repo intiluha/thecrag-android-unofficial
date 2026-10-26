@@ -5,13 +5,24 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
 }
 
+// Release signing. The PKCS12 keystore ./release.p12 is committed (key alias "thecrag"); only its
+// password is secret. `just release` prompts for it and passes it in as KEYSTORE_PASSWORD, which is
+// read only when a release task was requested, so debug builds, tests and `gradle help` never need it.
+val keystoreFile = rootProject.file("release.p12")
+val signingTaskNames = setOf("assembleRelease", "installRelease", "bundleRelease")
+val needsSigning = gradle.startParameter.taskNames.any { it.substringAfterLast(':') in signingTaskNames }
+
+fun keystorePassword(): String =
+    providers.environmentVariable("KEYSTORE_PASSWORD").orNull?.takeIf { it.isNotEmpty() }
+        ?: error("KEYSTORE_PASSWORD is not set: run `just release`, which prompts for the release.p12 password.")
+
 android {
-    namespace = "org.thecragunofficial.android"
+    namespace = "xyz.intiluha.thecrag"
     compileSdk = 35
     buildToolsVersion = "35.0.0"
 
     defaultConfig {
-        applicationId = "org.thecragunofficial.android"
+        applicationId = "xyz.intiluha.thecrag"
         minSdk = 26
         targetSdk = 35
         versionCode = 1
@@ -19,16 +30,29 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    signingConfigs {
+        // Only configured when the keystore is present, so a checkout without it still builds debug.
+        if (keystoreFile.exists()) {
+            create("release") {
+                storeFile = keystoreFile
+                storeType = "PKCS12"
+                keyAlias = "thecrag"
+                if (needsSigning) {
+                    val pw = keystorePassword()
+                    storePassword = pw
+                    keyPassword = pw
+                }
+            }
+        }
+    }
     buildTypes {
         release {
-            isMinifyEnabled = true
-            isShrinkResources = true
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-            // Personal build: signed with the debug keystore so `just install-release` works. Not for distribution.
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.findByName("release")
+            isMinifyEnabled = false
         }
         debug {
-            applicationIdSuffix = ".debug"
+            applicationIdSuffix = ".dev"
+            versionNameSuffix = "-dev"
         }
     }
     compileOptions {

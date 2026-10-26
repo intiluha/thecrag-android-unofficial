@@ -8,7 +8,7 @@ payloads in `api-samples/`.
 | # | Question | Decision |
 |---|---|---|
 | 1 | App licence | Beerware (rev. 42), see `LICENSE`. Data stays CC BY-NC-SA and is not bundled |
-| 2 | Name / package id | `thecrag-android-unofficial`; applicationId `org.thecragunofficial.android`; launcher label "theCrag unofficial" |
+| 2 | Name / package id | `thecrag-android-unofficial`; applicationId `xyz.intiluha.thecrag`; launcher label "theCrag unofficial" |
 | 3 | Contact theCrag? | No release planned; possibly a single user. Not contacting for now. Keep traffic polite (rate limiter, caches) so this stays a non-issue; revisit if it is ever published |
 | 4 | Map tiles | Default: MapLibre Native with OpenFreeMap vector tiles (no key, no registration, OSM data; attribution "© OpenMapTiles © OpenStreetMap contributors"). Options kept open in settings later: OpenTopoMap raster (contours, CC BY-SA, small volunteer servers), OSM raster (meant for osm.org, no prefetch), Thunderforest Outdoors / MapTiler Topo (best hiking maps, need a user-supplied key), Esri World Imagery (satellite, attribution required). Offline tiles for Stage 3: Protomaps PMTiles extracts, which MapLibre can read |
 | 5 | minSdk / target | 26 / 35 |
@@ -143,11 +143,13 @@ OkHttp 4, kotlinx.serialization, Room 2.7, Coil 3, MapLibre Native Android
 | Publisher-copyrighted descriptions | Show attribution, allow hiding publisher content in settings |
 | Ids > 2^31 and mixed string/number | Lenient `Long` serializer, tested with `9091907751` |
 
-## 6. Build environment in the container
+## 6. Build environment
 
-No JDK or SDK is preinstalled. `nix` is available:
-`shell.nix` composes platform 35 + build-tools 35.0.0 only (the default
-`androidenv.androidPkgs` pulls the NDK and emulator images). JDK via
-`shell.nix` too; recipes are in the `Justfile` (`just build`, `just test`, `just install`). No emulator in
-the container; UI verification happens on the owner's device or via screenshots of
-Compose previews (Paparazzi can run headless and is worth adding at M3).
+`shell.nix` (nixpkgs nixos-26.05, platform 35 + build-tools 35.0.0, no NDK, emulator or
+system images; JDK 17, Gradle, adb, gh, just) is the whole toolchain; there is no Gradle
+wrapper. Recipes in the `Justfile` run inside `nix-shell` (`just check`, `just run`,
+`just release`, `just publish <tag>`), the same layout as the owner's other Android apps.
+Release signing: committed `release.p12`, password prompted by `just release`, read by
+Gradle only for release tasks. In the Claude container the shell must be started as
+`env -u LD_LIBRARY_PATH nix-shell --run '…'`. No emulator anywhere: UI verification
+happens on the owner's device.
