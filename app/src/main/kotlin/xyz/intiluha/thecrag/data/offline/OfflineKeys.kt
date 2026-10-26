@@ -19,7 +19,7 @@ object OfflineKeys {
     fun topos(id: Long) = node(id, TopoRepository.TOPO_SHOW)
     fun childAreas(id: Long) = THECRAG_BASE + "api/node/id/$id/children/area"
     fun childRoutes(id: Long) = THECRAG_BASE + "api/node/id/$id/children/route"
-    fun image(hashId: String) = topoImageUrl(hashId)
+    fun image(hashId: String, rotate: Int = 0) = topoImageUrl(hashId, rotate)
 
     /** Batch form: one request for many nodes, every `show` the per-node keys need. */
     fun batch(ids: List<Long>, show: List<String>): String =

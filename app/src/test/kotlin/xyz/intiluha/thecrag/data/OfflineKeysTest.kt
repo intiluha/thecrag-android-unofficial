@@ -46,4 +46,13 @@ class OfflineKeysTest {
         assertEquals(topo.imageUrl(), OfflineKeys.image(topo.hashId))
         assertEquals("https://image.thecrag.com/1200x/8e/ab/8eab551bbf6e736c31c985beddf724f41886fff2", topo.imageUrl())
     }
+
+    @Test
+    fun rotatedImageKeyMatchesTheTopoModel() {
+        // Stored sideways: the server resizes first and turns second, so the width is asked for as the height.
+        val topo = Topo(1, "c9fb7a30fe8afa8dc1ed2542c814b161c6c9e9c4", 412f, 550f, emptyList(), emptyList(), rotate = 270)
+        assertEquals(topo.imageUrl(), OfflineKeys.image(topo.hashId, 270))
+        assertEquals("https://image.thecrag.com/x1200/filters:rotate(270)/c9/fb/c9fb7a30fe8afa8dc1ed2542c814b161c6c9e9c4", topo.imageUrl())
+        assertEquals("https://image.thecrag.com/1200x/filters:rotate(180)/c9/fb/c9fb7a30fe8afa8dc1ed2542c814b161c6c9e9c4", topo.copy(rotate = 180).imageUrl())
+    }
 }

@@ -16,7 +16,8 @@ import java.net.URLDecoder
  * Coordinates live in the topo's "max size" space: the original image fitted
  * into a [BASE_MAX] square. Observed on every topo checked: 898x823 -> 550x504,
  * 428x700 -> 336x550, 4624x3468 -> 550x412. The JSON `width`/`height` is
- * sometimes that size and sometimes the original, so it is not used.
+ * sometimes that size and sometimes the original, so it is not used. `origWidth`/
+ * `origHeight` already describe the photo after the server-side `rotate`.
  */
 object TopoMapper {
     const val BASE_MAX = 550f
@@ -28,7 +29,8 @@ object TopoMapper {
         val scale = BASE_MAX / maxOf(ow, oh)
         val routes = dto.objects.filter { it.objectType.equals("Route", ignoreCase = true) }.map { it.toRoute() }
         val areas = dto.objects.filter { it.objectType.equals("Area", ignoreCase = true) }.mapNotNull { it.toArea() }
-        return Topo(dto.id, dto.hashID, ow * scale, oh * scale, routes, areas)
+        val rotate = ((dto.rotate ?: 0) % 360 + 360) % 360
+        return Topo(dto.id, dto.hashID, ow * scale, oh * scale, routes, areas, rotate)
     }
 
     /** `"46 268,45 224,79 193 lower"` -> points; an extra trailing token marks the type. */

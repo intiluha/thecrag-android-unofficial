@@ -20,6 +20,22 @@ class TopoMapperTest {
         ApiFactory.json.decodeFromString(DataObj.serializer(NodeDto.serializer()), sample(name)).data.topos.mapNotNull(TopoMapper::fromDto)
 
     @Test
+    fun rotatedTopoUsesTheTurnedSidesAndAsksForTheRotatedImage() {
+        // Vedi / The Fortress: 4032x3024 photos stored sideways, rotate 270, origWidth/origHeight already turned.
+        val topos = topos("area_11404234257_show_topo.json")
+        assertEquals(3, topos.size)
+        val turned = topos.first { it.id == 11414678649L }
+        assertEquals(270, turned.rotate)
+        assertEquals(412.5f, turned.baseWidth, 0.6f)
+        assertEquals(550f, turned.baseHeight, 0.6f)
+        assertEquals("https://image.thecrag.com/x1200/filters:rotate(270)/c9/fb/c9fb7a30fe8afa8dc1ed2542c814b161c6c9e9c4", turned.imageUrl())
+        assertTrue(turned.routes.flatMap { it.points }.all { it.x <= turned.baseWidth && it.y <= turned.baseHeight })
+        val upright = topos.first { it.id == 12579949518L }
+        assertEquals(0, upright.rotate)
+        assertEquals("https://image.thecrag.com/1200x/3a/ca/3acaa9fca564c86772b5656d947c49fbf1c99209", upright.imageUrl())
+    }
+
+    @Test
     fun routeToposFromJson() {
         val topos = topos("route_12873151_show_topo.json")
         assertEquals(2, topos.size)

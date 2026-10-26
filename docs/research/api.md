@@ -78,7 +78,8 @@ Not available anonymously: `/api/index/summary|detail` (bulk sync), `/api/facet/
 { id, hashID (40-hex sha1 of the image), node, name, type:"topo",
   width, height            // base coordinate space of the overlay (e.g. 413 x 550)
   origWidth, origHeight    // original image pixels (1200 x 1600)
-  aspectFlipped, lastUpdated, positionMinLabel, positionMaxLabel, linked,
+  rotate, aspectFlipped,   // 270 / 1 when the stored photo is sideways (see image URL below)
+  lastUpdated, positionMinLabel, positionMaxLabel, linked,
   insideNode { …full area node… },
   objects[] { objectID, objectType:"Area"|"Route", parentObjectID, shape, siblingLabel, …node fields… } }
 ```
@@ -103,6 +104,13 @@ Not available anonymously: `/api/index/summary|detail` (bulk sync), `/api/facet/
   keeps the aspect (`x{H}/` by height). `{W}x{H}/` **crops to fill** that box, checked
   2026-10-25 on an 8064x4536 topo: 1200x1600 returned its middle 42 percent. Without the size segment it
   returns the original. No auth; needs the realistic UA.
+  **Rotated photos** (checked 2026-10-26, Vedi / The Fortress 11404234257): the topo has
+  `rotate: 270, aspectFlipped: 1` and `origWidth`/`origHeight` give the *turned* sides
+  (3024x4032 for a photo stored as 4032x3024); the overlay coordinates are in that turned
+  space. The website asks for `{W}x{H}/filters:rotate(270)/…` (Thumbor syntax). The
+  server resizes the stored photo first and rotates second, so `1200x/filters:rotate(270)/`
+  comes back 900x1200 and `x1200/filters:rotate(270)/` 1200x1600; the app uses the latter
+  form for quarter turns. Sample: `../api-samples/area_11404234257_show_topo.json`.
 
 ## 5. Auth, logbook, ticking (Stage 2 inputs)
 

@@ -15,7 +15,9 @@ import okhttp3.Response
 import xyz.intiluha.thecrag.data.remote.dto.DataList
 import xyz.intiluha.thecrag.data.remote.dto.DataObj
 import xyz.intiluha.thecrag.data.remote.dto.NodeDto
+import xyz.intiluha.thecrag.data.remote.dto.TopoDto
 import xyz.intiluha.thecrag.data.repo.NodeRepository
+import xyz.intiluha.thecrag.data.repo.TopoMapper
 import java.io.IOException
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -48,7 +50,7 @@ class FavouriteDownloader(private val http: OkHttpClient, private val store: Off
 
         val areaKeys = listOf(OfflineKeys::area, OfflineKeys::topos)
         val routeKeys = listOf(OfflineKeys::route, OfflineKeys::topos)
-        val hashes = LinkedHashSet<String>()
+        val images = LinkedHashSet<String>()
         val routeIds = LinkedHashSet<Long>()
 
         val root = nodes(listOf(favId), AREA_BATCH_SHOW, areaKeys, refresh, entries).firstOrNull()
@@ -57,7 +59,7 @@ class FavouriteDownloader(private val http: OkHttpClient, private val store: Off
         val pending = ArrayDeque(listOf(root))
         while (pending.isNotEmpty()) {
             val area = pending.removeFirst()
-            area.topos.forEach { if (it.hashID.length >= 40) hashes += it.hashID }
+            area.topos.forEach { images += imageUrls(it) }
             val children = list(OfflineKeys.childAreas(area.id), refresh, entries)
             step()
             if (NodeRepository.mayHaveRoutes(area)) {
@@ -79,15 +81,14 @@ class FavouriteDownloader(private val http: OkHttpClient, private val store: Off
         total = done + chunks.size
         chunks.forEach { chunk ->
             nodes(chunk, ROUTE_BATCH_SHOW, routeKeys, refresh, entries).forEach { r ->
-                r.topos.forEach { if (it.hashID.length >= 40) hashes += it.hashID }
+                r.topos.forEach { images += imageUrls(it) }
             }
             step()
             commit()
         }
 
-        total = done + hashes.size
-        hashes.forEachIndexed { i, hash ->
-            val url = OfflineKeys.image(hash)
+        total = done + images.size
+        images.forEachIndexed { i, url ->
             val previous = entries[url]
             if (refresh || previous == null || !store.file(url).exists()) {
                 val (bytes, type) = fetch(url)
@@ -97,7 +98,7 @@ class FavouriteDownloader(private val http: OkHttpClient, private val store: Off
             if (i % 10 == 9) commit()
         }
         commit()
-        return Result(routeIds.size, hashes.size, store.bytesOf(favId))
+        return Result(routeIds.size, images.size, store.bytesOf(favId))
     }
 
     /** A children listing, from the store when allowed, else fetched and pinned. */
@@ -136,6 +137,9 @@ class FavouriteDownloader(private val http: OkHttpClient, private val store: Off
             json.decodeFromJsonElement(NodeDto.serializer(), el)
         }
     }
+
+    /** The image URL the topo view will ask for, so the pinned key matches (rotation included). */
+    private fun imageUrls(dto: TopoDto): List<String> = listOfNotNull(TopoMapper.fromDto(dto)?.imageUrl())
 
     private fun stored(url: String): NodeDto? =
         store.read(url)?.let { json.decodeFromString(DataObj.serializer(NodeDto.serializer()), it.decodeToString()).data }

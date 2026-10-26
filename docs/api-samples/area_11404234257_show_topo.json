@@ -1,0 +1,1601 @@
+{
+  "data": {
+    "ascentCount": 62,
+    "asciiName": "The Fortress",
+    "averageHeight": [
+      9,
+      "m"
+    ],
+    "childIDs": [
+      "11405671335",
+      "12473359740",
+      "11404268877",
+      "12473375865",
+      "11405667087",
+      "11413657482",
+      "11404275906",
+      "11413750857",
+      "14173187094",
+      "12484437414",
+      "11413761705",
+      "11413792335",
+      "12482233638",
+      "12484444521",
+      "12581180211",
+      "12581180322",
+      "12581180427",
+      "12581180499",
+      "12581180604"
+    ],
+    "depth": 4,
+    "displayAverageHeight": [
+      9,
+      "m"
+    ],
+    "hasTopo": 1,
+    "hasUnarchivedChildren": 1,
+    "hide": {},
+    "id": "11404234257",
+    "kudos": 138,
+    "locatedness": 154,
+    "maxPop": 22,
+    "name": "The Fortress",
+    "numberRoutes": 19,
+    "numberTopos": 10,
+    "parentID": "11404189095",
+    "priceCategory": "Emerging",
+    "redirectStubs": [],
+    "seasonality": [
+      0,
+      0,
+      0,
+      5,
+      9,
+      9,
+      8,
+      8,
+      0,
+      22,
+      1,
+      0
+    ],
+    "siblingLabel": 2,
+    "subType": "Area",
+    "tlc": {
+      "node": {
+        "id": "11404189095"
+      }
+    },
+    "topos": [
+      {
+        "aspectFlipped": 1,
+        "hashID": "c9fb7a30fe8afa8dc1ed2542c814b161c6c9e9c4",
+        "height": 4032,
+        "id": "11414678649",
+        "insideNode": {
+          "ascentCount": 62,
+          "asciiName": "The Fortress",
+          "averageHeight": [
+            9,
+            "m"
+          ],
+          "beta": [
+            {
+              "markdown": "North-east facing limestone cliff up to 30m tall",
+              "name": "Unique Features And Strengths"
+            },
+            {
+              "markdown": "A beautiful location and scenery make this crag a must visit. North facing walls give shade all day, and if you're lucky, a stunning view of \nArarat from the top!",
+              "name": "Description"
+            },
+            {
+              "markdown": "Please don't block farmers roads with your cars.",
+              "name": "Access Issues"
+            },
+            {
+              "markdown": "Park your car along the dirt road going towards angels canyon, then walk to the cliff. Approach is anywhere from 2-10 minutes.",
+              "name": "Approach"
+            },
+            {
+              "markdown": "Probably best to stay in Yerevan and take day trips.",
+              "name": "Where To Stay"
+            },
+            {
+              "markdown": "First bolted in 2025",
+              "name": "History"
+            }
+          ],
+          "depth": 4,
+          "displayAverageHeight": [
+            9,
+            "m"
+          ],
+          "hasUnarchivedChildren": 1,
+          "hide": {},
+          "id": "11404234257",
+          "kudos": 138,
+          "locatedness": 154,
+          "maxPop": 22,
+          "name": "The Fortress",
+          "numberRoutes": 19,
+          "numberTopos": 10,
+          "priceCategory": "Emerging",
+          "redirectStubs": [],
+          "siblingLabel": 2,
+          "subType": "Area",
+          "tlc": {
+            "node": {
+              "id": "11404189095"
+            }
+          },
+          "type": "area",
+          "unique": "North-east facing limestone cliff up to 30m tall",
+          "urlAncestorStub": "armenia"
+        },
+        "lastUpdated": 1760340570,
+        "name": "",
+        "node": "11404234257",
+        "objects": [
+          {
+            "ascentCount": 4,
+            "asciiName": "The Wandering Knight",
+            "beta": [
+              {
+                "markdown": "Climb up the left arete of the main slab.",
+                "name": "Description"
+              }
+            ],
+            "context": "FR",
+            "cragScore": 1.09,
+            "depth": 5,
+            "displayHeight": [
+              15,
+              "m"
+            ],
+            "flags": {
+              "IsFree": 1,
+              "IsSport": 1
+            },
+            "grade": "5c/c+",
+            "gradeAtom": {
+              "context": "FR",
+              "grade": "5c/c+",
+              "gradeBand": 2,
+              "gradeInContext": "5c/c+",
+              "gradeStyle": "Free",
+              "internal": [
+                178,
+                192
+              ],
+              "type": "grade"
+            },
+            "gradeBand": 2,
+            "gradeInContext": "5c/c+",
+            "gradeStyle": "Free",
+            "height": [
+              "15",
+              "m"
+            ],
+            "hide": {},
+            "id": "11405671335",
+            "name": "The Wandering Knight",
+            "objectID": 11405671335,
+            "objectType": "Route",
+            "parentID": "11404234257",
+            "parentObjectID": 11404234257,
+            "points": "131 317.4,125.3 284.2,123 256.8,129.9 235,137.9 216.7,150.5 190.4,152.8 179.5 belayfixed",
+            "popularity": 17,
+            "priceCategory": "Emerging",
+            "qualityScore": 50,
+            "rawGrade": [
+              178,
+              192
+            ],
+            "relativePopularity": 17,
+            "siblingLabel": 1,
+            "stars": 1,
+            "style": "Sport",
+            "styleStub": "sport",
+            "tlc": {
+              "node": {
+                "id": "11404189095"
+              }
+            },
+            "type": "route",
+            "urlAncestorStub": "armenia"
+          },
+          {
+            "ascentCount": 6,
+            "asciiName": "Aralez",
+            "beta": [
+              {
+                "markdown": "Climb up the center part of the wall encountering technical and reachy boulder problems.",
+                "name": "Description"
+              }
+            ],
+            "context": "FR",
+            "cragScore": 2.4,
+            "depth": 5,
+            "displayHeight": [
+              15,
+              "m"
+            ],
+            "flags": {
+              "IsFree": 1,
+              "IsSport": 1
+            },
+            "grade": "7b",
+            "gradeAtom": {
+              "context": "FR",
+              "grade": "7b",
+              "gradeBand": 4,
+              "gradeInContext": "7b",
+              "gradeStyle": "Free",
+              "internal": [
+                301,
+                313
+              ],
+              "type": "grade"
+            },
+            "gradeBand": 4,
+            "gradeInContext": "7b",
+            "gradeStyle": "Free",
+            "height": [
+              "15",
+              "m"
+            ],
+            "hide": {},
+            "id": "12473359740",
+            "name": "Aralez",
+            "objectID": 12473359740,
+            "objectType": "Route",
+            "parentID": "11404234257",
+            "parentObjectID": 11404234257,
+            "points": "172 333.4,176 302.5,178.8 269.9,177.1 245.3,173.1 224.7,177.1 184.1",
+            "popularity": 22,
+            "priceCategory": "Emerging",
+            "qualityScore": 72,
+            "rawGrade": [
+              301,
+              313
+            ],
+            "relativePopularity": 22,
+            "siblingLabel": 2,
+            "stars": 2,
+            "style": "Sport",
+            "styleStub": "sport",
+            "tlc": {
+              "node": {
+                "id": "11404189095"
+              }
+            },
+            "type": "route",
+            "urlAncestorStub": "armenia"
+          },
+          {
+            "ascentCount": 3,
+            "asciiName": "Dragonslayer",
+            "beta": [
+              {
+                "markdown": "Climb up the steepening face to a powerful boulder problem",
+                "name": "Description"
+              }
+            ],
+            "bolts": 8,
+            "context": "FR",
+            "cragScore": 1.44,
+            "depth": 5,
+            "displayHeight": [
+              12,
+              "m"
+            ],
+            "flags": {
+              "IsFree": 1,
+              "IsSport": 1
+            },
+            "grade": "6c",
+            "gradeAtom": {
+              "context": "FR",
+              "grade": "6c",
+              "gradeBand": 3,
+              "gradeInContext": "6c",
+              "gradeStyle": "Free",
+              "internal": [
+                244,
+                257
+              ],
+              "type": "grade"
+            },
+            "gradeBand": 3,
+            "gradeInContext": "6c",
+            "gradeStyle": "Free",
+            "height": [
+              "12",
+              "m"
+            ],
+            "hide": {},
+            "id": "11404268877",
+            "name": "Dragonslayer",
+            "objectID": 11404268877,
+            "objectType": "Route",
+            "parentID": "11404234257",
+            "parentObjectID": 11404234257,
+            "pitches": 1,
+            "points": "210.6 319.1,199.7 282.5,200.9 241.9,204.8 193.9 belayfixed,204.8 193.9",
+            "popularity": 14,
+            "priceCategory": "Emerging",
+            "qualityScore": 78,
+            "rawGrade": [
+              244,
+              257
+            ],
+            "relativePopularity": 14,
+            "siblingLabel": 3,
+            "stars": 3,
+            "style": "Sport",
+            "styleStub": "sport",
+            "tlc": {
+              "node": {
+                "id": "11404189095"
+              }
+            },
+            "type": "route",
+            "urlAncestorStub": "armenia"
+          },
+          {
+            "ascentCount": 3,
+            "asciiName": "Dragon Tooth",
+            "beta": [
+              {
+                "markdown": "This is the route on the large boulder. Hard moves off the ground on sharp stone. Bouldering on a rope!",
+                "name": "Description"
+              }
+            ],
+            "context": "FR",
+            "cragScore": 1.99,
+            "depth": 5,
+            "displayHeight": [
+              8,
+              "m"
+            ],
+            "flags": {
+              "IsFree": 1,
+              "IsSport": 1
+            },
+            "grade": "7a+",
+            "gradeAtom": {
+              "context": "FR",
+              "grade": "7a+",
+              "gradeBand": 3,
+              "gradeInContext": "7a+",
+              "gradeStyle": "Free",
+              "internal": [
+                287,
+                300
+              ],
+              "type": "grade"
+            },
+            "gradeBand": 3,
+            "gradeInContext": "7a+",
+            "gradeStyle": "Free",
+            "height": [
+              "8",
+              "m"
+            ],
+            "hide": {},
+            "id": "12473375865",
+            "name": "Dragon Tooth",
+            "objectID": 12473375865,
+            "objectType": "Route",
+            "parentID": "11404234257",
+            "parentObjectID": 11404234257,
+            "points": "258.4 348.9,262.9 326,269.8 307.1,262.4 284.2,258.9 261.3",
+            "popularity": 14,
+            "priceCategory": "Emerging",
+            "qualityScore": 83,
+            "rawGrade": [
+              287,
+              300
+            ],
+            "relativePopularity": 14,
+            "siblingLabel": 4,
+            "stars": 3,
+            "style": "Sport",
+            "styleStub": "sport",
+            "tlc": {
+              "node": {
+                "id": "11404189095"
+              }
+            },
+            "type": "route",
+            "urlAncestorStub": "armenia"
+          },
+          {
+            "ascentCount": 3,
+            "asciiName": "White Castle",
+            "beta": [
+              {
+                "markdown": "A Steep bouldery route with good rests",
+                "name": "Description"
+              }
+            ],
+            "context": "FR",
+            "cragScore": 1.44,
+            "depth": 5,
+            "displayHeight": [
+              12,
+              "m"
+            ],
+            "flags": {
+              "IsFree": 1,
+              "IsSport": 1
+            },
+            "grade": "6c/c+",
+            "gradeAtom": {
+              "context": "FR",
+              "grade": "6c/c+",
+              "gradeBand": 3,
+              "gradeInContext": "6c/c+",
+              "gradeStyle": "Free",
+              "internal": [
+                244,
+                271
+              ],
+              "type": "grade"
+            },
+            "gradeBand": 3,
+            "gradeInContext": "6c/c+",
+            "gradeStyle": "Free",
+            "height": [
+              "12",
+              "m"
+            ],
+            "hide": {},
+            "id": "11405667087",
+            "name": "White Castle",
+            "objectID": 11405667087,
+            "objectType": "Route",
+            "parentID": "11404234257",
+            "parentObjectID": 11404234257,
+            "points": "297.6 285.4,299.3 235,314.7 194.4,313 174.9 belayfixed",
+            "popularity": 14,
+            "priceCategory": "Emerging",
+            "qualityScore": 58,
+            "rawGrade": [
+              244,
+              271
+            ],
+            "relativePopularity": 14,
+            "siblingLabel": 5,
+            "stars": 2,
+            "style": "Sport",
+            "styleStub": "sport",
+            "tlc": {
+              "node": {
+                "id": "11404189095"
+              }
+            },
+            "type": "route",
+            "urlAncestorStub": "armenia"
+          },
+          {
+            "ascentCount": 2,
+            "asciiName": "The High Tower",
+            "beta": [
+              {
+                "markdown": "Wander up the slab to a hard move at the very top. Can easily be aided and the route becomes much easier",
+                "name": "Description"
+              }
+            ],
+            "context": "FR",
+            "cragScore": 1.09,
+            "depth": 5,
+            "displayHeight": [
+              8,
+              "m"
+            ],
+            "flags": {
+              "IsFree": 1,
+              "IsSport": 1
+            },
+            "grade": "6a",
+            "gradeAtom": {
+              "context": "FR",
+              "grade": "6a",
+              "gradeBand": 2,
+              "gradeInContext": "6a",
+              "gradeStyle": "Free",
+              "internal": [
+                193,
+                200
+              ],
+              "type": "grade"
+            },
+            "gradeBand": 2,
+            "gradeInContext": "6a",
+            "gradeStyle": "Free",
+            "height": [
+              "8",
+              "m"
+            ],
+            "hide": {},
+            "id": "11413657482",
+            "name": "The High Tower",
+            "objectID": 11413657482,
+            "objectType": "Route",
+            "parentID": "11404234257",
+            "parentObjectID": 11404234257,
+            "pitches": 1,
+            "points": "318.7 294.5,334.2 223.6,344.5 179.5 belayfixed",
+            "popularity": 9,
+            "priceCategory": "Emerging",
+            "qualityScore": 50,
+            "rawGrade": [
+              193,
+              200
+            ],
+            "relativePopularity": 9,
+            "siblingLabel": 6,
+            "stars": 1,
+            "style": "Sport",
+            "styleStub": "sport",
+            "tlc": {
+              "node": {
+                "id": "11404189095"
+              }
+            },
+            "type": "route",
+            "urlAncestorStub": "armenia"
+          },
+          {
+            "ascentCount": 2,
+            "asciiName": "Bastion",
+            "beta": [
+              {
+                "markdown": "Climb up the thin arete. Good balance is very helpful.",
+                "name": "Description"
+              }
+            ],
+            "bolts": 5,
+            "context": "FR",
+            "cragScore": 1.09,
+            "depth": 5,
+            "displayHeight": [
+              6,
+              "m"
+            ],
+            "flags": {
+              "IsFree": 1,
+              "IsSport": 1
+            },
+            "grade": "5c",
+            "gradeAtom": {
+              "context": "FR",
+              "grade": "5c",
+              "gradeBand": 2,
+              "gradeInContext": "5c",
+              "gradeStyle": "Free",
+              "internal": [
+                178,
+                185
+              ],
+              "type": "grade"
+            },
+            "gradeBand": 2,
+            "gradeInContext": "5c",
+            "gradeStyle": "Free",
+            "height": [
+              "6",
+              "m"
+            ],
+            "hide": {},
+            "id": "11404275906",
+            "name": "Bastion",
+            "objectID": 11404275906,
+            "objectType": "Route",
+            "parentID": "11404234257",
+            "parentObjectID": 11404234257,
+            "points": "334.8 300.3,340.5 248.8,351.3 201.3,351.3 201.3 belayfixed",
+            "popularity": 9,
+            "priceCategory": "Emerging",
+            "qualityScore": 50,
+            "rawGrade": [
+              178,
+              185
+            ],
+            "relativePopularity": 9,
+            "siblingLabel": 7,
+            "stars": 1,
+            "style": "Sport",
+            "styleStub": "sport",
+            "tlc": {
+              "node": {
+                "id": "11404189095"
+              }
+            },
+            "type": "route",
+            "urlAncestorStub": "armenia"
+          }
+        ],
+        "origHeight": 4032,
+        "origWidth": 3024,
+        "positionMaxLabel": 7,
+        "positionMinLabel": 1,
+        "rotate": 270,
+        "type": "topo",
+        "width": 3024
+      },
+      {
+        "aspectFlipped": 1,
+        "hashID": "0ff6a1218b7e1c82a14e95588366d4581cac7aba",
+        "height": 4032,
+        "id": "11414513658",
+        "insideNode": {
+          "ascentCount": 62,
+          "asciiName": "The Fortress",
+          "averageHeight": [
+            9,
+            "m"
+          ],
+          "beta": [
+            {
+              "markdown": "North-east facing limestone cliff up to 30m tall",
+              "name": "Unique Features And Strengths"
+            },
+            {
+              "markdown": "A beautiful location and scenery make this crag a must visit. North facing walls give shade all day, and if you're lucky, a stunning view of \nArarat from the top!",
+              "name": "Description"
+            },
+            {
+              "markdown": "Please don't block farmers roads with your cars.",
+              "name": "Access Issues"
+            },
+            {
+              "markdown": "Park your car along the dirt road going towards angels canyon, then walk to the cliff. Approach is anywhere from 2-10 minutes.",
+              "name": "Approach"
+            },
+            {
+              "markdown": "Probably best to stay in Yerevan and take day trips.",
+              "name": "Where To Stay"
+            },
+            {
+              "markdown": "First bolted in 2025",
+              "name": "History"
+            }
+          ],
+          "depth": 4,
+          "displayAverageHeight": [
+            9,
+            "m"
+          ],
+          "hasUnarchivedChildren": 1,
+          "hide": {},
+          "id": "11404234257",
+          "kudos": 138,
+          "locatedness": 154,
+          "maxPop": 22,
+          "name": "The Fortress",
+          "numberRoutes": 19,
+          "numberTopos": 10,
+          "priceCategory": "Emerging",
+          "redirectStubs": [],
+          "siblingLabel": 2,
+          "subType": "Area",
+          "tlc": {
+            "node": {
+              "id": "11404189095"
+            }
+          },
+          "type": "area",
+          "unique": "North-east facing limestone cliff up to 30m tall",
+          "urlAncestorStub": "armenia"
+        },
+        "lastUpdated": 1760340568,
+        "node": "11404234257",
+        "objects": [
+          {
+            "ascentCount": 2,
+            "asciiName": "Sun Gate",
+            "beta": [
+              {
+                "markdown": "Climb up the blank looking face with reachy moves. One of the only sunny routes.",
+                "name": "Description"
+              }
+            ],
+            "bolts": 4,
+            "context": "FR",
+            "cragScore": 1.09,
+            "depth": 5,
+            "displayHeight": [
+              6,
+              "m"
+            ],
+            "flags": {
+              "IsFree": 1,
+              "IsSport": 1
+            },
+            "grade": "5c",
+            "gradeAtom": {
+              "context": "FR",
+              "grade": "5c",
+              "gradeBand": 2,
+              "gradeInContext": "5c",
+              "gradeStyle": "Free",
+              "internal": [
+                178,
+                185
+              ],
+              "type": "grade"
+            },
+            "gradeBand": 2,
+            "gradeInContext": "5c",
+            "gradeStyle": "Free",
+            "height": [
+              "6",
+              "m"
+            ],
+            "hide": {},
+            "id": "11413750857",
+            "name": "Sun Gate",
+            "objectID": 11413750857,
+            "objectType": "Route",
+            "parentID": "11404234257",
+            "parentObjectID": 11404234257,
+            "pitches": 1,
+            "points": "199.1 359.2,202.6 245.9,175.1 168.6 belayfixed",
+            "popularity": 9,
+            "priceCategory": "Emerging",
+            "qualityScore": 33,
+            "rawGrade": [
+              178,
+              185
+            ],
+            "relativePopularity": 9,
+            "siblingLabel": 8,
+            "stars": 0,
+            "style": "Sport",
+            "styleStub": "sport",
+            "tlc": {
+              "node": {
+                "id": "11404189095"
+              }
+            },
+            "type": "route",
+            "urlAncestorStub": "armenia"
+          }
+        ],
+        "origHeight": 4032,
+        "origWidth": 3024,
+        "positionMaxLabel": 8,
+        "positionMinLabel": 8,
+        "rotate": 270,
+        "type": "topo",
+        "width": 3024
+      },
+      {
+        "aspectFlipped": 0,
+        "hashID": "3acaa9fca564c86772b5656d947c49fbf1c99209",
+        "height": 2268,
+        "id": "12579949518",
+        "insideNode": {
+          "ascentCount": 62,
+          "asciiName": "The Fortress",
+          "averageHeight": [
+            9,
+            "m"
+          ],
+          "beta": [
+            {
+              "markdown": "North-east facing limestone cliff up to 30m tall",
+              "name": "Unique Features And Strengths"
+            },
+            {
+              "markdown": "A beautiful location and scenery make this crag a must visit. North facing walls give shade all day, and if you're lucky, a stunning view of \nArarat from the top!",
+              "name": "Description"
+            },
+            {
+              "markdown": "Please don't block farmers roads with your cars.",
+              "name": "Access Issues"
+            },
+            {
+              "markdown": "Park your car along the dirt road going towards angels canyon, then walk to the cliff. Approach is anywhere from 2-10 minutes.",
+              "name": "Approach"
+            },
+            {
+              "markdown": "Probably best to stay in Yerevan and take day trips.",
+              "name": "Where To Stay"
+            },
+            {
+              "markdown": "First bolted in 2025",
+              "name": "History"
+            }
+          ],
+          "depth": 4,
+          "displayAverageHeight": [
+            9,
+            "m"
+          ],
+          "hasUnarchivedChildren": 1,
+          "hide": {},
+          "id": "11404234257",
+          "kudos": 138,
+          "locatedness": 154,
+          "maxPop": 22,
+          "name": "The Fortress",
+          "numberRoutes": 19,
+          "numberTopos": 10,
+          "priceCategory": "Emerging",
+          "redirectStubs": [],
+          "siblingLabel": 2,
+          "subType": "Area",
+          "tlc": {
+            "node": {
+              "id": "11404189095"
+            }
+          },
+          "type": "area",
+          "unique": "North-east facing limestone cliff up to 30m tall",
+          "urlAncestorStub": "armenia"
+        },
+        "lastUpdated": 1783508475,
+        "name": "",
+        "node": "11404234257",
+        "objects": [
+          {
+            "ascentCount": 2,
+            "asciiName": "Prince",
+            "bolts": 6,
+            "context": "FR",
+            "cragScore": 1.09,
+            "depth": 5,
+            "displayHeight": [
+              11,
+              "m"
+            ],
+            "flags": {
+              "IsFree": 1,
+              "IsSport": 1
+            },
+            "grade": "5c+/6a",
+            "gradeAtom": {
+              "context": "FR",
+              "grade": "5c+/6a",
+              "gradeBand": 2,
+              "gradeInContext": "5c+/6a",
+              "gradeStyle": "Free",
+              "internal": [
+                186,
+                200
+              ],
+              "type": "grade"
+            },
+            "gradeBand": 2,
+            "gradeInContext": "5c+/6a",
+            "gradeStyle": "Free",
+            "height": [
+              "11",
+              "m"
+            ],
+            "hide": {},
+            "id": "14173187094",
+            "name": "Prince",
+            "objectID": 14173187094,
+            "objectType": "Route",
+            "parentID": "11404234257",
+            "parentObjectID": 11404234257,
+            "pitches": 1,
+            "points": "24.7 255.2,44.1 196.3,60.5 150.9,59.5 107.4,49.9 76.4,47.9 55.2,57.6 37.8",
+            "popularity": 9,
+            "priceCategory": "Emerging",
+            "rawGrade": [
+              186,
+              200
+            ],
+            "relativePopularity": 9,
+            "siblingLabel": 9,
+            "stars": 0,
+            "style": "Sport",
+            "styleStub": "sport",
+            "tlc": {
+              "node": {
+                "id": "11404189095"
+              }
+            },
+            "type": "route",
+            "urlAncestorStub": "armenia"
+          },
+          {
+            "ascentCount": 2,
+            "asciiName": "Rapunzel",
+            "context": "FR",
+            "cragScore": 1.09,
+            "depth": 5,
+            "displayHeight": [
+              8,
+              "m"
+            ],
+            "flags": {
+              "IsFree": 1,
+              "IsSport": 1
+            },
+            "grade": "5c",
+            "gradeAtom": {
+              "context": "FR",
+              "grade": "5c",
+              "gradeBand": 2,
+              "gradeInContext": "5c",
+              "gradeStyle": "Free",
+              "internal": [
+                178,
+                185
+              ],
+              "type": "grade"
+            },
+            "gradeBand": 2,
+            "gradeInContext": "5c",
+            "gradeStyle": "Free",
+            "height": [
+              "8",
+              "m"
+            ],
+            "hide": {},
+            "id": "12484437414",
+            "name": "Rapunzel",
+            "objectID": 12484437414,
+            "objectType": "Route",
+            "parentID": "11404234257",
+            "parentObjectID": 11404234257,
+            "points": "73.3 258.4,92.3 215.6,112.9 158.8,123.2 102.1,113.6 59",
+            "popularity": 9,
+            "priceCategory": "Emerging",
+            "qualityScore": 67,
+            "rawGrade": [
+              178,
+              185
+            ],
+            "relativePopularity": 9,
+            "siblingLabel": 10,
+            "stars": 2,
+            "style": "Sport",
+            "styleStub": "sport",
+            "tlc": {
+              "node": {
+                "id": "11404189095"
+              }
+            },
+            "type": "route",
+            "urlAncestorStub": "armenia"
+          },
+          {
+            "ascentCount": 4,
+            "asciiName": "War Dog",
+            "beta": [
+              {
+                "markdown": "The Climb up the easy slab to puzzling moves near the top.",
+                "name": "Description"
+              }
+            ],
+            "context": "FR",
+            "cragScore": 1,
+            "depth": 5,
+            "displayHeight": [
+              8,
+              "m"
+            ],
+            "flags": {
+              "IsFree": 1,
+              "IsSport": 1
+            },
+            "grade": "5a - b",
+            "gradeAtom": {
+              "context": "FR",
+              "grade": "5a - b",
+              "gradeBand": 2,
+              "gradeInContext": "5a - b",
+              "gradeStyle": "Free",
+              "internal": [
+                147,
+                169
+              ],
+              "type": "grade"
+            },
+            "gradeBand": 2,
+            "gradeInContext": "5a - b",
+            "gradeStyle": "Free",
+            "height": [
+              "8",
+              "m"
+            ],
+            "hide": {},
+            "id": "11413761705",
+            "name": "War Dog",
+            "objectID": 11413761705,
+            "objectType": "Route",
+            "parentID": "11404234257",
+            "parentObjectID": 11404234257,
+            "pitches": 1,
+            "points": "154.8 258.1,163.5 196.5,189.6 159.5,177.4 91.5,183.5 61.5",
+            "popularity": 17,
+            "priceCategory": "Emerging",
+            "qualityScore": 58,
+            "rawGrade": [
+              147,
+              169
+            ],
+            "relativePopularity": 17,
+            "siblingLabel": 11,
+            "stars": 2,
+            "style": "Sport",
+            "styleStub": "sport",
+            "tlc": {
+              "node": {
+                "id": "11404189095"
+              }
+            },
+            "type": "route",
+            "urlAncestorStub": "armenia"
+          },
+          {
+            "ascentCount": 2,
+            "asciiName": "Battle Kitten",
+            "beta": [
+              {
+                "markdown": "A nice climb with big holds and varied movement. Slightly more sustained than its partner on the left.",
+                "name": "Description"
+              }
+            ],
+            "context": "FR",
+            "cragScore": 1,
+            "depth": 5,
+            "displayHeight": [
+              8,
+              "m"
+            ],
+            "flags": {
+              "IsFree": 1,
+              "IsSport": 1
+            },
+            "grade": "5a",
+            "gradeAtom": {
+              "context": "FR",
+              "grade": "5a",
+              "gradeBand": 2,
+              "gradeInContext": "5a",
+              "gradeStyle": "Free",
+              "internal": [
+                147,
+                154
+              ],
+              "type": "grade"
+            },
+            "gradeBand": 2,
+            "gradeInContext": "5a",
+            "gradeStyle": "Free",
+            "height": [
+              "8",
+              "m"
+            ],
+            "hide": {},
+            "id": "11413792335",
+            "name": "Battle Kitten",
+            "objectID": 11413792335,
+            "objectType": "Route",
+            "parentID": "11404234257",
+            "parentObjectID": 11404234257,
+            "points": "251.5 268.1,244.7 178.8,217.6 140.8,218 68.3",
+            "popularity": 9,
+            "priceCategory": "Emerging",
+            "qualityScore": 67,
+            "rawGrade": [
+              147,
+              154
+            ],
+            "relativePopularity": 9,
+            "siblingLabel": 12,
+            "stars": 3,
+            "style": "Sport",
+            "styleStub": "sport",
+            "tlc": {
+              "node": {
+                "id": "11404189095"
+              }
+            },
+            "type": "route",
+            "urlAncestorStub": "armenia"
+          },
+          {
+            "ascentCount": 6,
+            "asciiName": "Flying Fairy",
+            "beta": [
+              {
+                "markdown": "Climb up the strange face good pockets and edges that are all facing the wrong way!",
+                "name": "Description"
+              }
+            ],
+            "context": "FR",
+            "cragScore": 1.31,
+            "depth": 5,
+            "displayHeight": [
+              8,
+              "m"
+            ],
+            "flags": {
+              "IsFree": 1,
+              "IsSport": 1
+            },
+            "grade": "6b+",
+            "gradeAtom": {
+              "context": "FR",
+              "grade": "6b+",
+              "gradeBand": 3,
+              "gradeInContext": "6b+",
+              "gradeStyle": "Free",
+              "internal": [
+                230,
+                243
+              ],
+              "type": "grade"
+            },
+            "gradeBand": 3,
+            "gradeInContext": "6b+",
+            "gradeStyle": "Free",
+            "height": [
+              "8",
+              "m"
+            ],
+            "hide": {},
+            "id": "12482233638",
+            "name": "Flying Fairy",
+            "objectID": 12482233638,
+            "objectType": "Route",
+            "parentID": "11404234257",
+            "parentObjectID": 11404234257,
+            "points": "294.9 262.3,301.7 154.3,278.1 128.9,276.2 80.2",
+            "popularity": 22,
+            "priceCategory": "Emerging",
+            "qualityScore": 83,
+            "rawGrade": [
+              230,
+              243
+            ],
+            "relativePopularity": 22,
+            "siblingLabel": 13,
+            "stars": 2,
+            "style": "Sport",
+            "styleStub": "sport",
+            "tlc": {
+              "node": {
+                "id": "11404189095"
+              }
+            },
+            "type": "route",
+            "urlAncestorStub": "armenia"
+          },
+          {
+            "ascentCount": 5,
+            "asciiName": "Qajaberd",
+            "context": "FR",
+            "cragScore": 1.09,
+            "depth": 5,
+            "displayHeight": [
+              8,
+              "m"
+            ],
+            "flags": {
+              "IsFree": 1,
+              "IsSport": 1
+            },
+            "grade": "6a",
+            "gradeAtom": {
+              "context": "FR",
+              "grade": "6a",
+              "gradeBand": 2,
+              "gradeInContext": "6a",
+              "gradeStyle": "Free",
+              "internal": [
+                193,
+                200
+              ],
+              "type": "grade"
+            },
+            "gradeBand": 2,
+            "gradeInContext": "6a",
+            "gradeStyle": "Free",
+            "height": [
+              "8",
+              "m"
+            ],
+            "hide": {},
+            "id": "12484444521",
+            "name": "Qajaberd",
+            "objectID": 12484444521,
+            "objectType": "Route",
+            "parentID": "11404234257",
+            "parentObjectID": 11404234257,
+            "points": "326.8 261,326.8 92.1",
+            "popularity": 20,
+            "priceCategory": "Emerging",
+            "qualityScore": 72,
+            "rawGrade": [
+              193,
+              200
+            ],
+            "relativePopularity": 20,
+            "siblingLabel": 14,
+            "stars": 2,
+            "style": "Sport",
+            "styleStub": "sport",
+            "tlc": {
+              "node": {
+                "id": "11404189095"
+              }
+            },
+            "type": "route",
+            "urlAncestorStub": "armenia"
+          },
+          {
+            "ascentCount": 4,
+            "asciiName": "Left Sword's Edge",
+            "beta": [
+              {
+                "markdown": "Shares first 2 bolts and anchor with Right Sword's Edge",
+                "name": "Description"
+              }
+            ],
+            "bolts": 5,
+            "context": "FR",
+            "cragScore": 1.22,
+            "depth": 5,
+            "displayHeight": [
+              8,
+              "m"
+            ],
+            "flags": {
+              "IsFree": 1,
+              "IsSport": 1
+            },
+            "grade": "6a+",
+            "gradeAtom": {
+              "context": "FR",
+              "grade": "6a+",
+              "gradeBand": 3,
+              "gradeInContext": "6a+",
+              "gradeStyle": "Free",
+              "internal": [
+                201,
+                214
+              ],
+              "type": "grade"
+            },
+            "gradeBand": 3,
+            "gradeInContext": "6a+",
+            "gradeStyle": "Free",
+            "height": [
+              "8",
+              "m"
+            ],
+            "hide": {},
+            "id": "12581180211",
+            "name": "Left Sword's Edge",
+            "objectID": 12581180211,
+            "objectType": "Route",
+            "parentID": "11404234257",
+            "parentObjectID": 11404234257,
+            "pitches": 1,
+            "points": "368.1 262.8,375.3 191.2,353.7 144.3,384.5 97.7",
+            "popularity": 17,
+            "priceCategory": "Emerging",
+            "qualityScore": 67,
+            "rawGrade": [
+              201,
+              214
+            ],
+            "relativePopularity": 17,
+            "siblingLabel": 15,
+            "stars": 2,
+            "style": "Sport",
+            "styleStub": "sport",
+            "tlc": {
+              "node": {
+                "id": "11404189095"
+              }
+            },
+            "type": "route",
+            "urlAncestorStub": "armenia"
+          },
+          {
+            "ascentCount": 4,
+            "asciiName": "Right Sword's Edge",
+            "beta": [
+              {
+                "markdown": "Shares first 2 bolts and anchor with Left Sword's Edge",
+                "name": "Description"
+              }
+            ],
+            "bolts": 5,
+            "context": "FR",
+            "cragScore": 1.22,
+            "depth": 5,
+            "displayHeight": [
+              8,
+              "m"
+            ],
+            "flags": {
+              "IsFree": 1,
+              "IsSport": 1
+            },
+            "grade": "6b",
+            "gradeAtom": {
+              "context": "FR",
+              "grade": "6b",
+              "gradeBand": 3,
+              "gradeInContext": "6b",
+              "gradeStyle": "Free",
+              "internal": [
+                215,
+                229
+              ],
+              "type": "grade"
+            },
+            "gradeBand": 3,
+            "gradeInContext": "6b",
+            "gradeStyle": "Free",
+            "height": [
+              "8",
+              "m"
+            ],
+            "hide": {},
+            "id": "12581180322",
+            "name": "Right Sword's Edge",
+            "objectID": 12581180322,
+            "objectType": "Route",
+            "parentID": "11404234257",
+            "parentObjectID": 11404234257,
+            "pitches": 1,
+            "points": "368.1 262.8 label,375.3 191.2,405.9 154.3,384.5 97.7",
+            "popularity": 17,
+            "priceCategory": "Emerging",
+            "qualityScore": 50,
+            "rawGrade": [
+              215,
+              229
+            ],
+            "relativePopularity": 17,
+            "siblingLabel": 16,
+            "stars": 1,
+            "style": "Sport",
+            "styleStub": "sport",
+            "tlc": {
+              "node": {
+                "id": "11404189095"
+              }
+            },
+            "type": "route",
+            "urlAncestorStub": "armenia"
+          },
+          {
+            "ascentCount": 2,
+            "asciiName": "Spark",
+            "bolts": 5,
+            "context": "FR",
+            "depth": 5,
+            "displayHeight": [
+              8,
+              "m"
+            ],
+            "flags": {
+              "IsFree": 1,
+              "IsProject": 1,
+              "IsSport": 1
+            },
+            "grade": "5b",
+            "gradeAtom": {
+              "context": "FR",
+              "grade": "5b",
+              "gradeBand": 2,
+              "gradeInContext": "5b",
+              "gradeStyle": "Free",
+              "internal": [
+                163,
+                169
+              ],
+              "type": "grade"
+            },
+            "gradeBand": 2,
+            "gradeInContext": "5b",
+            "gradeStyle": "Free",
+            "height": [
+              "8",
+              "m"
+            ],
+            "hide": {},
+            "id": "12581180427",
+            "name": "Spark",
+            "objectID": 12581180427,
+            "objectType": "Route",
+            "parentID": "11404234257",
+            "parentObjectID": 11404234257,
+            "pitches": 1,
+            "points": "425.2 249.9,425.2 111.7,402 79.2",
+            "popularity": 9,
+            "priceCategory": "Emerging",
+            "qualityScore": 50,
+            "rawGrade": [
+              163,
+              169
+            ],
+            "relativePopularity": 9,
+            "siblingLabel": 17,
+            "stars": 1,
+            "style": "Sport",
+            "styleStub": "sport",
+            "tlc": {
+              "node": {
+                "id": "11404189095"
+              }
+            },
+            "type": "route",
+            "urlAncestorStub": "armenia"
+          },
+          {
+            "ascentCount": 3,
+            "asciiName": "Lightning",
+            "beta": [
+              {
+                "markdown": "Shares first 2 bolts and anchor with Thunder",
+                "name": "Description"
+              }
+            ],
+            "bolts": 5,
+            "context": "FR",
+            "cragScore": 1,
+            "depth": 5,
+            "displayHeight": [
+              8,
+              "m"
+            ],
+            "flags": {
+              "IsFree": 1,
+              "IsSport": 1
+            },
+            "grade": "5b",
+            "gradeAtom": {
+              "context": "FR",
+              "grade": "5b",
+              "gradeBand": 2,
+              "gradeInContext": "5b",
+              "gradeStyle": "Free",
+              "internal": [
+                163,
+                169
+              ],
+              "type": "grade"
+            },
+            "gradeBand": 2,
+            "gradeInContext": "5b",
+            "gradeStyle": "Free",
+            "height": [
+              "8",
+              "m"
+            ],
+            "hide": {},
+            "id": "12581180499",
+            "name": "Lightning",
+            "objectID": 12581180499,
+            "objectType": "Route",
+            "parentID": "11404234257",
+            "parentObjectID": 11404234257,
+            "pitches": 1,
+            "points": "466.9 245.9,465.1 202.6,444.8 159.2,449 111.9,468.3 80",
+            "popularity": 13,
+            "priceCategory": "Emerging",
+            "qualityScore": 50,
+            "rawGrade": [
+              163,
+              169
+            ],
+            "relativePopularity": 13,
+            "siblingLabel": 18,
+            "stars": 2,
+            "style": "Sport",
+            "styleStub": "sport",
+            "tlc": {
+              "node": {
+                "id": "11404189095"
+              }
+            },
+            "type": "route",
+            "urlAncestorStub": "armenia"
+          },
+          {
+            "ascentCount": 3,
+            "asciiName": "Thunder",
+            "beta": [
+              {
+                "markdown": "Shares first 2 bolts and anchor with Lightning",
+                "name": "Description"
+              }
+            ],
+            "bolts": 5,
+            "context": "FR",
+            "cragScore": 1.09,
+            "depth": 5,
+            "displayHeight": [
+              8,
+              "m"
+            ],
+            "flags": {
+              "IsFree": 1,
+              "IsSport": 1
+            },
+            "grade": "6a",
+            "gradeAtom": {
+              "context": "FR",
+              "grade": "6a",
+              "gradeBand": 2,
+              "gradeInContext": "6a",
+              "gradeStyle": "Free",
+              "internal": [
+                193,
+                200
+              ],
+              "type": "grade"
+            },
+            "gradeBand": 2,
+            "gradeInContext": "6a",
+            "gradeStyle": "Free",
+            "height": [
+              "8",
+              "m"
+            ],
+            "hide": {},
+            "id": "12581180604",
+            "name": "Thunder",
+            "objectID": 12581180604,
+            "objectType": "Route",
+            "parentID": "11404234257",
+            "parentObjectID": 11404234257,
+            "pitches": 1,
+            "points": "466.9 245.9 label,465.1 202.6,482.2 147.5,468.3 80",
+            "popularity": 13,
+            "priceCategory": "Emerging",
+            "qualityScore": 50,
+            "rawGrade": [
+              193,
+              200
+            ],
+            "relativePopularity": 13,
+            "siblingLabel": 19,
+            "stars": 1,
+            "style": "Sport",
+            "styleStub": "sport",
+            "tlc": {
+              "node": {
+                "id": "11404189095"
+              }
+            },
+            "type": "route",
+            "urlAncestorStub": "armenia"
+          }
+        ],
+        "origHeight": 2268,
+        "origWidth": 4032,
+        "positionMaxLabel": 19,
+        "positionMinLabel": 9,
+        "type": "topo",
+        "width": 4032
+      }
+    ],
+    "type": "area",
+    "unique": "North-east facing limestone cliff up to 30m tall",
+    "urlAncestorStub": "armenia"
+  },
+  "query": {
+    "entity": "node",
+    "id": "11404234257",
+    "request": "id",
+    "show": [
+      "topo"
+    ]
+  }
+}

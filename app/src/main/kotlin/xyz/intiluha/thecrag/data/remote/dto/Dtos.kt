@@ -106,6 +106,10 @@ data class TopoDto(
     @Serializable(with = LenientIntOrNull::class) val height: Int? = null,
     @Serializable(with = LenientIntOrNull::class) val origWidth: Int? = null,
     @Serializable(with = LenientIntOrNull::class) val origHeight: Int? = null,
+    /** Degrees the server must turn the stored photo by (`filters:rotate(N)`); `null` or 0 when upright. */
+    @Serializable(with = LenientIntOrNull::class) val rotate: Int? = null,
+    /** 1 when [rotate] is 90 or 270, so `origWidth`/`origHeight` are the turned sides. */
+    @Serializable(with = LenientIntOrNull::class) val aspectFlipped: Int? = null,
     val objects: List<TopoObjectDto> = emptyList(),
 )
 
