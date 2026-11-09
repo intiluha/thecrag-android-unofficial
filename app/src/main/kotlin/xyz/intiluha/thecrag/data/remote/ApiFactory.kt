@@ -33,6 +33,7 @@ object ApiFactory {
         debug: Boolean,
         offline: OfflineStore? = null,
         loggedIn: () -> Boolean = { false },
+        onExpired: () -> Unit = {},
     ): OkHttpClient {
         val b = OkHttpClient.Builder()
             .cookieJar(cookies)
@@ -41,7 +42,7 @@ object ApiFactory {
             .addInterceptor(SessionInterceptor())
         if (offline != null) b.addInterceptor(OfflineInterceptor(offline))
         b.addInterceptor(OfflineFallbackInterceptor())
-            .addInterceptor(SessionRecoveryInterceptor(cookies, loggedIn))
+            .addInterceptor(SessionRecoveryInterceptor(cookies, loggedIn, onExpired))
             .addNetworkInterceptor(RateLimitInterceptor())
             .addNetworkInterceptor(CacheHeaderInterceptor())
         if (cacheDir != null) b.cache(Cache(File(cacheDir, "http"), 128L * 1024 * 1024))

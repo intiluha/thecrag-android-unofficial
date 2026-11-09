@@ -72,6 +72,44 @@ class FavouriteDownloaderTest {
     }
 
     @Test
+    fun pinnedContentIsServedWhenTheLoginHasExpired() = runBlocking {
+        val server = MockWebServer().apply { dispatcher = this@FavouriteDownloaderTest.dispatcher; start() }
+        val store = OfflineStore(Files.createTempDirectory("offline").toFile(), ApiFactory.json)
+        store.upsert(Favourite(100, "Crag", "Crag", 3, 1, addedAt = 1))
+        FavouriteDownloader(client(server, store), store, ApiFactory.json).download(100, refresh = false) { }
+
+        // Now theCrag treats the stored login cookie as no login at all (HTTP 400 insufficient access).
+        server.dispatcher = object : Dispatcher() {
+            override fun dispatch(request: RecordedRequest) = MockResponse().setResponseCode(400)
+                .addHeader("Content-Type", "application/json")
+                .setBody("""{"error":"You have insufficient access","errorLabel":"insufficient-api-permissions"}""")
+        }
+        var expired = 0
+        val jar = PersistentCookieJar(InMemoryStore())
+        val thecrag = HttpUrl.Builder().scheme("https").host("www.thecrag.com").build()
+        jar.saveFromResponse(thecrag, listOf(Cookie.parse(thecrag, "ApacheSessionID=stale; Path=/; Max-Age=86400")!!))
+        val http = ApiFactory.okHttp(jar, null, debug = false, offline = store, loggedIn = { true }, onExpired = { expired++ })
+            .newBuilder().addInterceptor { chain ->
+                val url = chain.request().url.newBuilder().scheme("http").host(server.hostName).port(server.port).build()
+                chain.proceed(chain.request().newBuilder().url(url).build())
+            }.build()
+        val api = ApiFactory.api(ApiFactory.retrofit(http))
+        val nodes = NodeRepository(api)
+        assertEquals("Crag", nodes.area(100).name)
+        assertEquals(listOf("R2", "R3"), nodes.area(200).routes.map { it.name })
+        assertEquals("R2", nodes.route(2).name)
+        assertEquals(1, TopoRepository(api).toposFor(2).size)
+        assertEquals("nothing pinned was asked from the network", 0, expired)
+        // An explicit refresh of a pinned page reaches the server, is refused, and the pinned copy is shown.
+        assertEquals("Crag", api.node(100L, NodeRepository.AREA_SHOW, cacheControl = NO_CACHE).data.name)
+        assertEquals(1, expired)
+        // Something outside the starred area does fail, and the app learns the login is gone.
+        assertTrue(runCatching { nodes.route(999) }.exceptionOrNull() is retrofit2.HttpException)
+        assertEquals(2, expired)
+        server.shutdown()
+    }
+
+    @Test
     fun downloadsSubtreeThenServesItWithoutNetwork() = runBlocking {
         val server = MockWebServer().apply { dispatcher = this@FavouriteDownloaderTest.dispatcher; start() }
         val store = OfflineStore(Files.createTempDirectory("offline").toFile(), ApiFactory.json)

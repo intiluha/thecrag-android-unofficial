@@ -46,6 +46,7 @@ import xyz.intiluha.thecrag.data.auth.AuthRepository
 import xyz.intiluha.thecrag.data.logbook.LogbookRepository
 import xyz.intiluha.thecrag.ui.common.SectionHeader
 import xyz.intiluha.thecrag.ui.common.describe
+import xyz.intiluha.thecrag.ui.common.needsLogin
 import java.text.DateFormat
 import java.util.Date
 
@@ -56,7 +57,10 @@ class AccountViewModel(private val auth: AuthRepository, private val logbook: Lo
     private fun run(block: suspend () -> String) {
         viewModelScope.launch {
             busy.value = true
-            message.value = try { block() } catch (e: Exception) { e.describe() }
+            message.value = try { block() } catch (e: Exception) {
+                if (e.needsLogin()) auth.markExpired()
+                e.describe()
+            }
             busy.value = false
         }
     }
@@ -86,6 +90,7 @@ fun AccountScreen(onBack: () -> Unit, onLogbook: () -> Unit) {
     val graph = TheCragApp.graph(context)
     val vm: AccountViewModel = viewModel { AccountViewModel(graph.auth, graph.logbook) }
     val account by graph.auth.state.collectAsState()
+    val expired by graph.auth.sessionExpired.collectAsState()
     val ascents by graph.logbook.ascents.collectAsState()
     val outbox by graph.logbook.outbox.collectAsState()
     val refreshedAt by graph.logbook.refreshedAt.collectAsState()
@@ -106,7 +111,16 @@ fun AccountScreen(onBack: () -> Unit, onLogbook: () -> Unit) {
             if (busy) LinearProgressIndicator(Modifier.fillMaxWidth())
             Text(stringResource(R.string.account_blurb), Modifier.padding(16.dp), style = MaterialTheme.typography.bodyMedium)
             val a = account
-            if (a == null) {
+            if (a != null && expired) {
+                Text(
+                    stringResource(R.string.session_expired, a.name),
+                    Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+                if (user.isBlank()) user = a.name
+            }
+            if (a == null || expired) {
                 Column(Modifier.padding(horizontal = 16.dp)) {
                     OutlinedTextField(user, { user = it }, label = { Text(stringResource(R.string.username)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
                     OutlinedTextField(
@@ -119,7 +133,8 @@ fun AccountScreen(onBack: () -> Unit, onLogbook: () -> Unit) {
                         modifier = Modifier.padding(top = 12.dp),
                     ) { Text(stringResource(R.string.login)) }
                 }
-            } else {
+            }
+            if (a != null) {
                 Column(Modifier.padding(horizontal = 16.dp)) {
                     Text("Logged in as ${a.name}", style = MaterialTheme.typography.titleMedium)
                     Text("Account id ${a.id}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.outline)

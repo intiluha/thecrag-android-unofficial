@@ -23,6 +23,7 @@
     <string name="account">Account</string>
     <string name="logbook">Logbook</string>
     <string name="login">Log in</string>
+    <string name="session_expired">theCrag no longer accepts this device\'s session for %1$s. Log in again.</string>
     <string name="logout">Log out</string>
     <string name="username">Username</string>
     <string name="password">Password</string>

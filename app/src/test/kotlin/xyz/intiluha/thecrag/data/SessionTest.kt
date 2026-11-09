@@ -57,7 +57,8 @@ class SessionTest {
 
         val jar = PersistentCookieJar(InMemoryStore())
         jar.saveFromResponse(okhttp3.HttpUrl.Builder().scheme("https").host("www.thecrag.com").build(), listOf(okhttp3.Cookie.parse(okhttp3.HttpUrl.Builder().scheme("https").host("www.thecrag.com").build(), "ApacheSessionID=login; Path=/; Max-Age=86400")!!))
-        val client = ApiFactory.okHttp(jar, null, debug = false, loggedIn = { true })
+        var expired = 0
+        val client = ApiFactory.okHttp(jar, null, debug = false, loggedIn = { true }, onExpired = { expired++ })
         val rewriting = client.newBuilder().addInterceptor { chain ->
             val url = chain.request().url.newBuilder().scheme("http").host(server.hostName).port(server.port).build()
             chain.proceed(chain.request().newBuilder().url(url).build())
@@ -67,6 +68,7 @@ class SessionTest {
         val failure = runCatching { api.node(7546063L) }.exceptionOrNull()
         assertTrue(failure is retrofit2.HttpException && failure.code() == 400)
         assertEquals(1, server.requestCount)
+        assertEquals("the app is told the login is gone", 1, expired)
         assertTrue(server.takeRequest().path!!.startsWith("/api/node/id/7546063"))
         server.shutdown()
     }

@@ -30,6 +30,15 @@ class AuthRepository(
     val state: StateFlow<Account?> = _state
     val account: Account? get() = _state.value
 
+    /**
+     * True once theCrag answered a call with the login cookie as if there were none: the
+     * server-side session is gone while [account] is still remembered. The Account screen
+     * then shows the login form again; a successful login or a logout clears it.
+     */
+    val sessionExpired = MutableStateFlow(false)
+
+    fun markExpired() { sessionExpired.value = true }
+
     suspend fun login(username: String, password: String): Account {
         cookies.clear()
         val formHtml = api.loginForm().let { it.body()?.string() ?: it.errorBody()?.string() ?: "" }
@@ -57,10 +66,12 @@ class AuthRepository(
         val account = Account(id, name, clock())
         store.put(KEY, json.encodeToString(Account.serializer(), account))
         _state.value = account
+        sessionExpired.value = false
         return account
     }
 
     fun logout() {
+        sessionExpired.value = false
         cookies.clear()
         store.put(KEY, "")
         _state.value = null

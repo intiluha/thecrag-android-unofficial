@@ -39,7 +39,11 @@ class AppGraph(app: Application) {
     // endpoints only for logged-in sessions, so browsing has to send the login cookie.
     val cookies = PersistentCookieJar(store, PersistentCookieJar.AUTH_KEY)
     val offline = OfflineStore(File(app.filesDir, "offline"), ApiFactory.json)
-    val okHttp: OkHttpClient = ApiFactory.okHttp(cookies, app.cacheDir, BuildConfig.DEBUG, offline) { auth.account != null }
+    val okHttp: OkHttpClient = ApiFactory.okHttp(
+        cookies, app.cacheDir, BuildConfig.DEBUG, offline,
+        loggedIn = { auth.account != null },
+        onExpired = { auth.markExpired() },
+    )
     val api: TheCragApi = ApiFactory.api(ApiFactory.retrofit(okHttp))
     val nodes = NodeRepository(api)
     val topos = TopoRepository(api)

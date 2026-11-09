@@ -18,7 +18,8 @@ object OfflineDownload
  * without touching the network. An explicit refresh (`Cache-Control: no-cache`)
  * goes to the network and the fresh body replaces the pinned copy, so a starred
  * area never shows older data than the user has just seen; if that network call
- * fails the pinned copy is served instead.
+ * fails, or the server refuses it (an expired login, say), the pinned copy is served
+ * instead. Interceptors further down still see the refusal, so the app learns of it.
  */
 class OfflineInterceptor(private val store: OfflineStore) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
@@ -37,7 +38,11 @@ class OfflineInterceptor(private val store: OfflineStore) : Interceptor {
             return serve(chain, entry)
         }
         val body = res.body
-        if (!res.isSuccessful || body == null) return res
+        if (!res.isSuccessful || body == null) {
+            // The server said no (for instance the login expired): the pinned copy beats an error page.
+            res.close()
+            return serve(chain, entry)
+        }
         val bytes = body.bytes()
         store.put(url, bytes, body.contentType()?.toString() ?: entry.contentType)
         return res.newBuilder().body(bytes.toResponseBody(body.contentType())).build()

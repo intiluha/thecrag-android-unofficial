@@ -15,7 +15,7 @@ fun Throwable.describe(): String = when (this) {
     is HttpException -> apiError()?.let { e ->
         when {
             e.contains("minimum level authweb") -> "Not logged in, or the theCrag session has expired. Log in again."
-            e.contains("insufficient access") -> "theCrag shows this only to logged-in accounts (since November 2026)."
+            e.contains("insufficient access") -> "theCrag shows this only to logged-in accounts. Log in, or log in again if your session has expired."
             else -> "theCrag: $e"
         }
     } ?: when (code()) {

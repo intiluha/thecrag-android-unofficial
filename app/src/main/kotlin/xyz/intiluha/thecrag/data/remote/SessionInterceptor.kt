@@ -43,6 +43,8 @@ class SessionRecoveryInterceptor(
     private val cookies: PersistentCookieJar,
     /** True while an account is logged in: a permission error then means the login expired, and an anonymous session would not help. */
     private val loggedIn: () -> Boolean = { false },
+    /** Called when a permission error arrives although [loggedIn] says there is a login: the session has expired. */
+    private val onExpired: () -> Unit = {},
 ) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()
@@ -51,7 +53,11 @@ class SessionRecoveryInterceptor(
         if (!cookies.hasSession() && !request.cacheControl.onlyIfCached) bootstrap(chain)
 
         val first = chain.proceed(request)
-        if (first.code != 400 || loggedIn() || !first.isPermissionError()) return first
+        if (first.code != 400 || !first.isPermissionError()) return first
+        if (loggedIn()) {
+            onExpired()
+            return first
+        }
         first.close()
         bootstrap(chain)
         return chain.proceed(request)
