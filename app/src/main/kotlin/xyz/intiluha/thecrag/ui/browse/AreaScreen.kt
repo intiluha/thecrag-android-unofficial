@@ -7,6 +7,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -50,6 +51,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -59,6 +61,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
 import xyz.intiluha.thecrag.R
 import xyz.intiluha.thecrag.TheCragApp
+import xyz.intiluha.thecrag.data.logbook.Ascent
 import xyz.intiluha.thecrag.data.logbook.LogbookRepository
 import xyz.intiluha.thecrag.data.offline.FavouriteDownloadWorker
 import xyz.intiluha.thecrag.data.offline.FavouritesRepository
@@ -80,6 +83,7 @@ import xyz.intiluha.thecrag.ui.common.Stars
 import xyz.intiluha.thecrag.ui.common.StateBox
 import xyz.intiluha.thecrag.ui.common.UiState
 import xyz.intiluha.thecrag.ui.common.formatBytes
+import xyz.intiluha.thecrag.ui.logbook.AscentBadges
 import xyz.intiluha.thecrag.ui.topo.TopoView
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -107,7 +111,12 @@ fun AreaScreen(
     // Coming back from a successful login: load what the anonymous attempt could not.
     LaunchedEffect(account) { if (account != null && state is UiState.Error) vm.reload() }
     val ascents by graph.logbook.ascents.collectAsState()
+    // Offline: which nodes the device can open (pinned or HTTP-cached); null online, so nothing is dimmed.
+    val online by graph.connectivity.online.collectAsState()
+    var available by remember { mutableStateOf<Set<Long>?>(null) }
+    LaunchedEffect(online, areaId) { available = if (online) null else graph.availability.availableNodeIds() }
     val sentIds = remember(ascents) { LogbookRepository.sentRouteIds(ascents) }
+    val ascentsByRoute = remember(ascents) { LogbookRepository.ascentsByRoute(ascents) }
     // A view of the list, not a setting: nothing stored, survives rotation only.
     var unclimbedOnly by rememberSaveable { mutableStateOf(false) }
     val area = (state as? UiState.Ready)?.value
@@ -160,7 +169,7 @@ fun AreaScreen(
         StateBox(state, onRetry = vm::reload, onLogin = onAccount) { a ->
             AreaBody(
                 a, topos, if (a.id == WORLD_ID) recents else emptyList(), onOpenArea, onOpenRoute,
-                if (ascents.isEmpty()) null else sentIds, unclimbedOnly, { unclimbedOnly = it }, Modifier.padding(padding),
+                if (ascents.isEmpty()) null else sentIds, ascentsByRoute, unclimbedOnly, { unclimbedOnly = it }, available, Modifier.padding(padding),
             )
         }
     }
@@ -197,8 +206,11 @@ private fun AreaBody(
     onOpenRoute: (Long) -> Unit,
     /** Routes with a clean ascent in the logbook; null when there is no logbook, which hides the view switch. */
     sentIds: Set<Long>?,
+    ascentsByRoute: Map<Long, List<Ascent>>,
     unclimbedOnly: Boolean,
     onUnclimbedOnly: (Boolean) -> Unit,
+    /** Nodes the device can open while offline; null when online or not yet known, which dims nothing. */
+    available: Set<Long>?,
     modifier: Modifier,
 ) {
     LazyColumn(modifier.fillMaxSize()) {
@@ -219,7 +231,7 @@ private fun AreaBody(
         if (recents.isNotEmpty()) {
             item { SectionHeader(stringResource(R.string.recent)) }
             items(recents, key = { "rc${it.id}" }) { r ->
-                RecentRow(r) { if (r.kind == NodeKind.ROUTE) onOpenRoute(r.id) else onOpenArea(r.id) }
+                Dimmed(available, r.id) { RecentRow(r) { if (r.kind == NodeKind.ROUTE) onOpenRoute(r.id) else onOpenArea(r.id) } }
             }
         }
         when (val t = topos) {
@@ -244,7 +256,7 @@ private fun AreaBody(
         }
         if (area.subAreas.isNotEmpty()) {
             item { SectionHeader("Areas") }
-            items(area.subAreas, key = { "a${it.id}" }) { AreaRow(it) { onOpenArea(it.id) } }
+            items(area.subAreas, key = { "a${it.id}" }) { a -> Dimmed(available, a.id) { AreaRow(a) { onOpenArea(a.id) } } }
         }
         if (area.routes.isNotEmpty()) {
             val shown = if (unclimbedOnly && sentIds != null) area.routes.filter { it.id !in sentIds } else area.routes
@@ -252,7 +264,7 @@ private fun AreaBody(
             if (shown.isEmpty()) {
                 item { Text(stringResource(R.string.all_climbed), Modifier.padding(16.dp), style = MaterialTheme.typography.bodyMedium) }
             }
-            items(shown, key = { "r${it.id}" }) { RouteRow(it) { onOpenRoute(it.id) } }
+            items(shown, key = { "r${it.id}" }) { r -> Dimmed(available, r.id) { RouteRow(r, ascentsByRoute[r.id].orEmpty()) { onOpenRoute(r.id) } } }
         }
         area.beta.forEach { section ->
             item {
@@ -265,6 +277,12 @@ private fun AreaBody(
         }
         item { Attribution() }
     }
+}
+
+/** Draws [content] at reduced alpha when offline and node [id] is not on the device; still clickable. */
+@Composable
+private fun Dimmed(available: Set<Long>?, id: Long, content: @Composable () -> Unit) {
+    Box(if (available != null && id !in available) Modifier.alpha(0.38f) else Modifier) { content() }
 }
 
 /**
@@ -317,7 +335,7 @@ private fun AreaRow(a: AreaSummary, onClick: () -> Unit) {
 }
 
 @Composable
-private fun RouteRow(r: RouteSummary, onClick: () -> Unit) {
+private fun RouteRow(r: RouteSummary, myAscents: List<Ascent>, onClick: () -> Unit) {
     Row(
         Modifier.fillMaxWidth().clickable(onClick = onClick).padding(horizontal = 16.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -335,6 +353,7 @@ private fun RouteRow(r: RouteSummary, onClick: () -> Unit) {
             }
             Text(parts.joinToString(" · "), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.outline)
         }
+        if (myAscents.isNotEmpty()) AscentBadges(myAscents, Modifier.padding(end = 8.dp))
         Stars(r.stars)
     }
 }

@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -56,8 +57,9 @@ import xyz.intiluha.thecrag.ui.common.Attribution
 import xyz.intiluha.thecrag.ui.common.Breadcrumbs
 import xyz.intiluha.thecrag.ui.common.GradeChip
 import xyz.intiluha.thecrag.ui.common.SectionHeader
-import xyz.intiluha.thecrag.ui.logbook.AscentRow
-import xyz.intiluha.thecrag.ui.logbook.PendingRow
+import xyz.intiluha.thecrag.data.logbook.LogbookRepository
+import xyz.intiluha.thecrag.ui.logbook.RouteAscentRow
+import xyz.intiluha.thecrag.ui.logbook.RoutePendingRow
 import xyz.intiluha.thecrag.ui.common.OverflowMenu
 import xyz.intiluha.thecrag.ui.common.Stars
 import xyz.intiluha.thecrag.ui.common.StateBox
@@ -167,6 +169,16 @@ fun RouteScreen(routeId: Long, onOpenArea: (Long) -> Unit, onOpenRoute: (Long) -
                         r.firstAscent?.let { Text("FA: $it", Modifier.padding(top = 4.dp), style = MaterialTheme.typography.bodyMedium) }
                     }
                 }
+                // The own ascents of this route, oldest first, with any outbox ticks after them; the
+                // route name is in the header, so each row is just badge, date, gear style, comment.
+                val mine = myAscents.filter { it.routeId == r.id }.sortedWith(LogbookRepository.CHRONOLOGICAL)
+                val minePending = pending.filter { it.routeId == r.id }
+                if (mine.isNotEmpty() || minePending.isNotEmpty()) {
+                    item { SectionHeader(stringResource(R.string.your_ascents)) }
+                    items(mine, key = { "a${it.id}" }) { RouteAscentRow(it) }
+                    items(minePending, key = { "p${it.createdAt}" }) { RoutePendingRow(it) }
+                    item { Spacer(Modifier.height(8.dp)) }
+                }
                 when (val t = topos) {
                     UiState.Loading -> item { LinearProgressIndicator(Modifier.fillMaxWidth().padding(horizontal = 16.dp)) }
                     is UiState.Error -> item {
@@ -181,13 +193,6 @@ fun RouteScreen(routeId: Long, onOpenArea: (Long) -> Unit, onOpenRoute: (Long) -
                             Modifier.padding(vertical = 4.dp),
                         )
                     }
-                }
-                val mine = myAscents.filter { it.routeId == r.id }
-                val minePending = pending.filter { it.routeId == r.id }
-                if (mine.isNotEmpty() || minePending.isNotEmpty()) {
-                    item { SectionHeader(stringResource(R.string.your_ascents)) }
-                    items(minePending, key = { "p${it.createdAt}" }) { PendingRow(it) {} }
-                    items(mine, key = { "a${it.id}" }) { AscentRow(it, onClick = {}) }
                 }
                 r.beta.forEach { s ->
                     item {

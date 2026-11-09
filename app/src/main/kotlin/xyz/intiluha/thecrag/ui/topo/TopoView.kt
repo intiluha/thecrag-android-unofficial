@@ -15,7 +15,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -88,24 +87,19 @@ fun TopoView(
 
 @Composable
 private fun ZoomableTopo(topo: Topo, selectedRouteId: Long?, onRouteTap: (Long) -> Unit, onAreaTap: (Long) -> Unit) {
-    var scale by remember { mutableFloatStateOf(1f) }
-    var offset by remember { mutableStateOf(Offset.Zero) }
+    var zoom by remember { mutableStateOf(ZoomState()) }
     Box(
         Modifier.fillMaxSize().clipToBounds().pointerInput(Unit) {
-            detectTransformGestures { centroid, pan, zoom, _ ->
-                val newScale = (scale * zoom).coerceIn(1f, 8f)
-                // Keep the point under the fingers fixed while zooming.
-                offset = (offset - centroid) * (newScale / scale) + centroid + pan
-                scale = newScale
-                if (scale == 1f) offset = Offset.Zero
+            detectTransformGestures { centroid, pan, factor, _ ->
+                zoom = zoom.step(factor, centroid.x, centroid.y, pan.x, pan.y, size.width.toFloat(), size.height.toFloat(), topo.aspect)
             }
         },
         contentAlignment = Alignment.Center,
     ) {
         Box(
             Modifier.fillMaxWidth().aspectRatio(topo.aspect).graphicsLayer {
-                scaleX = scale; scaleY = scale
-                translationX = offset.x; translationY = offset.y
+                scaleX = zoom.scale; scaleY = zoom.scale
+                translationX = zoom.x; translationY = zoom.y
                 transformOrigin = TransformOrigin(0f, 0f)
             },
         ) {

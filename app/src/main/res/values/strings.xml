@@ -42,6 +42,7 @@
     <string name="delete">Delete</string>
     <string name="cancel">Cancel</string>
     <string name="offline">Offline</string>
+    <string name="offline_bar">Offline · showing saved copies</string>
     <string name="star">Keep offline</string>
     <string name="starred">Kept offline</string>
     <string name="offline_blurb">Starred areas are downloaded with all their sub-areas, routes and topos and shown from this device, online or not. Refresh an area to fetch it live and update the copy; Update re-downloads everything.</string>

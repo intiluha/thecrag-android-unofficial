@@ -12,10 +12,12 @@ import okhttp3.OkHttpClient
 import xyz.intiluha.thecrag.data.auth.AuthApi
 import xyz.intiluha.thecrag.data.auth.AuthRepository
 import xyz.intiluha.thecrag.data.logbook.LogbookRepository
+import xyz.intiluha.thecrag.data.offline.Availability
 import xyz.intiluha.thecrag.data.offline.FavouriteDownloader
 import xyz.intiluha.thecrag.data.offline.FavouritesRepository
 import xyz.intiluha.thecrag.data.offline.OfflineStore
 import xyz.intiluha.thecrag.data.remote.ApiFactory
+import xyz.intiluha.thecrag.data.remote.ConnectivityMonitor
 import xyz.intiluha.thecrag.data.remote.authHttp
 import xyz.intiluha.thecrag.data.remote.KeyValueStore
 import xyz.intiluha.thecrag.data.remote.PersistentCookieJar
@@ -45,6 +47,9 @@ class AppGraph(app: Application) {
     val recents = RecentStore(store, ApiFactory.json)
     // Stage 3: starred areas, pinned in the offline store and served by OfflineInterceptor.
     val favourites = FavouritesRepository(offline, FavouriteDownloader(okHttp, offline, ApiFactory.json))
+    // Network state for the Offline bar, and which nodes the device can open without one.
+    val connectivity = ConnectivityMonitor(app)
+    val availability = Availability(offline, okHttp.cache)
 
     // Stage 2: the account. Separate client (no redirects, no cache) on the same cookie jar.
     val authCookies = cookies

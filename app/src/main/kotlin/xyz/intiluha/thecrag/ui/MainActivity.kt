@@ -5,17 +5,29 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import xyz.intiluha.thecrag.TheCragApp
 import xyz.intiluha.thecrag.domain.WORLD_ID
 import xyz.intiluha.thecrag.ui.about.AboutScreen
 import xyz.intiluha.thecrag.ui.account.AccountScreen
 import xyz.intiluha.thecrag.ui.logbook.LogbookScreen
 import xyz.intiluha.thecrag.ui.browse.AreaScreen
+import xyz.intiluha.thecrag.ui.common.OfflineBar
 import xyz.intiluha.thecrag.ui.favourites.FavouritesScreen
 import xyz.intiluha.thecrag.ui.map.MapScreen
 import xyz.intiluha.thecrag.ui.route.RouteScreen
@@ -30,8 +42,22 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+/**
+ * The Offline bar above whatever screen is showing. Each screen keeps its own
+ * Scaffold; while the bar is up it has taken the status bar inset, so the screen
+ * below is told that inset is consumed and its top bar sits right under the bar.
+ */
 @Composable
 fun AppNav() {
+    val online by TheCragApp.graph(LocalContext.current).connectivity.online.collectAsState()
+    Column(Modifier.fillMaxSize()) {
+        if (!online) OfflineBar()
+        Box(if (online) Modifier else Modifier.consumeWindowInsets(WindowInsets.statusBars)) { NavGraph() }
+    }
+}
+
+@Composable
+private fun NavGraph() {
     val nav = rememberNavController()
     NavHost(nav, startDestination = "area/$WORLD_ID") {
         composable("area/{id}", arguments = listOf(navArgument("id") { type = NavType.LongType })) { entry ->

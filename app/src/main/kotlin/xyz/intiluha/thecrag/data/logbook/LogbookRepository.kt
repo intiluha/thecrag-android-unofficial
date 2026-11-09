@@ -169,5 +169,22 @@ class LogbookRepository(
         /** Routes with at least one clean ascent ([TickTypes.isSend]); what the area screen can hide. */
         fun sentRouteIds(ascents: List<Ascent>): Set<Long> =
             ascents.asSequence().filter { TickTypes.isSend(it.tick) }.mapNotNull { it.routeId }.toSet()
+
+        /** Oldest first; ascents without a date last; ties broken by id so the order is stable. */
+        val CHRONOLOGICAL: Comparator<Ascent> = compareBy<Ascent>({ it.date == null }, { it.date ?: "" }, { it.id })
+
+        /** The ascents of each route in [CHRONOLOGICAL] order; ascents without a route id are left out. */
+        fun ascentsByRoute(ascents: List<Ascent>): Map<Long, List<Ascent>> =
+            ascents.filter { it.routeId != null }.sortedWith(CHRONOLOGICAL).groupBy { it.routeId!! }
+
+        /**
+         * Which ascents a route row shows as badges: all of them up to three, otherwise the
+         * first two in [CHRONOLOGICAL] order. The flag says whether any were left out, so the
+         * row can add a truncation mark and never shows more than three badges.
+         */
+        fun badgeAscents(ascents: List<Ascent>): Pair<List<Ascent>, Boolean> {
+            val sorted = ascents.sortedWith(CHRONOLOGICAL)
+            return if (sorted.size <= 3) sorted to false else sorted.take(2) to true
+        }
     }
 }
