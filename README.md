@@ -42,9 +42,10 @@ Out of scope: adding or editing routes, crags and topos. Use the website for tha
 ## Screenshots
 
 <p>
-<img src="docs/screenshots/area.png" width="200" alt="A crag: route list with the All / Unclimbed switch">
-<img src="docs/screenshots/topo.png" width="200" alt="A topo with route lines">
-<img src="docs/screenshots/route.png" width="200" alt="A route with its topo and your ascents">
+<img src="docs/screenshots/area.png" width="200" alt="A crag: its route list">
+<img src="docs/screenshots/unclimbed.png" width="200" alt="The same crag in the Unclimbed view">
+<img src="docs/screenshots/topo.png" width="200" alt="Topos with the route lines drawn on">
+<img src="docs/screenshots/route.png" width="200" alt="A route page">
 </p>
 <p>
 <img src="docs/screenshots/map.png" width="200" alt="Crags on the map">
