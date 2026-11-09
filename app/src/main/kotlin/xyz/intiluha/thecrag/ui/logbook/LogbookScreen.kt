@@ -138,6 +138,8 @@ fun AscentRow(a: Ascent, onClick: () -> Unit, onLongClick: (() -> Unit)? = null)
     ) {
         GradeChip(a.grade, a.gradeBand, Modifier.width(56.dp))
         Spacer(Modifier.width(12.dp))
+        AscentBadge(a.tick, a.gearStyle)
+        Spacer(Modifier.width(10.dp))
         Column(Modifier.weight(1f)) {
             Text(a.routeName, style = MaterialTheme.typography.bodyLarge, maxLines = 1)
             Text(
@@ -157,6 +159,8 @@ fun PendingRow(t: TickRequest, onClick: () -> Unit) {
     ) {
         GradeChip(t.grade, t.gradeBand, Modifier.width(56.dp))
         Spacer(Modifier.width(12.dp))
+        AscentBadge(t.tick, t.gearStyle, pending = true)
+        Spacer(Modifier.width(10.dp))
         Column(Modifier.weight(1f)) {
             Text(t.routeName, style = MaterialTheme.typography.bodyLarge, maxLines = 1)
             Text(

@@ -51,9 +51,11 @@ import xyz.intiluha.thecrag.data.logbook.TickTypes
 /**
  * A tick type as a small round picture: a glyph from the Material icon set on a
  * coloured disc for clean sends, on an outlined disc for everything else. Our own
- * vocabulary, deliberately unlike theCrag's tick icons.
+ * vocabulary, deliberately unlike theCrag's tick icons. A clean ascent that was not led
+ * (top rope, second) keeps the colour but only as an outline, so a top-rope flash is
+ * told apart from a led one at a glance.
  */
-data class TickGlyph(val icon: ImageVector, val color: Color?) {
+data class TickGlyph(val icon: ImageVector, val color: Color?, val led: Boolean = true) {
     val send: Boolean get() = color != null
 
     companion object {
@@ -67,7 +69,13 @@ data class TickGlyph(val icon: ImageVector, val color: Color?) {
         private val SOLO = Color(0xFF6D4C41)
         private val FIRST = Color(0xFFEF6C00)
 
-        fun of(tick: String): TickGlyph = when (tick.lowercase()) {
+        /** Gear styles in which the climber did not lead; their sends are drawn as coloured outlines. */
+        private val NOT_LED = setOf("toprope", "top-rope", "second")
+
+        fun of(tick: String, gearStyle: String? = null): TickGlyph =
+            base(tick).copy(led = gearStyle?.lowercase() !in NOT_LED)
+
+        private fun base(tick: String): TickGlyph = when (tick.lowercase()) {
             "onsight" -> TickGlyph(Icons.Default.Visibility, ONSIGHT)
             "flash" -> TickGlyph(Icons.Default.Bolt, FLASH)
             "redpoint", "groundupredpoint" -> TickGlyph(Icons.Default.FiberManualRecord, REDPOINT)
@@ -101,24 +109,29 @@ fun AscentBadges(ascents: List<Ascent>, modifier: Modifier = Modifier) {
     val (shown, truncated) = remember(ascents) { LogbookRepository.badgeAscents(ascents) }
     if (shown.isEmpty()) return
     Row(modifier, horizontalArrangement = Arrangement.spacedBy(4.dp), verticalAlignment = Alignment.CenterVertically) {
-        shown.forEach { AscentBadge(it.tick) }
+        shown.forEach { AscentBadge(it.tick, it.gearStyle) }
         if (truncated) MoreBadge()
     }
 }
 
-/** One tick type as a 22 dp disc; [pending] draws it in the error colour for an outbox tick. */
+/**
+ * One tick type as a 22 dp disc: filled when led clean, coloured outline when clean on
+ * top rope or second, grey outline otherwise; [pending] draws it in the error colour.
+ */
 @Composable
-fun AscentBadge(tick: String, modifier: Modifier = Modifier, pending: Boolean = false) {
-    val glyph = TickGlyph.of(tick)
+fun AscentBadge(tick: String, gearStyle: String?, modifier: Modifier = Modifier, pending: Boolean = false) {
+    val glyph = TickGlyph.of(tick, gearStyle)
     val colors = MaterialTheme.colorScheme
     val tint = when {
         pending -> colors.error
-        glyph.send -> Color.White
+        glyph.send && glyph.led -> Color.White
+        glyph.send -> glyph.color!!
         else -> colors.onSurfaceVariant
     }
     val look = when {
         pending -> Modifier.border(1.5.dp, colors.error, CircleShape)
-        glyph.send -> Modifier.background(glyph.color!!, CircleShape)
+        glyph.send && glyph.led -> Modifier.background(glyph.color!!, CircleShape)
+        glyph.send -> Modifier.border(1.5.dp, glyph.color!!, CircleShape)
         else -> Modifier.border(1.5.dp, colors.outlineVariant, CircleShape)
     }
     Box(modifier.size(22.dp).then(look), contentAlignment = Alignment.Center) {
@@ -139,7 +152,7 @@ private fun MoreBadge(modifier: Modifier = Modifier) {
 @Composable
 fun RouteAscentRow(a: Ascent, modifier: Modifier = Modifier) {
     Row(modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 6.dp), verticalAlignment = Alignment.Top) {
-        AscentBadge(a.tick)
+        AscentBadge(a.tick, a.gearStyle)
         Spacer(Modifier.width(12.dp))
         Column(Modifier.weight(1f)) {
             Text(
@@ -155,7 +168,7 @@ fun RouteAscentRow(a: Ascent, modifier: Modifier = Modifier) {
 @Composable
 fun RoutePendingRow(t: TickRequest, modifier: Modifier = Modifier) {
     Row(modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 6.dp), verticalAlignment = Alignment.Top) {
-        AscentBadge(t.tick, pending = true)
+        AscentBadge(t.tick, t.gearStyle, pending = true)
         Spacer(Modifier.width(12.dp))
         Column(Modifier.weight(1f)) {
             Text(
