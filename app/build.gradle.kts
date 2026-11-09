@@ -8,6 +8,17 @@ plugins {
 // Release signing. The PKCS12 keystore ./release.p12 is committed (key alias "thecrag"); only its
 // password is secret. `just release` prompts for it and passes it in as KEYSTORE_PASSWORD, which is
 // read only when a release task was requested, so debug builds, tests and `gradle help` never need it.
+// Version. `just publish vX.Y.Z` passes the tag as -PappVersion and the APK is stamped X.Y.Z with
+// versionCode X*1000000 + Y*10000 + Z, so every release is a real upgrade for Android and for
+// Obtainium, which compares the installed versionName with the release tag. Any other build
+// (debug, a bare `just release`) is named after `git describe`, versionCode from its tag part or 1.
+val appVersion: String = (project.findProperty("appVersion") as String?)?.trim()?.removePrefix("v")?.takeIf { it.isNotEmpty() }
+    ?: runCatching {
+        providers.exec { commandLine("git", "describe", "--tags", "--always", "--dirty") }.standardOutput.asText.get().trim().removePrefix("v")
+    }.getOrNull()?.takeIf { it.isNotEmpty() } ?: "0.0.0"
+val appVersionCode: Int = Regex("""^(\d+)\.(\d+)\.(\d+)""").find(appVersion)
+    ?.destructured?.let { (major, minor, patch) -> major.toInt() * 1_000_000 + minor.toInt() * 10_000 + patch.toInt() } ?: 1
+
 val keystoreFile = rootProject.file("release.p12")
 val signingTaskNames = setOf("assembleRelease", "installRelease", "bundleRelease")
 val needsSigning = gradle.startParameter.taskNames.any { it.substringAfterLast(':') in signingTaskNames }
@@ -25,8 +36,8 @@ android {
         applicationId = "xyz.intiluha.thecrag"
         minSdk = 26
         targetSdk = 35
-        versionCode = 1
-        versionName = "0.1.0"
+        versionCode = appVersionCode
+        versionName = appVersion
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 

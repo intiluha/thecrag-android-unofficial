@@ -84,14 +84,16 @@ How the app talks to theCrag is written up in `docs/research/api.md`; the design
 ```sh
 just release            # signed app/build/outputs/apk/release/app-release.apk
 just release-install    # …and adb install it
-just publish v0.1.0     # …and attach it to a new GitHub Release tagged v0.1.0
+just publish v0.2.0     # build as version 0.2.0 and attach it to a new GitHub Release tagged v0.2.0
 ```
 
 Releases are signed with the committed PKCS12 keystore `release.p12` (key alias `thecrag`). Only its
 password is secret: `just release` prompts for it and hands it to Gradle as `KEYSTORE_PASSWORD`, which
 is read only when a release task runs, never for debug builds or tests. Set the variable yourself to
 skip the prompt. Keeping the keystore in the repo keeps the signing key stable across versions, which
-is what lets Obtainium update the app in place from this repository's GitHub Releases. There is no CI:
+is what lets Obtainium update the app in place from this repository's GitHub Releases. The APK's
+version comes from the tag given to `just publish` (`v0.2.0` → `versionName` 0.2.0, `versionCode` 20000),
+so each release is an upgrade; a bare `just release` or debug build is named after `git describe`. There is no CI:
 releases are built locally.
 
 Setting up a fresh keystore (once, inside `nix-shell`):

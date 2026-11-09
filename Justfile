@@ -56,14 +56,14 @@ keystore: nix-check
     keytool -genkeypair -storetype PKCS12 -keystore release.p12 -alias {{app}} -keyalg RSA -keysize 4096 -validity 10000 -dname "CN={{app}}"
 
 # Build the signed release APK. Keystore at ./release.p12 (committed); prompts for its password unless KEYSTORE_PASSWORD is set.
-release: nix-check
+release tag="": nix-check
     #!/usr/bin/env bash
     set -euo pipefail
     if [ -z "${KEYSTORE_PASSWORD:-}" ]; then
         read -rsp "release.p12 password: " KEYSTORE_PASSWORD; echo
         export KEYSTORE_PASSWORD
     fi
-    gradle :app:assembleRelease
+    gradle :app:assembleRelease -PappVersion="{{tag}}"
     echo "APK at {{release_apk}}"
 
 # Build + install the release APK on the USB-connected device
@@ -71,7 +71,7 @@ release-install: release
     adb install -r {{release_apk}}
 
 # Build the release APK and publish it as a GitHub Release (creates the tag at HEAD; needs `gh auth login`)
-publish tag: release
+publish tag: (release tag)
     gh release create {{tag}} {{release_apk}} --title {{tag}} --generate-notes
 
 # Delete build outputs and Gradle/Kotlin caches (everything the build regenerates)
