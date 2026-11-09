@@ -22,6 +22,13 @@ import java.net.URLDecoder
 object TopoMapper {
     const val BASE_MAX = 550f
 
+    /**
+     * The order the website shows an area's topos in. The API lists them by the position of
+     * their first route, which interleaves overview photos (area outlines only, no routes)
+     * with route topos; the website puts the overviews first. Stable otherwise.
+     */
+    fun order(topos: List<Topo>): List<Topo> = topos.sortedBy { it.routes.isNotEmpty() }
+
     fun fromDto(dto: TopoDto): Topo? {
         if (dto.id == 0L || dto.hashID.length < 40) return null
         val ow = (dto.origWidth ?: dto.width)?.takeIf { it > 0 } ?: return null

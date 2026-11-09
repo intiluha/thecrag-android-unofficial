@@ -20,6 +20,19 @@ class TopoMapperTest {
         ApiFactory.json.decodeFromString(DataObj.serializer(NodeDto.serializer()), sample(name)).data.topos.mapNotNull(TopoMapper::fromDto)
 
     @Test
+    fun overviewPhotosComeFirstLikeOnTheWebsite() {
+        // Armenia / West (2306019351): the API lists the route topo for routes 1-3 before the
+        // overview photo with two area outlines; the website shows the overview first.
+        val api = topos("area_2306019351_show_topo.json")
+        assertEquals(listOf(9487044717L, 9487195683L), api.take(2).map { it.id })
+        val shown = TopoMapper.order(api)
+        assertEquals(9487195683L, shown.first().id)
+        assertTrue(shown.first().routes.isEmpty() && shown.first().areas.size == 2)
+        // Everything else keeps the API order.
+        assertEquals(api.filter { it.routes.isNotEmpty() }.map { it.id }, shown.drop(1).map { it.id })
+    }
+
+    @Test
     fun rotatedTopoUsesTheTurnedSidesAndAsksForTheRotatedImage() {
         // Vedi / The Fortress: 4032x3024 photos stored sideways, rotate 270, origWidth/origHeight already turned.
         val topos = topos("area_11404234257_show_topo.json")

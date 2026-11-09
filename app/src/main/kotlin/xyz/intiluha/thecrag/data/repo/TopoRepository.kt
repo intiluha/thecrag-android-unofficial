@@ -12,7 +12,7 @@ class TopoRepository(private val api: TheCragApi) {
     suspend fun toposFor(id: Long, force: Boolean = false): List<Topo> {
         if (!force) cache.get(id)?.let { return it }
         val dto = api.node(id, show = TOPO_SHOW, cacheControl = if (force) NO_CACHE else null).data
-        val topos = dto.topos.mapNotNull(TopoMapper::fromDto)
+        val topos = TopoMapper.order(dto.topos.mapNotNull(TopoMapper::fromDto))
         cache.put(id, topos)
         return topos
     }
