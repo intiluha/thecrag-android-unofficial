@@ -33,9 +33,11 @@ class AppGraph(app: Application) {
         override fun get(key: String) = prefs.getString(key, null)
         override fun put(key: String, value: String) { prefs.edit().putString(key, value).apply() }
     }
-    val cookies = PersistentCookieJar(store)
+    // One jar for browsing and the account: since 2026-11 theCrag answers the node
+    // endpoints only for logged-in sessions, so browsing has to send the login cookie.
+    val cookies = PersistentCookieJar(store, PersistentCookieJar.AUTH_KEY)
     val offline = OfflineStore(File(app.filesDir, "offline"), ApiFactory.json)
-    val okHttp: OkHttpClient = ApiFactory.okHttp(cookies, app.cacheDir, BuildConfig.DEBUG, offline)
+    val okHttp: OkHttpClient = ApiFactory.okHttp(cookies, app.cacheDir, BuildConfig.DEBUG, offline) { auth.account != null }
     val api: TheCragApi = ApiFactory.api(ApiFactory.retrofit(okHttp))
     val nodes = NodeRepository(api)
     val topos = TopoRepository(api)
@@ -44,8 +46,8 @@ class AppGraph(app: Application) {
     // Stage 3: starred areas, pinned in the offline store and served by OfflineInterceptor.
     val favourites = FavouritesRepository(offline, FavouriteDownloader(okHttp, offline, ApiFactory.json))
 
-    // Stage 2: the account. Separate client and cookie jar; browsing above never sees it.
-    val authCookies = PersistentCookieJar(store, PersistentCookieJar.AUTH_KEY)
+    // Stage 2: the account. Separate client (no redirects, no cache) on the same cookie jar.
+    val authCookies = cookies
     val authHttp: OkHttpClient = ApiFactory.authHttp(authCookies, BuildConfig.DEBUG)
     val authApi: AuthApi = ApiFactory.retrofit(authHttp).create(AuthApi::class.java)
     val auth = AuthRepository(authApi, authCookies, store, ApiFactory.json)

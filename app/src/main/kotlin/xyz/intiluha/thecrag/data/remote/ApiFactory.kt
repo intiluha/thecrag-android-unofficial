@@ -27,7 +27,13 @@ object ApiFactory {
      * and cache stamping are network interceptors, so cache hits
      * cost no tokens.
      */
-    fun okHttp(cookies: PersistentCookieJar, cacheDir: File?, debug: Boolean, offline: OfflineStore? = null): OkHttpClient {
+    fun okHttp(
+        cookies: PersistentCookieJar,
+        cacheDir: File?,
+        debug: Boolean,
+        offline: OfflineStore? = null,
+        loggedIn: () -> Boolean = { false },
+    ): OkHttpClient {
         val b = OkHttpClient.Builder()
             .cookieJar(cookies)
             .connectTimeout(20, TimeUnit.SECONDS)
@@ -35,7 +41,7 @@ object ApiFactory {
             .addInterceptor(SessionInterceptor())
         if (offline != null) b.addInterceptor(OfflineInterceptor(offline))
         b.addInterceptor(OfflineFallbackInterceptor())
-            .addInterceptor(SessionRecoveryInterceptor(cookies))
+            .addInterceptor(SessionRecoveryInterceptor(cookies, loggedIn))
             .addNetworkInterceptor(RateLimitInterceptor())
             .addNetworkInterceptor(CacheHeaderInterceptor())
         if (cacheDir != null) b.cache(Cache(File(cacheDir, "http"), 128L * 1024 * 1024))
@@ -54,7 +60,8 @@ object ApiFactory {
 }
 
 /**
- * Client for the logged-in session: its own cookie jar, no redirects (a login
+ * Client for the login form and the logbook: shares the cookie jar with the browse
+ * client (since 2026-11 browsing needs the login too), no redirects (a login
  * success is the 302 itself, the target page is never loaded), no disk cache,
  * same rate limiter. Nothing else ever uses this client.
  */

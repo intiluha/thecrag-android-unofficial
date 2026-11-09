@@ -40,6 +40,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -102,6 +103,9 @@ fun AreaScreen(
     val topos by vm.topos.collectAsState()
     val recents by graph.recents.items.collectAsState()
     val favourites by graph.favourites.favourites.collectAsState()
+    val account by graph.auth.state.collectAsState()
+    // Coming back from a successful login: load what the anonymous attempt could not.
+    LaunchedEffect(account) { if (account != null && state is UiState.Error) vm.reload() }
     val ascents by graph.logbook.ascents.collectAsState()
     val sentIds = remember(ascents) { LogbookRepository.sentRouteIds(ascents) }
     // A view of the list, not a setting: nothing stored, survives rotation only.
@@ -153,7 +157,7 @@ fun AreaScreen(
             )
         },
     ) { padding ->
-        StateBox(state, onRetry = vm::reload) { a ->
+        StateBox(state, onRetry = vm::reload, onLogin = onAccount) { a ->
             AreaBody(
                 a, topos, if (a.id == WORLD_ID) recents else emptyList(), onOpenArea, onOpenRoute,
                 if (ascents.isEmpty()) null else sentIds, unclimbedOnly, { unclimbedOnly = it }, Modifier.padding(padding),

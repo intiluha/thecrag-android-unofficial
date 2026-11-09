@@ -43,12 +43,13 @@ import xyz.intiluha.thecrag.ui.theme.gradeBandColor
 
 sealed interface UiState<out T> {
     data object Loading : UiState<Nothing>
-    data class Error(val message: String) : UiState<Nothing>
+    /** [needsLogin]: theCrag refused for lack of a logged-in session; the screen offers Log in instead of Retry. */
+    data class Error(val message: String, val needsLogin: Boolean = false) : UiState<Nothing>
     data class Ready<T>(val value: T) : UiState<T>
 }
 
 @Composable
-fun <T> StateBox(state: UiState<T>, onRetry: () -> Unit, content: @Composable (T) -> Unit) {
+fun <T> StateBox(state: UiState<T>, onRetry: () -> Unit, onLogin: (() -> Unit)? = null, content: @Composable (T) -> Unit) {
     when (state) {
         UiState.Loading -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { CircularProgressIndicator() }
         is UiState.Error -> Column(
@@ -57,7 +58,12 @@ fun <T> StateBox(state: UiState<T>, onRetry: () -> Unit, content: @Composable (T
             verticalArrangement = Arrangement.Center,
         ) {
             Text(state.message, textAlign = TextAlign.Center, style = MaterialTheme.typography.bodyLarge)
-            Button(onClick = onRetry, modifier = Modifier.padding(top = 16.dp)) { Text(stringResource(R.string.retry)) }
+            if (state.needsLogin && onLogin != null) {
+                Button(onClick = onLogin, modifier = Modifier.padding(top = 16.dp)) { Text(stringResource(R.string.login)) }
+                TextButton(onClick = onRetry) { Text(stringResource(R.string.retry)) }
+            } else {
+                Button(onClick = onRetry, modifier = Modifier.padding(top = 16.dp)) { Text(stringResource(R.string.retry)) }
+            }
         }
         is UiState.Ready -> content(state.value)
     }

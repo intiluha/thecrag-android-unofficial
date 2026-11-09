@@ -49,6 +49,29 @@ class SessionTest {
     }
 
     @Test
+    fun loggedInSessionIsNotReplacedByAnAnonymousOne() = runBlocking {
+        val server = MockWebServer()
+        // The login cookie is there, the API still refuses: no /home fetch, the error comes back as is.
+        server.enqueue(MockResponse().setResponseCode(400).setBody(permissionError))
+        server.start()
+
+        val jar = PersistentCookieJar(InMemoryStore())
+        jar.saveFromResponse(okhttp3.HttpUrl.Builder().scheme("https").host("www.thecrag.com").build(), listOf(okhttp3.Cookie.parse(okhttp3.HttpUrl.Builder().scheme("https").host("www.thecrag.com").build(), "ApacheSessionID=login; Path=/; Max-Age=86400")!!))
+        val client = ApiFactory.okHttp(jar, null, debug = false, loggedIn = { true })
+        val rewriting = client.newBuilder().addInterceptor { chain ->
+            val url = chain.request().url.newBuilder().scheme("http").host(server.hostName).port(server.port).build()
+            chain.proceed(chain.request().newBuilder().url(url).build())
+        }.build()
+        val api = ApiFactory.api(ApiFactory.retrofit(rewriting, server.url("/").toString()))
+
+        val failure = runCatching { api.node(7546063L) }.exceptionOrNull()
+        assertTrue(failure is retrofit2.HttpException && failure.code() == 400)
+        assertEquals(1, server.requestCount)
+        assertTrue(server.takeRequest().path!!.startsWith("/api/node/id/7546063"))
+        server.shutdown()
+    }
+
+    @Test
     fun cookieJarPersistsAcrossInstances() {
         val store = InMemoryStore()
         val url = okhttp3.HttpUrl.Builder().scheme("https").host("www.thecrag.com").build()

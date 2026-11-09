@@ -13,6 +13,7 @@ import xyz.intiluha.thecrag.domain.NodeKind
 import xyz.intiluha.thecrag.domain.Topo
 import xyz.intiluha.thecrag.ui.common.UiState
 import xyz.intiluha.thecrag.ui.common.describe
+import xyz.intiluha.thecrag.ui.common.needsLogin
 
 class AreaViewModel(
     private val repo: NodeRepository,
@@ -35,7 +36,7 @@ class AreaViewModel(
             val area = try {
                 repo.area(id, force)
             } catch (e: Exception) {
-                _state.value = UiState.Error(e.describe()); return@launch
+                _state.value = UiState.Error(e.describe(), e.needsLogin()); return@launch
             }
             _state.value = UiState.Ready(area)
             recents.record(area.id, area.name, NodeKind.AREA, listOfNotNull(area.subType, area.ancestors.lastOrNull()?.name).joinToString(" · "))
@@ -44,7 +45,7 @@ class AreaViewModel(
                 _topos.value = try {
                     UiState.Ready(topoRepo.toposFor(id, force))
                 } catch (e: Exception) {
-                    UiState.Error(e.describe())
+                    UiState.Error(e.describe(), e.needsLogin())
                 }
             } else {
                 _topos.value = UiState.Ready(emptyList())

@@ -58,7 +58,7 @@ class PersistentCookieJar(private val store: KeyValueStore, private val key: Str
 
     companion object {
         const val KEY = "thecrag.cookies"
-        /** The logged-in session lives in its own jar: browsing never sends it. */
+        /** Key of the shared jar. Until 2026-11 the login lived here alone and browsing used [KEY]. */
         const val AUTH_KEY = "thecrag.auth.cookies"
     }
 }

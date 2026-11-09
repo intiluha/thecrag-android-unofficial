@@ -28,7 +28,8 @@ Error bodies name the level an endpoint needs. What grants each level, verified:
 |---|---|---|
 | none | browser-like UA only | `/api/lookup/*`, `/api/config/*` |
 | `thecragreferrer` | header `Referer: https://www.thecrag.com/<anything>` | `/api/map/*` |
-| `anonweb` | Referer **and** the anonymous session cookie `ApacheSessionID` (set by a plain `GET /home`; `userstatus=anon`, `acceptedterms=0` come with it; ~2 year expiry) | `/api/node/id/*`, `/api/node/ids`, `/children/*`, `/api/country/list`, every `show=` option tried |
+| `anonweb` | Referer **and** the anonymous session cookie `ApacheSessionID` (set by a plain `GET /home`; `userstatus=anon`, `acceptedterms=0` come with it; ~2 year expiry) | **Until 2026-11:** `/api/node/id/*`, `/api/node/ids`, `/children/*`, `/api/country/list`, `/api/map/summary/*`, every `show=` option tried. **Since 2026-11-09 (checked):** none of these; they answer `insufficient-api-permissions` (HTTP 400) for anonymous sessions. `/api/lookup/*` and `/api/map/bbox/*` still work. |
+| `authweb` | Referer **and** the `ApacheSessionID` of a logged-in session (website login form); `cookieAuth=1` is not needed for reads | Everything `anonweb` used to unlock, plus `/api/account/id/me`, `/api/climber/id/me/ascents`, ascent create/delete. Checked 2026-11-09 with the throwaway account on every endpoint the app uses. |
 | `node` | not reachable anonymously | `/api/facet/*`, `/api/index/*` (the bulk/offline endpoints) |
 | `endpoint` | not reachable anonymously | `/api/area/id/N/topos`, `/photos`, `/beta` |
 | key / OAuth | partner key | everything, writes |

@@ -1,7 +1,11 @@
 # theCrag Android client: plan
 
-Status (2026-10-25): Stages 1–3 implemented. Stage 1 (browse, routes, search, topos, map) and Stage 2 (login, logbook, ticks) run on a phone; Stage 3 (starred areas kept offline) is unit-tested end to end against a mock server and awaits its first device run. Research is in `research/api.md`; sample
-payloads in `api-samples/`.
+Status (2026-11-09): Stages 1–3 implemented. Since 2026-11 theCrag answers the node endpoints only
+for logged-in sessions, so browsing shares the login cookie jar and the app needs an account for
+anything beyond search and the map overview (see `research/api.md` §2). Stage 1 (browse, routes,
+search, topos, map) and Stage 2 (login, logbook, ticks) run on a phone; Stage 3 (starred areas kept
+offline) is unit-tested end to end against a mock server and awaits its first device run. Research
+is in `research/api.md`; sample payloads in `api-samples/`.
 
 ## 1. Decisions (settled 2026-10-20)
 

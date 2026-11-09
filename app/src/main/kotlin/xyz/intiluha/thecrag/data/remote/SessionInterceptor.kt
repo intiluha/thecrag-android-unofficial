@@ -33,8 +33,17 @@ class SessionInterceptor : Interceptor {
  * and retries the call once. It also bootstraps proactively on the very first
  * API call when no session cookie is stored yet. A failed bootstrap (no network)
  * is ignored so the call itself can still be answered from the cache.
+ *
+ * Since 2026-11 the node endpoints answer anonymous sessions with that same error,
+ * so browsing needs the logged-in session: the browse client shares the cookie
+ * jar with the login client, and while an account is logged in a permission
+ * error is returned as is instead of being "fixed" with an anonymous session.
  */
-class SessionRecoveryInterceptor(private val cookies: PersistentCookieJar) : Interceptor {
+class SessionRecoveryInterceptor(
+    private val cookies: PersistentCookieJar,
+    /** True while an account is logged in: a permission error then means the login expired, and an anonymous session would not help. */
+    private val loggedIn: () -> Boolean = { false },
+) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()
         if (!isApiCall(request)) return chain.proceed(request)
@@ -42,7 +51,7 @@ class SessionRecoveryInterceptor(private val cookies: PersistentCookieJar) : Int
         if (!cookies.hasSession() && !request.cacheControl.onlyIfCached) bootstrap(chain)
 
         val first = chain.proceed(request)
-        if (first.code != 400 || !first.isPermissionError()) return first
+        if (first.code != 400 || loggedIn() || !first.isPermissionError()) return first
         first.close()
         bootstrap(chain)
         return chain.proceed(request)

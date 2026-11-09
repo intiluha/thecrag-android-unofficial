@@ -27,6 +27,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -62,6 +63,7 @@ import xyz.intiluha.thecrag.ui.common.Stars
 import xyz.intiluha.thecrag.ui.common.StateBox
 import xyz.intiluha.thecrag.ui.common.UiState
 import xyz.intiluha.thecrag.ui.common.describe
+import xyz.intiluha.thecrag.ui.common.needsLogin
 import xyz.intiluha.thecrag.ui.topo.TopoView
 
 class RouteViewModel(
@@ -83,7 +85,7 @@ class RouteViewModel(
             val route = try {
                 repo.route(id, force)
             } catch (e: Exception) {
-                state.value = UiState.Error(e.describe()); return@launch
+                state.value = UiState.Error(e.describe(), e.needsLogin()); return@launch
             }
             state.value = UiState.Ready(route)
             recents.record(route.id, route.name, NodeKind.ROUTE, listOfNotNull(route.grade, route.ancestors.lastOrNull()?.name).joinToString(" · "))
@@ -91,7 +93,7 @@ class RouteViewModel(
             topos.value = try {
                 UiState.Ready(topoRepo.toposFor(id, force))
             } catch (e: Exception) {
-                UiState.Error(e.describe())
+                UiState.Error(e.describe(), e.needsLogin())
             }
         }
     }
@@ -107,6 +109,7 @@ fun RouteScreen(routeId: Long, onOpenArea: (Long) -> Unit, onOpenRoute: (Long) -
     val topos by vm.topos.collectAsState()
     val route = (state as? UiState.Ready)?.value
     val account by graph.auth.state.collectAsState()
+    LaunchedEffect(account) { if (account != null && state is UiState.Error) vm.reload() }
     val myAscents by graph.logbook.ascents.collectAsState()
     val pending by graph.logbook.outbox.collectAsState()
     var showTick by remember { mutableStateOf(false) }
@@ -141,7 +144,7 @@ fun RouteScreen(routeId: Long, onOpenArea: (Long) -> Unit, onOpenRoute: (Long) -
                 scope.launch { snackbar.showSnackbar(msg) }
             }
         }
-        StateBox(state, onRetry = vm::reload) { r ->
+        StateBox(state, onRetry = vm::reload, onLogin = onAccount) { r ->
             LazyColumn(Modifier.fillMaxSize().padding(padding)) {
                 item { Breadcrumbs(r.ancestors, onOpenArea) }
                 item {
