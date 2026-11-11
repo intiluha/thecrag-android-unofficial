@@ -96,6 +96,12 @@ version comes from the tag given to `just publish` (`v0.2.0` → `versionName` 0
 so each release is an upgrade; a bare `just release` or debug build is named after `git describe`. There is no CI:
 releases are built locally.
 
+The debug build (`xyz.intiluha.thecrag.dev`, installs beside the release) is signed with the committed
+`debug.p12` (alias `androiddebugkey`, password `android`, nothing secret), so every checkout on every
+machine produces the same dev signature and `just run` can update the dev app wherever it was built.
+If a dev app signed by a per-user `~/.android/debug.keystore` is still installed, `adb install` refuses
+with `INSTALL_FAILED_UPDATE_INCOMPATIBLE`; run `adb uninstall xyz.intiluha.thecrag.dev` once.
+
 Setting up a fresh keystore (once, inside `nix-shell`):
 
 ```sh

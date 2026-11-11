@@ -160,6 +160,7 @@ system images; JDK 17, Gradle, adb, gh, just) is the whole toolchain; there is n
 wrapper. Recipes in the `Justfile` run inside `nix-shell` (`just check`, `just run`,
 `just release`, `just publish <tag>`), the same layout as the owner's other Android apps.
 Release signing: committed `release.p12`, password prompted by `just release`, read by
-Gradle only for release tasks. In the Claude container the shell must be started as
+Gradle only for release tasks. Debug signing: committed `debug.p12` with the conventional
+`android` password, so dev builds from any machine update each other. In the Claude container the shell must be started as
 `env -u LD_LIBRARY_PATH nix-shell --run '…'`. No emulator anywhere: UI verification
 happens on the owner's device.

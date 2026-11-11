@@ -8,6 +8,9 @@ plugins {
 // Release signing. The PKCS12 keystore ./release.p12 is committed (key alias "thecrag"); only its
 // password is secret. `just release` prompts for it and passes it in as KEYSTORE_PASSWORD, which is
 // read only when a release task was requested, so debug builds, tests and `gradle help` never need it.
+// Debug signing. ./debug.p12 is committed too (alias "androiddebugkey", password "android", nothing
+// secret) so every machine signs the .dev build with the same key; with the plugin's default
+// per-user ~/.android/debug.keystore each machine's dev build refuses to install over another's.
 // Version. `just publish vX.Y.Z` passes the tag as -PappVersion and the APK is stamped X.Y.Z with
 // versionCode X*1000000 + Y*10000 + Z, so every release is a real upgrade for Android and for
 // Obtainium, which compares the installed versionName with the release tag. Any other build
@@ -42,6 +45,13 @@ android {
     }
 
     signingConfigs {
+        getByName("debug") {
+            storeFile = rootProject.file("debug.p12")
+            storeType = "PKCS12"
+            keyAlias = "androiddebugkey"
+            storePassword = "android"
+            keyPassword = "android"
+        }
         // Only configured when the keystore is present, so a checkout without it still builds debug.
         if (keystoreFile.exists()) {
             create("release") {
