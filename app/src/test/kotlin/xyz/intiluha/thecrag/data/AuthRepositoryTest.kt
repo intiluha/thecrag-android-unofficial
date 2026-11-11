@@ -4,11 +4,13 @@ import kotlinx.coroutines.runBlocking
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
 import org.junit.Test
 import xyz.intiluha.thecrag.data.auth.AuthApi
+import xyz.intiluha.thecrag.data.auth.Account
 import xyz.intiluha.thecrag.data.auth.AuthRepository
 import xyz.intiluha.thecrag.data.remote.ApiFactory
 import xyz.intiluha.thecrag.data.remote.InMemoryStore
@@ -23,6 +25,26 @@ class AuthRepositoryTest {
         val jar = PersistentCookieJar(store, PersistentCookieJar.AUTH_KEY)
         val api = ApiFactory.retrofit(ApiFactory.authHttp(jar, debug = false), server.url("/").toString()).create(AuthApi::class.java)
         return AuthRepository(api, jar, store, ApiFactory.json, clock = { 42L }) to store
+    }
+
+    @Test
+    fun checkSessionFlagsARejectedLoginAndClearsItAgain() = runBlocking {
+        val server = MockWebServer()
+        server.enqueue(MockResponse().setResponseCode(400).setBody("""{"error":"You have insufficient access","errorLabel":"insufficient-api-permissions"}"""))
+        server.enqueue(MockResponse().setBody("""{"data":{"id":"9001","name":"Tester"}}""").addHeader("Content-Type", "application/json"))
+        server.start()
+        val seeded = InMemoryStore().apply { put(AuthRepository.KEY, ApiFactory.json.encodeToString(Account.serializer(), Account(9001, "Tester", 1))) }
+        val (auth, _) = repo(server, seeded)
+        assertEquals(9001L, auth.account?.id)
+        assertFalse(auth.sessionExpired.value)
+        // theCrag no longer accepts the cookie: flagged, account record kept.
+        assertFalse(auth.checkSession())
+        assertTrue(auth.sessionExpired.value)
+        assertEquals(9001L, auth.account?.id)
+        // Accepted again (after a login elsewhere in the app): flag cleared.
+        assertTrue(auth.checkSession())
+        assertFalse(auth.sessionExpired.value)
+        server.shutdown()
     }
 
     @Test

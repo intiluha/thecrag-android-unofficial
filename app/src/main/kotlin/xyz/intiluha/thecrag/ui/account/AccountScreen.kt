@@ -24,6 +24,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -44,6 +45,7 @@ import xyz.intiluha.thecrag.R
 import xyz.intiluha.thecrag.TheCragApp
 import xyz.intiluha.thecrag.data.auth.AuthRepository
 import xyz.intiluha.thecrag.data.logbook.LogbookRepository
+import xyz.intiluha.thecrag.data.remote.SessionRecoveryInterceptor
 import xyz.intiluha.thecrag.ui.common.SectionHeader
 import xyz.intiluha.thecrag.ui.common.describe
 import xyz.intiluha.thecrag.ui.common.needsLogin
@@ -53,6 +55,9 @@ import java.util.Date
 class AccountViewModel(private val auth: AuthRepository, private val logbook: LogbookRepository) : ViewModel() {
     val busy = MutableStateFlow(false)
     val message = MutableStateFlow<String?>(null)
+
+    // The page claims "logged in" from a stored record; make sure theCrag still agrees.
+    init { viewModelScope.launch { auth.checkSession() } }
 
     private fun run(block: suspend () -> String) {
         viewModelScope.launch {
@@ -98,6 +103,8 @@ fun AccountScreen(onBack: () -> Unit, onLogbook: () -> Unit) {
     val message by vm.message.collectAsState()
     var user by rememberSaveable { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    // Prefill the login name once when the session turns out to be expired; typing over it must stick.
+    LaunchedEffect(expired) { if (expired && user.isBlank()) account?.login?.let { user = it } }
 
     Scaffold(
         topBar = {
@@ -118,7 +125,6 @@ fun AccountScreen(onBack: () -> Unit, onLogbook: () -> Unit) {
                     color = MaterialTheme.colorScheme.error,
                     style = MaterialTheme.typography.bodyMedium,
                 )
-                if (user.isBlank()) user = a.name
             }
             if (a == null || expired) {
                 Column(Modifier.padding(horizontal = 16.dp)) {
@@ -138,6 +144,17 @@ fun AccountScreen(onBack: () -> Unit, onLogbook: () -> Unit) {
                 Column(Modifier.padding(horizontal = 16.dp)) {
                     Text("Logged in as ${a.name}", style = MaterialTheme.typography.titleMedium)
                     Text("Account id ${a.id}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.outline)
+                    // Diagnostics for session loss: which cookie we hold and whether the app replaced it by an anonymous one.
+                    val session = graph.cookies.session()
+                    val sessionLine = if (session == null) "No session cookie stored" else {
+                        val tail = session.value.takeLast(6)
+                        val until = if (session.persistent) DateFormat.getDateInstance(DateFormat.SHORT).format(Date(session.expiresAt)) else "end of session"
+                        "Session cookie …$tail, valid until $until"
+                    }
+                    Text(
+                        "$sessionLine · anonymous sessions fetched since launch: ${SessionRecoveryInterceptor.bootstraps.get()}",
+                        style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.outline,
+                    )
                 }
                 SectionHeader(stringResource(R.string.logbook))
                 Column(Modifier.padding(16.dp)) {

@@ -45,6 +45,10 @@ class PersistentCookieJar(private val store: KeyValueStore, private val key: Str
         return cache.values.filter { it.expiresAt > now }
     }
 
+    /** The `ApacheSessionID` cookie as stored, live or not; for the Account page diagnostics. */
+    @Synchronized
+    fun session(): Cookie? = cache["ApacheSessionID"]
+
     @Synchronized
     fun hasSession(): Boolean =
         cache["ApacheSessionID"]?.let { it.expiresAt > System.currentTimeMillis() } == true

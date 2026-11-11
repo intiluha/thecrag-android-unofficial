@@ -37,7 +37,7 @@
     <string name="pending">pending</string>
     <string name="refresh_logbook">Refresh logbook</string>
     <string name="retry_outbox">Retry pending</string>
-    <string name="account_blurb">Your theCrag account is used only to log in, read your own logbook and send ticks. Browsing stays anonymous and never carries your session. The password is not stored.</string>
+    <string name="account_blurb">Since November 2026 theCrag answers its guide only to logged-in accounts, so the app browses with your session as well as reading your logbook and sending ticks. Only the login cookie is kept on this device; the password is not stored.</string>
     <string name="not_logged_in">Not logged in.</string>
     <string name="delete_ascent">Delete this ascent on theCrag?</string>
     <string name="delete">Delete</string>

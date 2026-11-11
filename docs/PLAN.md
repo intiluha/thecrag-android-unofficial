@@ -20,10 +20,10 @@ is in `research/api.md`; sample payloads in `api-samples/`.
 
 ## 2. Data strategy (the core constraint)
 
-- **Primary source: the website's own JSON endpoints at anonweb level.** Every API
-  call carries a realistic `User-Agent`, `Referer: https://www.thecrag.com/`, and the
-  anonymous `ApacheSessionID` cookie obtained by one `GET /home` on first run
-  (persisted; refreshed on any `insufficient-api-permissions` error).
+- **Primary source: the website's own JSON endpoints.** Every API call carries a realistic
+  `User-Agent` and `Referer: https://www.thecrag.com/`. Until 2026-11 the anonymous
+  `ApacheSessionID` from one `GET /home` was enough (anonweb level); since then the node
+  endpoints answer only logged-in sessions, so browsing sends the login cookie (see Stage 2).
 - **Topos** come entirely from `show=topo`: image hash, route lines (`objects[].points`)
   and area outlines (`objects[].shape`). Coordinates are in the original image fitted
   into 550x550 (see research). No HTML page loads: those are throttled per IP after a
@@ -90,9 +90,11 @@ OkHttp 4, kotlinx.serialization, Room 2.7, Coil 3, MapLibre Native Android
 - Login is driven natively: GET the cids.cgi form (session cookie + CSRF), POST the
   credentials, 302 = success, then one `GET /api/account/id/me?cookieAuth=1` for the id.
   No WebView, the login target page is never loaded, the password is never stored.
-- The logged-in session lives in its own OkHttp client and cookie jar (no redirects, no
-  cache). Only login, `me`, the own ascents list and ascent create/validate use it; all
-  browsing stays on the anonymous session, so the account is disclosed as little as possible.
+- The login client (no redirects, no cache) shares one cookie jar with the browse client:
+  since 2026-11 theCrag answers the guide only to logged-in sessions, so browsing has to
+  carry the login cookie too. Until then browsing stayed anonymous on purpose. A permission
+  error while logged in marks the session expired; the Account page verifies the session
+  when opened and offers the login form again.
 - Everything needed is at the `authweb` access level (session cookie + `cookieAuth=1`),
   and the live replies are saved as `api-samples/account_me*.json` and `ascent_*_reply.json`;
   the ascent parser still reads fields defensively with fallbacks.

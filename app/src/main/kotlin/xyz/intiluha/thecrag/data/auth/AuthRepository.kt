@@ -4,13 +4,21 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
+import retrofit2.HttpException
 import xyz.intiluha.thecrag.data.remote.KeyValueStore
 import xyz.intiluha.thecrag.data.remote.PersistentCookieJar
 import xyz.intiluha.thecrag.data.remote.dto.long
 import xyz.intiluha.thecrag.data.remote.dto.string
 
 @Serializable
-data class Account(val id: Long, val name: String, val loggedInAt: Long)
+data class Account(
+    val id: Long,
+    /** Display name as theCrag shows it (`name` in the account reply), not what one logs in with. */
+    val name: String,
+    val loggedInAt: Long,
+    /** What the user typed to log in; used to prefill the form when the session expires. Absent on records from older builds. */
+    val login: String? = null,
+)
 
 /**
  * Website login driven natively: GET the form (session cookie + CSRF), POST the
@@ -63,11 +71,30 @@ class AuthRepository(
         val id = me.long("id") ?: me.long("accountID")
             ?: throw LoginFailed("Logged in, but theCrag's account reply has no id: ${me.keys.joinToString()}")
         val name = me.string("name") ?: me.string("label") ?: me.string("login") ?: username
-        val account = Account(id, name, clock())
+        val account = Account(id, name, clock(), login = username.trim())
         store.put(KEY, json.encodeToString(Account.serializer(), account))
         _state.value = account
         sessionExpired.value = false
         return account
+    }
+
+    /**
+     * Asks theCrag whether the stored session is still accepted and updates [sessionExpired].
+     * Returns true when it is; a network failure leaves the flag as it was and returns its inverse.
+     */
+    suspend fun checkSession(): Boolean {
+        if (account == null) return false
+        return try {
+            api.me()
+            sessionExpired.value = false
+            true
+        } catch (e: HttpException) {
+            val body = runCatching { e.response()?.errorBody()?.source()?.peek()?.readUtf8() }.getOrNull().orEmpty()
+            if (body.contains("insufficient-api-permissions") || body.contains("authweb")) markExpired()
+            !sessionExpired.value
+        } catch (e: Exception) {
+            !sessionExpired.value
+        }
     }
 
     fun logout() {

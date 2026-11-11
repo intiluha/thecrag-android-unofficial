@@ -140,6 +140,14 @@ Not available anonymously: `/api/index/summary|detail` (bulk sync), `/api/facet/
   with `ok{ascentID, eventStats, isFirstAscent}`; `POST /api/ascent/delete` wants
   `{"data":{"ascent":id}}` (`{"id":…}` -> 400 `ascentError: mandatory field`) and answers
   202 `ok{}`. Rejections are HTTP 400 with `error{field: reason}`.
+- **Session lifetime (measured 2026-11-10, throwaway account, curl):** the login cookie
+  carries a ~2-year expiry and theCrag honours it. Three sessions probed every 10 min for
+  6 h never failed; sessions left completely idle were still accepted after 1, 2, 4, 6, 8
+  and 16 h, with and without the `userstatus=user`/`acceptedterms`/`NavCtx` cookies the
+  post-login redirect sets in a browser. Several sessions of one account coexist; the
+  anonymous helper cookies and a plain `GET /home` do not disturb a logged-in session; API
+  responses never set cookies; the login form has no remember-me field. So a session that
+  dies on a phone within a day was not expired by the server for idleness.
 - OAuth 1.0a: `/oauth/request_token` → `/oauth/authorize?oauth_token=` → `/oauth/access_token`; consumer key needs the partner agreement. A FOSS app cannot keep a consumer secret private anyway.
 
 ## 6. Terms and licensing summary

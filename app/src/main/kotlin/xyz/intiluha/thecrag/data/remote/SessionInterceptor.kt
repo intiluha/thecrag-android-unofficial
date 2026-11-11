@@ -66,12 +66,18 @@ class SessionRecoveryInterceptor(
     private fun isApiCall(r: Request) = r.url.encodedPath.startsWith("/api/")
 
     private fun bootstrap(chain: Interceptor.Chain) {
+        bootstraps.incrementAndGet()
         val home = Request.Builder().url(THECRAG_BASE + "home").get().build()
         try {
             chain.proceed(home).use { }
         } catch (e: IOException) {
             // Offline: let the real request fall through to the cache.
         }
+    }
+
+    companion object {
+        /** Anonymous `/home` fetches since process start; shown on the Account page to tell a self-inflicted logout from a server-side one. */
+        val bootstraps = java.util.concurrent.atomic.AtomicInteger(0)
     }
 
     private fun Response.isPermissionError(): Boolean {
