@@ -94,7 +94,9 @@ OkHttp 4, kotlinx.serialization, Room 2.7, Coil 3, MapLibre Native Android
   since 2026-11 theCrag answers the guide only to logged-in sessions, so browsing has to
   carry the login cookie too. Until then browsing stayed anonymous on purpose. A permission
   error while logged in marks the session expired; the Account page verifies the session
-  when opened and offers the login form again.
+  when opened and offers the login form again. Every `/api/` call carries `cookieAuth=1`
+  (2026-11-12): a day-old session was refused by the guide endpoints without it while
+  the account endpoint, which always had it, still accepted the same cookie.
 - Everything needed is at the `authweb` access level (session cookie + `cookieAuth=1`),
   and the live replies are saved as `api-samples/account_me*.json` and `ascent_*_reply.json`;
   the ascent parser still reads fields defensively with fallbacks.

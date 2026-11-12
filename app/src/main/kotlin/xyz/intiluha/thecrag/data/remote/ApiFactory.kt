@@ -23,7 +23,8 @@ object ApiFactory {
     /**
      * Interceptor order matters: headers first, then the offline fallback wraps
      * the session recovery so a failed bootstrap still ends in a cache lookup.
-     * The pinned store of starred areas answers before any of that. Rate limiting
+     * The pinned store of starred areas answers before any of that, keyed by the plain
+     * URL, so `cookieAuth=1` is appended only after it. Rate limiting
      * and cache stamping are network interceptors, so cache hits
      * cost no tokens.
      */
@@ -43,6 +44,7 @@ object ApiFactory {
         if (offline != null) b.addInterceptor(OfflineInterceptor(offline))
         b.addInterceptor(OfflineFallbackInterceptor())
             .addInterceptor(SessionRecoveryInterceptor(cookies, loggedIn, onExpired))
+            .addInterceptor(CookieAuthInterceptor())
             .addNetworkInterceptor(RateLimitInterceptor())
             .addNetworkInterceptor(CacheHeaderInterceptor())
         if (cacheDir != null) b.cache(Cache(File(cacheDir, "http"), 128L * 1024 * 1024))

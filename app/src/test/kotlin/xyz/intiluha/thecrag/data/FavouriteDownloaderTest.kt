@@ -43,7 +43,9 @@ class FavouriteDownloaderTest {
     private val dispatcher = object : Dispatcher() {
         override fun dispatch(request: RecordedRequest): MockResponse {
             val json = MockResponse().addHeader("Content-Type", "application/json")
-            return when (request.path) {
+            // The client appends cookieAuth=1 to every /api/ call; match on the path without it.
+            val path = request.path?.replace(Regex("""[?&]cookieAuth=1$"""), "")
+            return when (path) {
                 "/api/node/ids?id=100&show=ancestors,info,location,topo" -> json.setBody("""{"data":[${area(100, "Crag", "Crag", 1, 3, topo(1, h1))}]}""")
                 "/api/node/id/100/children/area" -> json.setBody("""{"data":[${area(200, "Sector", "Sector", 0, 2)}]}""")
                 "/api/node/id/100/children/route" -> json.setBody("""{"data":[${route(1)}]}""")
