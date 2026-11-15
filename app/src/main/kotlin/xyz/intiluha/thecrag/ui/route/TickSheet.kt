@@ -8,17 +8,25 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material3.Button
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -39,7 +47,9 @@ import xyz.intiluha.thecrag.data.logbook.TickTypes
 import xyz.intiluha.thecrag.domain.RouteDetail
 import xyz.intiluha.thecrag.ui.common.describe
 import java.io.IOException
+import java.time.Instant
 import java.time.LocalDate
+import java.time.ZoneOffset
 
 private val DATE = Regex("""\d{4}-\d{2}-\d{2}""")
 
@@ -56,6 +66,7 @@ fun TickSheet(route: RouteDetail, logbook: LogbookRepository, onDismiss: () -> U
     var comment by remember { mutableStateOf("") }
     var attempts by remember { mutableStateOf("") }
     var proposedGrade by remember { mutableStateOf("") }
+    var showPicker by remember { mutableStateOf(false) }
     var busy by remember { mutableStateOf(false) }
     var message by remember { mutableStateOf<String?>(null) }
     val attemptsOk = attempts.isBlank() || (attempts.toIntOrNull() ?: 0) > 0
@@ -83,8 +94,25 @@ fun TickSheet(route: RouteDetail, logbook: LogbookRepository, onDismiss: () -> U
         }
     }
 
+    if (showPicker) {
+        // The picker works in UTC midnights; the typed date (or today) seeds it, the pick comes back as YYYY-MM-DD.
+        val seed = runCatching { LocalDate.parse(date) }.getOrElse { LocalDate.now() }
+        val state = rememberDatePickerState(initialSelectedDateMillis = seed.atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli())
+        DatePickerDialog(
+            onDismissRequest = { showPicker = false },
+            confirmButton = {
+                TextButton(onClick = {
+                    state.selectedDateMillis?.let { date = Instant.ofEpochMilli(it).atZone(ZoneOffset.UTC).toLocalDate().toString() }
+                    showPicker = false
+                }) { Text(stringResource(R.string.ok)) }
+            },
+            dismissButton = { TextButton(onClick = { showPicker = false }) { Text(stringResource(R.string.cancel)) } },
+        ) { DatePicker(state) }
+    }
+
     ModalBottomSheet(onDismissRequest = onDismiss) {
-        Column(Modifier.padding(horizontal = 16.dp).verticalScroll(rememberScrollState())) {
+        // imePadding: the sheet has its own window, so without it the keyboard covers the lower fields.
+        Column(Modifier.imePadding().padding(horizontal = 16.dp).verticalScroll(rememberScrollState())) {
             Text(route.name, style = MaterialTheme.typography.titleLarge)
             route.grade?.let { Text(it, style = MaterialTheme.typography.bodyMedium) }
             Text("Gear style", Modifier.padding(top = 12.dp), style = MaterialTheme.typography.labelMedium)
@@ -97,6 +125,7 @@ fun TickSheet(route: RouteDetail, logbook: LogbookRepository, onDismiss: () -> U
             }
             OutlinedTextField(
                 date, { date = it }, label = { Text("Date (YYYY-MM-DD)") }, singleLine = true, isError = !valid,
+                trailingIcon = { IconButton(onClick = { showPicker = true }) { Icon(Icons.Default.CalendarMonth, stringResource(R.string.pick_date)) } },
                 modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
             )
             Row(Modifier.fillMaxWidth().padding(top = 8.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
