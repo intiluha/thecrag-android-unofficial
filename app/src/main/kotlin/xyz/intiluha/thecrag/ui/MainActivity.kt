@@ -83,7 +83,10 @@ private fun NavGraph() {
                 routeId = id,
                 onOpenArea = { nav.navigate("area/$it") },
                 onOpenRoute = { nav.navigate("route/$it") },
+                onFavourites = { nav.navigate("favourites") },
+                onLogbook = { nav.navigate("logbook") },
                 onAccount = { nav.navigate("account") },
+                onAbout = { nav.navigate("about") },
                 onBack = { nav.popBackStack() },
             )
         }

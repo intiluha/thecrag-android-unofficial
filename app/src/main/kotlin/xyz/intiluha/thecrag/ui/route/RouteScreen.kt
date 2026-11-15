@@ -103,7 +103,10 @@ class RouteViewModel(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RouteScreen(routeId: Long, onOpenArea: (Long) -> Unit, onOpenRoute: (Long) -> Unit, onAccount: () -> Unit, onBack: () -> Unit) {
+fun RouteScreen(
+    routeId: Long, onOpenArea: (Long) -> Unit, onOpenRoute: (Long) -> Unit,
+    onFavourites: () -> Unit, onLogbook: () -> Unit, onAccount: () -> Unit, onAbout: () -> Unit, onBack: () -> Unit,
+) {
     val context = LocalContext.current
     val graph = TheCragApp.graph(context)
     val vm: RouteViewModel = viewModel(key = "route/$routeId") { RouteViewModel(graph.nodes, graph.topos, graph.recents, routeId) }
@@ -127,7 +130,13 @@ fun RouteScreen(routeId: Long, onOpenArea: (Long) -> Unit, onOpenRoute: (Long) -
                     if (route != null) IconButton(onClick = {
                         context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(route.webUrl)))
                     }) { Icon(Icons.AutoMirrored.Filled.OpenInNew, stringResource(R.string.open_on_thecrag)) }
-                    OverflowMenu(stringResource(R.string.refresh) to vm::reload)
+                    OverflowMenu(
+                        stringResource(R.string.refresh) to vm::reload,
+                        stringResource(R.string.offline) to onFavourites,
+                        stringResource(R.string.logbook) to onLogbook,
+                        stringResource(R.string.account) to onAccount,
+                        stringResource(R.string.about) to onAbout,
+                    )
                 },
             )
         },

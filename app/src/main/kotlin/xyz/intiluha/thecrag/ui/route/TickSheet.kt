@@ -27,6 +27,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -110,7 +111,9 @@ fun TickSheet(route: RouteDetail, logbook: LogbookRepository, onDismiss: () -> U
         ) { DatePicker(state) }
     }
 
-    ModalBottomSheet(onDismissRequest = onDismiss) {
+    // Fully expanded from the start: half-open, the sheet stays put when the keyboard appears and covers the
+    // fields in its top half (the date field), while imePadding only helps once the sheet is at full height.
+    ModalBottomSheet(onDismissRequest = onDismiss, sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
         // imePadding: the sheet has its own window, so without it the keyboard covers the lower fields.
         Column(Modifier.imePadding().padding(horizontal = 16.dp).verticalScroll(rememberScrollState())) {
             Text(route.name, style = MaterialTheme.typography.titleLarge)
