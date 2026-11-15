@@ -26,6 +26,8 @@ data class Ascent(
     val date: String?,
     val comment: String?,
     val cragName: String?,
+    /** `numberAttempts`: tries in the session, when recorded. */
+    val attempts: Int? = null,
 )
 
 /** A tick to send; kept in the outbox while the network is down. */
@@ -42,6 +44,13 @@ data class TickRequest(
     val cragName: String?,
     val createdAt: Long,
     val error: String? = null,
+    /** Optional `numberAttempts`. */
+    val attempts: Int? = null,
+    /** Grade the climber proposes, as typed; resolved to `gradeSystem` + `grade` through theCrag's parser when sent. */
+    val proposedGrade: String? = null,
+    /** The route's grade context (`AU`, `FR`, …) and style (`Free`, `Boulder`), which disambiguate the typed grade. */
+    val gradeContext: String? = null,
+    val gradeStyle: String? = null,
 )
 
 /**
@@ -86,6 +95,7 @@ object AscentParser {
             date = date?.take(10),
             comment = o.string("markdown") ?: o.string("comment"),
             cragName = crag,
+            attempts = o.int("numberAttempts"),
         )
     }
 }

@@ -37,6 +37,8 @@ data class NodeDto(
     val grade: String? = null,
     val gradeInContext: String? = null,
     val context: String? = null,
+    /** `Free`, `Boulder`, `Aid`…: the grade type, which theCrag's grade parser takes as `style`. */
+    val gradeStyle: String? = null,
     @Serializable(with = LenientIntOrNull::class) val gradeBand: Int? = null,
     val style: String? = null,
     val styleStub: String? = null,

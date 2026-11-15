@@ -67,6 +67,8 @@ data class RouteDetail(
     val ancestors: List<Crumb>,
     val grade: String?,
     val gradeContext: String?,
+    /** `Free`, `Boulder`, …; with [gradeContext] it tells theCrag's parser how to read a typed grade. */
+    val gradeStyle: String?,
     val gradeBand: Int,
     val style: String?,
     /** Lower-case gear style as the API names it (`sport`, `trad`, `boulder`); the default `climbedGearStyle` of a tick. */

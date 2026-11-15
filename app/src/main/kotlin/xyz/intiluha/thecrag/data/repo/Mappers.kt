@@ -75,6 +75,7 @@ fun NodeDto.toRouteDetail() = RouteDetail(
     ancestors = crumbs(),
     grade = gradeInContext ?: grade,
     gradeContext = context,
+    gradeStyle = gradeStyle,
     gradeBand = gradeBand ?: 0,
     style = style,
     styleStub = styleStub,

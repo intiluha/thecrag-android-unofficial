@@ -47,6 +47,7 @@ class DtoParsingTest {
         assertEquals("Have A Good Flight", r.name)
         assertEquals("25", r.grade)
         assertEquals("AU", r.gradeContext)
+        assertEquals("Free", r.gradeStyle)
         assertEquals(3, r.stars)
         assertEquals("Sport", r.style)
         assertEquals(18.0, r.height!!.value, 0.0)

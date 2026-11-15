@@ -6,11 +6,13 @@ import kotlinx.serialization.KSerializer
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.put
 import xyz.intiluha.thecrag.data.auth.AuthApi
 import xyz.intiluha.thecrag.data.auth.AuthRepository
+import xyz.intiluha.thecrag.data.remote.dto.int
 import xyz.intiluha.thecrag.data.remote.dto.long
 import xyz.intiluha.thecrag.data.remote.dto.obj
 import xyz.intiluha.thecrag.data.remote.dto.string
@@ -132,8 +134,9 @@ class LogbookRepository(
         return "Logged as ascent $id"
     }
 
-    private fun body(req: TickRequest): JsonObject {
+    private suspend fun body(req: TickRequest): JsonObject {
         val account = auth.account ?: throw IllegalStateException("Not logged in")
+        val grade = req.proposedGrade?.trim()?.takeIf { it.isNotEmpty() }?.let { resolveGrade(it, req.gradeContext, req.gradeStyle) }
         return buildJsonObject {
             put("data", buildJsonObject {
                 put("account", account.id)
@@ -143,14 +146,58 @@ class LogbookRepository(
                 put("tick", req.tick)
                 put("date", req.date)
                 if (req.comment.isNotBlank()) put("comment", req.comment)
+                req.attempts?.let { put("numberAttempts", it) }
+                grade?.let { parts ->
+                    put("gradeSystem", parts[0].first)
+                    put("grade", parts[0].second)
+                    parts.getOrNull(1)?.let { (system, text) ->
+                        put("altGradeSystem", system)
+                        put("altGrade", text)
+                    }
+                }
             })
         }
     }
 
-    /** validate answers 202 with the data echoed back (no "ok"); rejections are HTTP 400 and never reach here. */
+    /**
+     * Asks theCrag's grade parser what [text] means in the route's grade [context]
+     * (`AU`, `FR`, …) and [style] (`Free`, `Boulder`). It answers one component per
+     * part of the grade (`E1 5b` is two) with the system each belongs to; create
+     * wants the pair `gradeSystem`/`grade` and takes a second part as
+     * `altGradeSystem`/`altGrade`. Returns (system, grade) pairs in sequence order.
+     */
+    private suspend fun resolveGrade(text: String, context: String?, style: String?): List<Pair<String, String>> {
+        val reply = api.parseGrade(buildJsonObject {
+            put("data", buildJsonObject {
+                put("text", text)
+                context?.let { put("context", it) }
+                style?.let { put("style", it) }
+            })
+        })
+        val parts = reply.obj("data")?.obj("components")?.values
+            ?.mapNotNull { it as? JsonObject }
+            ?.sortedBy { it.int("sequence") ?: Int.MAX_VALUE }
+            ?.mapNotNull { c -> c.string("systemLabel")?.let { system -> (c.string("grade") ?: c.string("display"))?.let { system to it } } }
+            .orEmpty()
+        if (parts.isEmpty()) throw GradeNotRecognised(text, context)
+        return parts
+    }
+
+    /** The proposed grade meant nothing to theCrag's parser; a rejection, not a network failure, so the tick is not parked. */
+    class GradeNotRecognised(text: String, context: String?) : IllegalArgumentException(
+        "theCrag does not recognise \"$text\" as a grade" + (context?.let { " in the $it grading context" } ?: "") + ".",
+    )
+
+    /**
+     * validate answers 202 with the data echoed back (no "ok") and, for a field
+     * it dislikes, an `error` object such as `{"gradeError":"invalid grade"}`
+     * alongside; HTTP 400 rejections never reach here.
+     */
     private fun summarize(res: JsonObject): String = when {
+        res.containsKey("error") -> "Rejected: " + (res.obj("error")?.entries?.joinToString("; ") { (field, reason) ->
+            "${field.removeSuffix("Error")}: ${(reason as? JsonPrimitive)?.content ?: reason}"
+        } ?: res.string("error"))
         res.containsKey("ok") || res.containsKey("data") -> "theCrag would accept this tick."
-        res.containsKey("error") -> "Rejected: ${res.string("error")}"
         else -> res.toString().take(300)
     }
 

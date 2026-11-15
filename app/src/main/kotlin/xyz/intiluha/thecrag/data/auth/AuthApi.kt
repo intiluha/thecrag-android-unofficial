@@ -48,4 +48,12 @@ interface AuthApi {
     /** Same checks as create without writing anything: the "dry run". Answers 202 with the data echoed. */
     @POST("api/ascent/create/validate?cookieAuth=1")
     suspend fun validateAscent(@Body body: JsonObject): JsonObject
+
+    /**
+     * theCrag's grade parser, used by the website's grade inputs. `{"data":{"text","context","style"}}`
+     * answers `data{components{<part>{systemLabel, grade, sequence}}, grade, gradeInContext, systemText}`;
+     * an unknown grade has empty `components`. Needs the logged-in session.
+     */
+    @POST("api/grade?cookieAuth=1")
+    suspend fun parseGrade(@Body body: JsonObject): JsonObject
 }

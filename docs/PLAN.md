@@ -95,8 +95,13 @@ OkHttp 4, kotlinx.serialization, Room 2.7, Coil 3, MapLibre Native Android
   carry the login cookie too. Until then browsing stayed anonymous on purpose. A permission
   error while logged in marks the session expired; the Account page verifies the session
   when opened and offers the login form again. Every `/api/` call carries `cookieAuth=1`
-  (2026-11-12): a day-old session was refused by the guide endpoints without it while
-  the account endpoint, which always had it, still accepted the same cookie.
+  (2026-11-12): without it the guide endpoints accept the cookie only for a short while
+  after a page view, which a browser renews on every page and the app never does.
+- A tick may carry `numberAttempts` and a proposed grade. The grade is typed as on the
+  website; theCrag's own parser (`POST /api/grade`) reads it in the route's grade context
+  and style and the create call sends the resulting `gradeSystem`/`grade` pair, so the app
+  never needs a grade-system table. "Climbed with" is not offered: the JSON create API
+  drops partners (verified 2026-11-15); only the website's form sets them.
 - Everything needed is at the `authweb` access level (session cookie + `cookieAuth=1`),
   and the live replies are saved as `api-samples/account_me*.json` and `ascent_*_reply.json`;
   the ascent parser still reads fields defensively with fallbacks.

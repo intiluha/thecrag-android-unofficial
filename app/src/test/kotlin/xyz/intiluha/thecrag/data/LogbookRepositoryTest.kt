@@ -147,6 +147,79 @@ class LogbookRepositoryTest {
         assertNotNull(b.date)
         assertEquals("2026-10-20", b.date)
     }
+
+    private fun sample(name: String) =
+        listOf(File("../docs/api-samples/$name"), File("docs/api-samples/$name")).first { it.exists() }.readText()
+
+    @Test
+    fun attemptsAndProposedGradeGoThroughTheGradeParser() = runBlocking {
+        val server = MockWebServer().apply {
+            enqueue(ok(sample("grade_parse_reply.json")))
+            enqueue(ok("""{"ok":{"ascentID":"779"}}"""))
+            start()
+        }
+        val repo = repo(server, Files.createTempDirectory("logbook").toFile())
+        repo.tick(req.copy(attempts = 3, proposedGrade = " 23 ", gradeContext = "AU", gradeStyle = "Free"))
+        val parse = server.takeRequest()
+        assertEquals("/api/grade?cookieAuth=1", parse.path)
+        val asked = json.parseToJsonElement(parse.body.readUtf8()).jsonObject["data"]!!.jsonObject
+        assertEquals("23", asked["text"]!!.jsonPrimitive.content)
+        assertEquals("AU", asked["context"]!!.jsonPrimitive.content)
+        assertEquals("Free", asked["style"]!!.jsonPrimitive.content)
+        val data = json.parseToJsonElement(server.takeRequest().body.readUtf8()).jsonObject["data"]!!.jsonObject
+        assertEquals("3", data["numberAttempts"]!!.jsonPrimitive.content)
+        assertEquals("AU", data["gradeSystem"]!!.jsonPrimitive.content)
+        assertEquals("23", data["grade"]!!.jsonPrimitive.content)
+        assertEquals(null, data["altGrade"])
+        server.shutdown()
+    }
+
+    @Test
+    fun plainTickSendsNeitherAttemptsNorGrade() = runBlocking {
+        val server = MockWebServer().apply { enqueue(ok("""{"ok":{"ascentID":"780"}}""")); start() }
+        repo(server, Files.createTempDirectory("logbook").toFile()).tick(req)
+        val data = json.parseToJsonElement(server.takeRequest().body.readUtf8()).jsonObject["data"]!!.jsonObject
+        assertEquals(1, server.requestCount)
+        assertTrue(data["numberAttempts"] == null && data["grade"] == null && data["gradeSystem"] == null)
+        server.shutdown()
+    }
+
+    @Test
+    fun unknownGradeIsRejectedBeforeAnythingIsSent() = runBlocking {
+        val server = MockWebServer().apply {
+            enqueue(ok("""{"data":{"components":{},"context":"AU","grade":"zz","input":"zz","score":null}}"""))
+            start()
+        }
+        val repo = repo(server, Files.createTempDirectory("logbook").toFile())
+        try {
+            repo.tick(req.copy(proposedGrade = "zz", gradeContext = "AU"))
+            fail("expected a rejection")
+        } catch (e: LogbookRepository.GradeNotRecognised) {
+            assertTrue(e.message!!, e.message!!.contains("zz") && e.message!!.contains("AU"))
+        }
+        assertEquals(1, server.requestCount)
+        assertTrue(repo.outbox.value.isEmpty())
+        server.shutdown()
+    }
+
+    @Test
+    fun dryRunReportsTheServersFieldErrors() = runBlocking {
+        val server = MockWebServer().apply {
+            enqueue(MockResponse().setResponseCode(202).setBody("""{"data":{"grade":"zz","gradeSystem":"FR"},"error":{"gradeError":"invalid grade"}}""").addHeader("Content-Type", "application/json"))
+            start()
+        }
+        val msg = repo(server, Files.createTempDirectory("logbook").toFile()).tick(req, dryRun = true)
+        assertTrue(msg, msg.startsWith("Rejected") && msg.contains("grade: invalid grade"))
+        server.shutdown()
+    }
+
+    @Test
+    fun ascentReadBackCarriesAttemptsAndProposedGrade() {
+        val a = AscentParser.parse(json.parseToJsonElement(sample("ascent_id_reply.json")).jsonObject["data"]!!.jsonObject)!!
+        assertEquals(3, a.attempts)
+        assertEquals("7a", a.grade)
+        assertEquals("redpoint", a.tick)
+    }
 }
 
 class LogbookLiveShapesTest {

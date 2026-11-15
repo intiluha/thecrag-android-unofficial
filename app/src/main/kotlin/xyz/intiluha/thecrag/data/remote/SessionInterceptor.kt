@@ -88,13 +88,15 @@ class SessionRecoveryInterceptor(
 
 /**
  * Appends `cookieAuth=1` to every `/api/` call, as the website's own JavaScript
- * does: it tells theCrag to authenticate the call from the session cookie. On
- * 2026-11-12 a day-old login cookie was still accepted by
- * `/api/account/id/me?cookieAuth=1` while the guide endpoints, called without
- * the parameter, answered `insufficient-api-permissions`, so the parameter now
- * goes on all API calls. The open endpoints and anonymous sessions accept it
- * unchanged. Sits after the pinned store and the session recovery so pins keep
- * their plain URLs; only the HTTP cache is keyed with it.
+ * does: it tells theCrag to authenticate the call from the session cookie.
+ * Without it the guide endpoints accept a logged-in cookie only for a short
+ * while after a page view (under 30 minutes after login, measured 2026-11-12),
+ * then answer `insufficient-api-permissions` until the next page load; a
+ * browser re-arms that on every page, the app never loads pages. With the
+ * parameter the same cookie is accepted regardless, as the account endpoints
+ * always were. The open endpoints and anonymous sessions accept it unchanged.
+ * Sits after the pinned store and the session recovery so pins keep their
+ * plain URLs; only the HTTP cache is keyed with it.
  */
 class CookieAuthInterceptor : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {

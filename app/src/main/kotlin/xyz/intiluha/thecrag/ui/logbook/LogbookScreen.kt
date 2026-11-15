@@ -39,6 +39,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -143,7 +144,7 @@ fun AscentRow(a: Ascent, onClick: () -> Unit, onLongClick: (() -> Unit)? = null)
         Column(Modifier.weight(1f)) {
             Text(a.routeName, style = MaterialTheme.typography.bodyLarge, maxLines = 1)
             Text(
-                listOfNotNull(a.tickName, a.date, a.cragName).joinToString(" · "),
+                listOfNotNull(a.tickName, a.attempts?.let { pluralStringResource(R.plurals.attempt_count, it, it) }, a.date, a.cragName).joinToString(" · "),
                 style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.outline,
             )
             a.comment?.let { Text(it, style = MaterialTheme.typography.bodySmall, maxLines = 2) }

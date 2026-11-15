@@ -29,7 +29,7 @@ Error bodies name the level an endpoint needs. What grants each level, verified:
 | none | browser-like UA only | `/api/lookup/*`, `/api/config/*` |
 | `thecragreferrer` | header `Referer: https://www.thecrag.com/<anything>` | `/api/map/*` |
 | `anonweb` | Referer **and** the anonymous session cookie `ApacheSessionID` (set by a plain `GET /home`; `userstatus=anon`, `acceptedterms=0` come with it; ~2 year expiry) | **Until 2026-11:** `/api/node/id/*`, `/api/node/ids`, `/children/*`, `/api/country/list`, `/api/map/summary/*`, every `show=` option tried. **Since 2026-11-09 (checked):** none of these; they answer `insufficient-api-permissions` (HTTP 400) for anonymous sessions. `/api/lookup/*` and `/api/map/bbox/*` still work. |
-| `authweb` | Referer **and** the `ApacheSessionID` of a logged-in session (website login form); `cookieAuth=1` was not needed for fresh sessions, but on 2026-11-12 a day-old phone session was refused by the guide endpoints without it while `/api/account/id/me?cookieAuth=1` still accepted it, so the app now sends it on every `/api/` call (the open endpoints and anonymous sessions accept it) | Everything `anonweb` used to unlock, plus `/api/account/id/me`, `/api/climber/id/me/ascents`, ascent create/delete. Checked 2026-11-09 with the throwaway account on every endpoint the app uses. |
+| `authweb` | Referer **and** the `ApacheSessionID` of a logged-in session (website login form); without `cookieAuth=1` the guide endpoints accept the cookie only for a short while after a page view (measured 2026-11-12: 200 right after login, 400 `insufficient-api-permissions` 30 min later with no page loaded in between, 200 again right after a `GET /home` or a crag page with the cookie); with `cookieAuth=1` they accept it regardless, like the account endpoints, so the app sends it on every `/api/` call (open endpoints and anonymous sessions accept it too) | Everything `anonweb` used to unlock, plus `/api/account/id/me`, `/api/climber/id/me/ascents`, ascent create/delete. Checked 2026-11-09 with the throwaway account on every endpoint the app uses. |
 | `node` | not reachable anonymously | `/api/facet/*`, `/api/index/*` (the bulk/offline endpoints) |
 | `endpoint` | not reachable anonymously | `/api/area/id/N/topos`, `/photos`, `/beta` |
 | key / OAuth | partner key | everything, writes |
@@ -148,6 +148,25 @@ Not available anonymously: `/api/index/summary|detail` (bulk sync), `/api/facet/
   anonymous helper cookies and a plain `GET /home` do not disturb a logged-in session; API
   responses never set cookies; the login form has no remember-me field. So a session that
   dies on a phone within a day was not expired by the server for idleness.
+- **Ascent extras (verified 2026-11-15, test ticks created and deleted in the test area):**
+  `numberAttempts` (integer; else `numberAttemptsError: not an integer`) and `gradeSystem` +
+  `grade` (system label such as `AU`, `FR`, `YDS`, `BLDV`, `FB`; the pair is checked, `gradeError:
+  invalid grade` for `AU`/`7a` or `UK`/`E1 5b`; a compound grade goes as `gradeSystem`/`grade` plus
+  `altGradeSystem`/`altGrade`, e.g. `UK`/`E1` + `UKT`/`5b`) are stored and read back as sent
+  (`api-samples/ascent_id_reply.json`). `create/validate` answers 202 with the data echoed and, for
+  a bad field, an `error` object beside it (`{"gradeError":"invalid grade"}`); it echoes unknown keys
+  without complaint, so it cannot tell which keys exist. `POST /api/grade?cookieAuth=1` with
+  `{"data":{"text","context","style"}}` is the website's grade parser (`api-samples/grade_parse_reply.json`):
+  `components{<part>{systemLabel, grade, sequence, interpretations[]}}` plus top-level `grade`,
+  `gradeInContext`, `systemText`; unknown text gives empty `components`; no `context` means `US`;
+  `E1 5b` in context `UK` comes back as `UK`/`E1` and `FR`/`5b`. **Partners cannot be set through
+  the JSON API:** listings expose them as `with`, one string like `"Dave,@gareth"` (`@login` for
+  members), but `ascent/create` and `ascent/update` silently drop `with` and every other key tried
+  (`partners`, `withClimbers`, `climbedWith`, `withAccounts`, …); the website sets them in its
+  server-rendered tick form (`…/route/<id>/tick`, a `cids.cgi` process, login required).
+  `/api/lookup/climber?search=…&mode=follow|history|you|karma|login|all` is the website's climber
+  completion (`follow` = accounts you follow, `history` = past partners; items `{id, login, name}`);
+  `/api/climber/update` with `{"data":{account, follow:[{account, status}]}}` toggles following.
 - OAuth 1.0a: `/oauth/request_token` → `/oauth/authorize?oauth_token=` → `/oauth/access_token`; consumer key needs the partner agreement. A FOSS app cannot keep a consumer secret private anyway.
 
 ## 6. Terms and licensing summary
