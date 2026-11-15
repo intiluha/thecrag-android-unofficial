@@ -32,6 +32,7 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
@@ -104,6 +105,7 @@ fun AreaScreen(
     val graph = TheCragApp.graph(context)
     val vm: AreaViewModel = viewModel(key = "area/$areaId") { AreaViewModel(graph.nodes, graph.topos, graph.recents, areaId) }
     val state by vm.state.collectAsState()
+    val refreshing by vm.refreshing.collectAsState()
     val topos by vm.topos.collectAsState()
     val recents by graph.recents.items.collectAsState()
     val favourites by graph.favourites.favourites.collectAsState()
@@ -166,11 +168,14 @@ fun AreaScreen(
             )
         },
     ) { padding ->
-        StateBox(state, onRetry = vm::reload, onLogin = onAccount) { a ->
-            AreaBody(
-                a, topos, if (a.id == WORLD_ID) recents else emptyList(), onOpenArea, onOpenRoute,
-                if (ascents.isEmpty()) null else sentIds, ascentsByRoute, unclimbedOnly, { unclimbedOnly = it }, available, Modifier.padding(padding),
-            )
+        // Pull down at the top of the list to reload, with the usual indicator; letting go early cancels.
+        PullToRefreshBox(isRefreshing = refreshing, onRefresh = vm::reload, modifier = Modifier.padding(padding)) {
+            StateBox(state, onRetry = vm::reload, onLogin = onAccount) { a ->
+                AreaBody(
+                    a, topos, if (a.id == WORLD_ID) recents else emptyList(), onOpenArea, onOpenRoute,
+                    if (ascents.isEmpty()) null else sentIds, ascentsByRoute, unclimbedOnly, { unclimbedOnly = it }, available, Modifier,
+                )
+            }
         }
     }
 

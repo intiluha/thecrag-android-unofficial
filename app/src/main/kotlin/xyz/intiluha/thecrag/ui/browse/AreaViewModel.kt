@@ -25,31 +25,41 @@ class AreaViewModel(
     val state: StateFlow<UiState<AreaDetail>> = _state
     private val _topos = MutableStateFlow<UiState<List<Topo>>>(UiState.Ready(emptyList()))
     val topos: StateFlow<UiState<List<Topo>>> = _topos
+    /** True while a reload of an area already on screen is in flight (pull to refresh); the content stays visible. */
+    val refreshing = MutableStateFlow(false)
 
     init { load(force = false) }
 
     fun reload() = load(force = true)
 
     private fun load(force: Boolean) {
-        _state.value = UiState.Loading
+        if (_state.value is UiState.Ready) refreshing.value = true else _state.value = UiState.Loading
         viewModelScope.launch {
-            val area = try {
-                repo.area(id, force)
+            try {
+                loadInto(force)
+            } finally {
+                refreshing.value = false
+            }
+        }
+    }
+
+    private suspend fun loadInto(force: Boolean) {
+        val area = try {
+            repo.area(id, force)
+        } catch (e: Exception) {
+            _state.value = UiState.Error(e.describe(), e.needsLogin()); return
+        }
+        _state.value = UiState.Ready(area)
+        recents.record(area.id, area.name, NodeKind.AREA, listOfNotNull(area.subType, area.ancestors.lastOrNull()?.name).joinToString(" · "))
+        if (area.numberTopos > 0) {
+            _topos.value = UiState.Loading
+            _topos.value = try {
+                UiState.Ready(topoRepo.toposFor(id, force))
             } catch (e: Exception) {
-                _state.value = UiState.Error(e.describe(), e.needsLogin()); return@launch
+                UiState.Error(e.describe(), e.needsLogin())
             }
-            _state.value = UiState.Ready(area)
-            recents.record(area.id, area.name, NodeKind.AREA, listOfNotNull(area.subType, area.ancestors.lastOrNull()?.name).joinToString(" · "))
-            if (area.numberTopos > 0) {
-                _topos.value = UiState.Loading
-                _topos.value = try {
-                    UiState.Ready(topoRepo.toposFor(id, force))
-                } catch (e: Exception) {
-                    UiState.Error(e.describe(), e.needsLogin())
-                }
-            } else {
-                _topos.value = UiState.Ready(emptyList())
-            }
+        } else {
+            _topos.value = UiState.Ready(emptyList())
         }
     }
 }

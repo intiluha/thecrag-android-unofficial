@@ -26,6 +26,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -135,15 +136,17 @@ fun LogbookScreen(onOpenRoute: (Long) -> Unit, onAccount: () -> Unit, onBack: ()
                 }
                 return@Column
             }
-            LazyColumn(Modifier.fillMaxSize()) {
-                if (outbox.isNotEmpty()) {
-                    item { SectionHeader("Waiting to be sent") }
-                    items(outbox, key = { "p${it.createdAt}" }) { p -> PendingRow(p, onClick = { onOpenRoute(p.routeId) }, onLongClick = { selectedPending = p }) }
+            PullToRefreshBox(isRefreshing = busy, onRefresh = vm::refresh, modifier = Modifier.fillMaxSize()) {
+                LazyColumn(Modifier.fillMaxSize()) {
+                    if (outbox.isNotEmpty()) {
+                        item { SectionHeader("Waiting to be sent") }
+                        items(outbox, key = { "p${it.createdAt}" }) { p -> PendingRow(p, onClick = { onOpenRoute(p.routeId) }, onLongClick = { selectedPending = p }) }
+                    }
+                    if (sorted.isEmpty()) {
+                        item { Text("No ascents on this device yet. Refresh to download your logbook.", Modifier.padding(16.dp)) }
+                    }
+                    items(sorted, key = { "a${it.id}" }) { a -> AscentRow(a, onClick = { a.routeId?.let(onOpenRoute) }, onLongClick = { selected = a }) }
                 }
-                if (sorted.isEmpty()) {
-                    item { Text("No ascents on this device yet. Refresh to download your logbook.", Modifier.padding(16.dp)) }
-                }
-                items(sorted, key = { "a${it.id}" }) { a -> AscentRow(a, onClick = { a.routeId?.let(onOpenRoute) }, onLongClick = { selected = a }) }
             }
         }
     }

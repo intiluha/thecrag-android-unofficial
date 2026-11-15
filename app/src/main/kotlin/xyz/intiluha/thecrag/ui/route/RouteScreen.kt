@@ -25,6 +25,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -80,27 +81,37 @@ class RouteViewModel(
 ) : ViewModel() {
     val state = MutableStateFlow<UiState<RouteDetail>>(UiState.Loading)
     val topos = MutableStateFlow<UiState<List<Topo>>>(UiState.Loading)
+    /** True while a reload of a route already on screen is in flight (pull to refresh); the content stays visible. */
+    val refreshing = MutableStateFlow(false)
 
     init { load(false) }
 
     fun reload() = load(true)
 
     private fun load(force: Boolean) {
-        state.value = UiState.Loading
+        if (state.value is UiState.Ready) refreshing.value = true else state.value = UiState.Loading
         viewModelScope.launch {
-            val route = try {
-                repo.route(id, force)
-            } catch (e: Exception) {
-                state.value = UiState.Error(e.describe(), e.needsLogin()); return@launch
+            try {
+                loadInto(force)
+            } finally {
+                refreshing.value = false
             }
-            state.value = UiState.Ready(route)
-            recents.record(route.id, route.name, NodeKind.ROUTE, listOfNotNull(route.grade, route.ancestors.lastOrNull()?.name).joinToString(" · "))
-            topos.value = UiState.Loading
-            topos.value = try {
-                UiState.Ready(topoRepo.toposFor(id, force))
-            } catch (e: Exception) {
-                UiState.Error(e.describe(), e.needsLogin())
-            }
+        }
+    }
+
+    private suspend fun loadInto(force: Boolean) {
+        val route = try {
+            repo.route(id, force)
+        } catch (e: Exception) {
+            state.value = UiState.Error(e.describe(), e.needsLogin()); return
+        }
+        state.value = UiState.Ready(route)
+        recents.record(route.id, route.name, NodeKind.ROUTE, listOfNotNull(route.grade, route.ancestors.lastOrNull()?.name).joinToString(" · "))
+        topos.value = UiState.Loading
+        topos.value = try {
+            UiState.Ready(topoRepo.toposFor(id, force))
+        } catch (e: Exception) {
+            UiState.Error(e.describe(), e.needsLogin())
         }
     }
 }
@@ -115,6 +126,7 @@ fun RouteScreen(
     val graph = TheCragApp.graph(context)
     val vm: RouteViewModel = viewModel(key = "route/$routeId") { RouteViewModel(graph.nodes, graph.topos, graph.recents, routeId) }
     val state by vm.state.collectAsState()
+    val refreshing by vm.refreshing.collectAsState()
     val topos by vm.topos.collectAsState()
     val route = (state as? UiState.Ready)?.value
     val account by graph.auth.state.collectAsState()
@@ -201,64 +213,66 @@ fun RouteScreen(
                 scope.launch { snackbar.showSnackbar(msg) }
             }
         }
-        StateBox(state, onRetry = vm::reload, onLogin = onAccount) { r ->
-            LazyColumn(Modifier.fillMaxSize().padding(padding)) {
-                item { Breadcrumbs(r.ancestors, onOpenArea) }
-                item {
-                    Column(Modifier.padding(16.dp)) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            GradeChip(r.grade, r.gradeBand)
-                            Spacer(Modifier.width(12.dp))
-                            Stars(r.stars)
-                            Spacer(Modifier.width(12.dp))
-                            r.style?.let { Text(it, style = MaterialTheme.typography.titleMedium) }
-                        }
-                        val facts = buildList {
-                            r.gradeContext?.let { add("grade context $it") }
-                            r.height?.let { add("$it") }
-                            r.bolts?.let { if (it > 0) add("$it bolts") }
-                            r.pitches?.let { if (it > 1) add("$it pitches") }
-                            add("${r.ascentCount} ascents")
-                        }
-                        Text(facts.joinToString(" · "), Modifier.padding(top = 8.dp), style = MaterialTheme.typography.bodyMedium)
-                        r.firstAscent?.let { Text("FA: $it", Modifier.padding(top = 4.dp), style = MaterialTheme.typography.bodyMedium) }
-                    }
-                }
-                // The own ascents of this route, oldest first, with any outbox ticks after them; the
-                // route name is in the header, so each row is just badge, date, gear style, comment.
-                val mine = myAscents.filter { it.routeId == r.id }.sortedWith(LogbookRepository.CHRONOLOGICAL)
-                val minePending = pending.filter { it.routeId == r.id }
-                if (mine.isNotEmpty() || minePending.isNotEmpty()) {
-                    item { SectionHeader(stringResource(R.string.your_ascents)) }
-                    items(mine, key = { "a${it.id}" }) { a -> RouteAscentRow(a, onLongClick = { selected = a }) }
-                    items(minePending, key = { "p${it.createdAt}" }) { p -> RoutePendingRow(p, onLongClick = { selectedPending = p }) }
-                    item { Spacer(Modifier.height(8.dp)) }
-                }
-                when (val t = topos) {
-                    UiState.Loading -> item { LinearProgressIndicator(Modifier.fillMaxWidth().padding(horizontal = 16.dp)) }
-                    is UiState.Error -> item {
-                        Text(stringResource(R.string.topos_failed, t.message), Modifier.padding(16.dp), style = MaterialTheme.typography.bodyMedium)
-                    }
-                    is UiState.Ready -> items(t.value, key = { "t${it.id}" }) { topo ->
-                        TopoView(
-                            topo,
-                            selectedRouteId = r.id,
-                            onRouteTap = { if (it != r.id) onOpenRoute(it) },
-                            onAreaTap = onOpenArea,
-                            Modifier.padding(vertical = 4.dp),
-                        )
-                    }
-                }
-                r.beta.forEach { s ->
+        PullToRefreshBox(isRefreshing = refreshing, onRefresh = vm::reload, modifier = Modifier.padding(padding)) {
+            StateBox(state, onRetry = vm::reload, onLogin = onAccount) { r ->
+                LazyColumn(Modifier.fillMaxSize()) {
+                    item { Breadcrumbs(r.ancestors, onOpenArea) }
                     item {
-                        Column(Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
-                            Text(s.name, style = MaterialTheme.typography.titleSmall)
-                            Text(s.text, style = MaterialTheme.typography.bodyMedium)
-                            s.publisher?.let { Text("Source: $it", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.outline) }
+                        Column(Modifier.padding(16.dp)) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                GradeChip(r.grade, r.gradeBand)
+                                Spacer(Modifier.width(12.dp))
+                                Stars(r.stars)
+                                Spacer(Modifier.width(12.dp))
+                                r.style?.let { Text(it, style = MaterialTheme.typography.titleMedium) }
+                            }
+                            val facts = buildList {
+                                r.gradeContext?.let { add("grade context $it") }
+                                r.height?.let { add("$it") }
+                                r.bolts?.let { if (it > 0) add("$it bolts") }
+                                r.pitches?.let { if (it > 1) add("$it pitches") }
+                                add("${r.ascentCount} ascents")
+                            }
+                            Text(facts.joinToString(" · "), Modifier.padding(top = 8.dp), style = MaterialTheme.typography.bodyMedium)
+                            r.firstAscent?.let { Text("FA: $it", Modifier.padding(top = 4.dp), style = MaterialTheme.typography.bodyMedium) }
                         }
                     }
+                    // The own ascents of this route, oldest first, with any outbox ticks after them; the
+                    // route name is in the header, so each row is just badge, date, gear style, comment.
+                    val mine = myAscents.filter { it.routeId == r.id }.sortedWith(LogbookRepository.CHRONOLOGICAL)
+                    val minePending = pending.filter { it.routeId == r.id }
+                    if (mine.isNotEmpty() || minePending.isNotEmpty()) {
+                        item { SectionHeader(stringResource(R.string.your_ascents)) }
+                        items(mine, key = { "a${it.id}" }) { a -> RouteAscentRow(a, onLongClick = { selected = a }) }
+                        items(minePending, key = { "p${it.createdAt}" }) { p -> RoutePendingRow(p, onLongClick = { selectedPending = p }) }
+                        item { Spacer(Modifier.height(8.dp)) }
+                    }
+                    when (val t = topos) {
+                        UiState.Loading -> item { LinearProgressIndicator(Modifier.fillMaxWidth().padding(horizontal = 16.dp)) }
+                        is UiState.Error -> item {
+                            Text(stringResource(R.string.topos_failed, t.message), Modifier.padding(16.dp), style = MaterialTheme.typography.bodyMedium)
+                        }
+                        is UiState.Ready -> items(t.value, key = { "t${it.id}" }) { topo ->
+                            TopoView(
+                                topo,
+                                selectedRouteId = r.id,
+                                onRouteTap = { if (it != r.id) onOpenRoute(it) },
+                                onAreaTap = onOpenArea,
+                                Modifier.padding(vertical = 4.dp),
+                            )
+                        }
+                    }
+                    r.beta.forEach { s ->
+                        item {
+                            Column(Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
+                                Text(s.name, style = MaterialTheme.typography.titleSmall)
+                                Text(s.text, style = MaterialTheme.typography.bodyMedium)
+                                s.publisher?.let { Text("Source: $it", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.outline) }
+                            }
+                        }
+                    }
+                    item { Attribution() }
                 }
-                item { Attribution() }
             }
         }
     }
