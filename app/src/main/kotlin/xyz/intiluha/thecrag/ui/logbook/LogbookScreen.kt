@@ -1,7 +1,6 @@
 package xyz.intiluha.thecrag.ui.logbook
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -52,6 +51,8 @@ import xyz.intiluha.thecrag.data.logbook.TickTypes
 import xyz.intiluha.thecrag.ui.account.AccountViewModel
 import xyz.intiluha.thecrag.ui.common.GradeChip
 import xyz.intiluha.thecrag.ui.common.SectionHeader
+import xyz.intiluha.thecrag.ui.route.TickSheet
+import xyz.intiluha.thecrag.ui.route.WithRoute
 import java.time.LocalDate
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -65,7 +66,10 @@ fun LogbookScreen(onOpenRoute: (Long) -> Unit, onAccount: () -> Unit, onBack: ()
     val outbox by graph.logbook.outbox.collectAsState()
     val busy by vm.busy.collectAsState()
     val message by vm.message.collectAsState()
-    var confirmDelete by remember { mutableStateOf<Ascent?>(null) }
+    var selected by remember { mutableStateOf<Ascent?>(null) }
+    var editing by remember { mutableStateOf<Ascent?>(null) }
+    var selectedPending by remember { mutableStateOf<TickRequest?>(null) }
+    var editingPending by remember { mutableStateOf<TickRequest?>(null) }
     var exportMessage by remember { mutableStateOf<String?>(null) }
     val exportedText = stringResource(R.string.exported, ascents.size)
     // A save dialog (defaults to Downloads); the CSV is written from the local copy, nothing is fetched.
@@ -78,14 +82,29 @@ fun LogbookScreen(onOpenRoute: (Long) -> Unit, onAccount: () -> Unit, onBack: ()
             context.getString(R.string.export_failed, e.message ?: e.javaClass.simpleName)
         }
     }
-    confirmDelete?.let { a ->
-        AlertDialog(
-            onDismissRequest = { confirmDelete = null },
-            title = { Text(stringResource(R.string.delete_ascent)) },
-            text = { Text("${a.routeName}, ${a.tickName}, ${a.date ?: ""}") },
-            confirmButton = { TextButton(onClick = { vm.delete(a.id); confirmDelete = null }) { Text(stringResource(R.string.delete)) } },
-            dismissButton = { TextButton(onClick = { confirmDelete = null }) { Text(stringResource(R.string.cancel)) } },
+    selected?.let { a ->
+        AscentActionsDialog(
+            a.routeName, listOfNotNull(a.tickName, a.date, a.cragName).joinToString(" · "), stringResource(R.string.delete),
+            onEdit = { editing = a; selected = null }, onDelete = { vm.delete(a.id); selected = null }, onDismiss = { selected = null },
         )
+    }
+    selectedPending?.let { p ->
+        AscentActionsDialog(
+            p.routeName, listOf(TickTypes.name(p.tick), p.date, stringResource(if (p.ascentId != null) R.string.pending_edit else R.string.pending)).joinToString(" · "),
+            stringResource(R.string.remove),
+            onEdit = { editingPending = p; selectedPending = null }, onDelete = { graph.logbook.removeFromOutbox(p); selectedPending = null },
+            onDismiss = { selectedPending = null },
+        )
+    }
+    editing?.let { a ->
+        WithRoute(a.routeId, graph.nodes, onFailed = { editing = null; vm.message.value = it }) { route ->
+            TickSheet(route, graph.logbook, existing = a, onDismiss = { editing = null }) { msg -> editing = null; vm.message.value = msg }
+        }
+    }
+    editingPending?.let { p ->
+        WithRoute(p.routeId, graph.nodes, onFailed = { editingPending = null; vm.message.value = it }) { route ->
+            TickSheet(route, graph.logbook, pending = p, onDismiss = { editingPending = null }) { msg -> editingPending = null; vm.message.value = msg }
+        }
     }
     val sorted = ascents.sortedWith(compareByDescending<Ascent> { it.date ?: "" }.thenByDescending { it.id })
 
@@ -119,12 +138,12 @@ fun LogbookScreen(onOpenRoute: (Long) -> Unit, onAccount: () -> Unit, onBack: ()
             LazyColumn(Modifier.fillMaxSize()) {
                 if (outbox.isNotEmpty()) {
                     item { SectionHeader("Waiting to be sent") }
-                    items(outbox, key = { "p${it.createdAt}" }) { PendingRow(it) { onOpenRoute(it.routeId) } }
+                    items(outbox, key = { "p${it.createdAt}" }) { p -> PendingRow(p, onClick = { onOpenRoute(p.routeId) }, onLongClick = { selectedPending = p }) }
                 }
                 if (sorted.isEmpty()) {
                     item { Text("No ascents on this device yet. Refresh to download your logbook.", Modifier.padding(16.dp)) }
                 }
-                items(sorted, key = { "a${it.id}" }) { a -> AscentRow(a, onClick = { a.routeId?.let(onOpenRoute) }, onLongClick = { confirmDelete = a }) }
+                items(sorted, key = { "a${it.id}" }) { a -> AscentRow(a, onClick = { a.routeId?.let(onOpenRoute) }, onLongClick = { selected = a }) }
             }
         }
     }
@@ -153,9 +172,10 @@ fun AscentRow(a: Ascent, onClick: () -> Unit, onLongClick: (() -> Unit)? = null)
 }
 
 @Composable
-fun PendingRow(t: TickRequest, onClick: () -> Unit) {
+@OptIn(ExperimentalFoundationApi::class)
+fun PendingRow(t: TickRequest, onClick: () -> Unit, onLongClick: (() -> Unit)? = null) {
     Row(
-        Modifier.fillMaxWidth().clickable(onClick = onClick).padding(horizontal = 16.dp, vertical = 10.dp),
+        Modifier.fillMaxWidth().combinedClickable(onClick = onClick, onLongClick = onLongClick).padding(horizontal = 16.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         GradeChip(t.grade, t.gradeBand, Modifier.width(56.dp))
@@ -165,10 +185,27 @@ fun PendingRow(t: TickRequest, onClick: () -> Unit) {
         Column(Modifier.weight(1f)) {
             Text(t.routeName, style = MaterialTheme.typography.bodyLarge, maxLines = 1)
             Text(
-                listOfNotNull(TickTypes.name(t.tick), t.date, stringResource(R.string.pending)).joinToString(" · "),
+                listOfNotNull(TickTypes.name(t.tick), t.date, stringResource(if (t.ascentId != null) R.string.pending_edit else R.string.pending)).joinToString(" · "),
                 style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error,
             )
             t.error?.let { Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error, maxLines = 2) }
         }
     }
+}
+
+/** What a long press on an ascent or an outbox entry offers: edit it in the tick sheet, or delete it ([deleteLabel] says where). */
+@Composable
+fun AscentActionsDialog(title: String, details: String, deleteLabel: String, onEdit: () -> Unit, onDelete: () -> Unit, onDismiss: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(title) },
+        text = { Text(details) },
+        confirmButton = {
+            Row {
+                TextButton(onClick = onEdit) { Text(stringResource(R.string.edit)) }
+                TextButton(onClick = onDelete) { Text(deleteLabel) }
+            }
+        },
+        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.cancel)) } },
+    )
 }

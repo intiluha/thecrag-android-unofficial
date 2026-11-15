@@ -45,6 +45,14 @@ interface AuthApi {
     @POST("api/ascent/delete?cookieAuth=1")
     suspend fun deleteAscent(@Body body: JsonObject): JsonObject
 
+    /**
+     * Edits an ascent: `{"data":{"ascent":id, …}}` with any subset of the create fields; only the
+     * fields sent change. `null` clears a grade or comment, `""` clears `numberAttempts`. Answers
+     * 202 with the data echoed, 400 with an `error` object for a bad field (verified 2026-11-15).
+     */
+    @POST("api/ascent/update?cookieAuth=1")
+    suspend fun updateAscent(@Body body: JsonObject): JsonObject
+
     /** Same checks as create without writing anything: the "dry run". Answers 202 with the data echoed. */
     @POST("api/ascent/create/validate?cookieAuth=1")
     suspend fun validateAscent(@Body body: JsonObject): JsonObject

@@ -1,6 +1,7 @@
 package xyz.intiluha.thecrag.data
 
 import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
@@ -218,7 +219,106 @@ class LogbookRepositoryTest {
         val a = AscentParser.parse(json.parseToJsonElement(sample("ascent_id_reply.json")).jsonObject["data"]!!.jsonObject)!!
         assertEquals(3, a.attempts)
         assertEquals("7a", a.grade)
+        assertEquals("7a", a.proposedGrade)
         assertEquals("redpoint", a.tick)
+    }
+
+    @Test
+    fun plainAscentHasNoProposedGrade() {
+        val a = AscentParser.parse(json.parseToJsonElement("""{"id":1,"tick":{"label":"attempt"},"route":{"id":5,"name":"R","grade":"21"}}""").jsonObject)!!
+        assertEquals("21", a.grade)
+        assertEquals(null, a.proposedGrade)
+    }
+
+    @Test
+    fun updateSendsTheAscentIdAndClearsEmptyFields() = runBlocking {
+        val server = MockWebServer().apply {
+            enqueue(ok("""{"ok":{"ascentID":"777"}}"""))
+            enqueue(MockResponse().setResponseCode(202).setBody("""{"data":{"ascent":777}}""").addHeader("Content-Type", "application/json"))
+            start()
+        }
+        val repo = repo(server, Files.createTempDirectory("logbook").toFile())
+        repo.tick(req.copy(attempts = 3))
+        server.takeRequest()
+
+        assertEquals("Ascent updated.", repo.update(777, req.copy(tick = "onsight", date = "2026-10-21", comment = " ", attempts = null)))
+        val r = server.takeRequest()
+        assertEquals("/api/ascent/update?cookieAuth=1", r.path)
+        val data = json.parseToJsonElement(r.body.readUtf8()).jsonObject["data"]!!.jsonObject
+        assertEquals("777", data["ascent"]!!.jsonPrimitive.content)
+        assertEquals("onsight", data["tick"]!!.jsonPrimitive.content)
+        assertEquals("2026-10-21", data["date"]!!.jsonPrimitive.content)
+        assertEquals("sport", data["climbedGearStyle"]!!.jsonPrimitive.content)
+        // Clearing: null for comment and grade, "" for attempts; create's own keys are not sent.
+        assertEquals(JsonNull, data["comment"])
+        assertEquals("", data["numberAttempts"]!!.jsonPrimitive.content)
+        assertEquals(JsonNull, data["grade"])
+        assertEquals(JsonNull, data["gradeSystem"])
+        assertEquals(JsonNull, data["altGrade"])
+        assertTrue("account" !in data && "node" !in data && "version" !in data)
+
+        val mine = repo.ascentsOf(555).single()
+        assertEquals("onsight", mine.tick)
+        assertEquals("2026-10-21", mine.date)
+        assertEquals(null, mine.comment)
+        assertEquals(null, mine.attempts)
+        server.shutdown()
+    }
+
+    @Test
+    fun editingAnOutboxTickReplacesItInPlaceWithoutSending() = runBlocking {
+        val dir = Files.createTempDirectory("logbook").toFile()
+        val down = MockWebServer().apply { start(); shutdown() }
+        val repo = repo(down, dir)
+        try { repo.tick(req) } catch (e: IOException) { /* parked */ }
+        try { repo.tick(req.copy(routeId = 556, createdAt = 2000L)) } catch (e: IOException) { /* parked */ }
+
+        repo.editPending(1000L, req.copy(tick = "flash", comment = "fixed", createdAt = 99L, error = "stale"))
+        val pending = repo.outbox.value
+        assertEquals(listOf(1000L, 2000L), pending.map { it.createdAt })
+        assertEquals("flash", pending[0].tick)
+        assertEquals("fixed", pending[0].comment)
+        assertEquals(null, pending[0].error)
+        assertEquals("redpoint", pending[1].tick)
+        // Persisted, and still a create when it finally goes out.
+        assertEquals("flash", repo(down, dir).outbox.value[0].tick)
+        assertEquals(null, pending[0].ascentId)
+    }
+
+    @Test
+    fun offlineEditIsParkedAndRetrySendsAnUpdate() = runBlocking {
+        val dir = Files.createTempDirectory("logbook").toFile()
+        val up = MockWebServer().apply { enqueue(ok("""{"ok":{"ascentID":"777"}}""")); start() }
+        repo(up, dir).tick(req)
+        up.shutdown()
+
+        val offline = repo(MockWebServer().apply { start(); shutdown() }, dir)
+        try {
+            offline.update(777, req.copy(tick = "flash"))
+            fail("expected IOException")
+        } catch (e: IOException) {
+            // expected: parked
+        }
+        // A second offline edit of the same ascent replaces the first; the local copy still shows the server's state.
+        try { offline.update(777, req.copy(tick = "onsight", createdAt = 3000L)) } catch (e: IOException) { /* parked */ }
+        assertEquals(1, offline.outbox.value.size)
+        assertEquals(777L, offline.outbox.value.single().ascentId)
+        assertEquals("redpoint", offline.ascentsOf(555).single().tick)
+
+        val later = MockWebServer().apply {
+            enqueue(MockResponse().setResponseCode(202).setBody("""{"data":{"ascent":777}}""").addHeader("Content-Type", "application/json"))
+            start()
+        }
+        val retry = repo(later, dir)
+        assertEquals(1, retry.retryOutbox())
+        val r = later.takeRequest()
+        assertEquals("/api/ascent/update?cookieAuth=1", r.path)
+        val data = json.parseToJsonElement(r.body.readUtf8()).jsonObject["data"]!!.jsonObject
+        assertEquals("777", data["ascent"]!!.jsonPrimitive.content)
+        assertEquals("onsight", data["tick"]!!.jsonPrimitive.content)
+        assertTrue(retry.outbox.value.isEmpty())
+        assertEquals("onsight", retry.ascentsOf(555).single().tick)
+        later.shutdown()
     }
 }
 

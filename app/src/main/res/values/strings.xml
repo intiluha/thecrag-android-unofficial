@@ -42,11 +42,13 @@
     <string name="view_unclimbed">Unclimbed</string>
     <string name="all_climbed">Every route here is climbed.</string>
     <string name="pending">pending</string>
+    <string name="pending_edit">edit pending</string>
     <string name="refresh_logbook">Refresh logbook</string>
     <string name="retry_outbox">Retry pending</string>
     <string name="account_blurb">Since November 2026 theCrag answers its guide only to logged-in accounts, so the app browses with your session as well as reading your logbook and sending ticks. Only the login cookie is kept on this device; the password is not stored.</string>
     <string name="not_logged_in">Not logged in.</string>
-    <string name="delete_ascent">Delete this ascent on theCrag?</string>
+    <string name="edit">Edit</string>
+    <string name="save">Save</string>
     <string name="delete">Delete</string>
     <string name="cancel">Cancel</string>
     <string name="ok">OK</string>

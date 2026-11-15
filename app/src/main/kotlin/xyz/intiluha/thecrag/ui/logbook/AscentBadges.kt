@@ -1,6 +1,8 @@
 package xyz.intiluha.thecrag.ui.logbook
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -150,8 +152,10 @@ private fun MoreBadge(modifier: Modifier = Modifier) {
 
 /** One of the user's ascents on the route's own page: picture, tick name, date and gear style, comment. The route name is in the header already. */
 @Composable
-fun RouteAscentRow(a: Ascent, modifier: Modifier = Modifier) {
-    Row(modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 6.dp), verticalAlignment = Alignment.Top) {
+@OptIn(ExperimentalFoundationApi::class)
+fun RouteAscentRow(a: Ascent, modifier: Modifier = Modifier, onLongClick: (() -> Unit)? = null) {
+    val pressable = if (onLongClick == null) Modifier else Modifier.combinedClickable(onClick = {}, onLongClick = onLongClick)
+    Row(modifier.fillMaxWidth().then(pressable).padding(horizontal = 16.dp, vertical = 6.dp), verticalAlignment = Alignment.Top) {
         AscentBadge(a.tick, a.gearStyle)
         Spacer(Modifier.width(12.dp))
         Column(Modifier.weight(1f)) {
@@ -166,13 +170,15 @@ fun RouteAscentRow(a: Ascent, modifier: Modifier = Modifier) {
 
 /** An outbox tick of the route being viewed, in the same layout as [RouteAscentRow] but in the error colour. */
 @Composable
-fun RoutePendingRow(t: TickRequest, modifier: Modifier = Modifier) {
-    Row(modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 6.dp), verticalAlignment = Alignment.Top) {
+@OptIn(ExperimentalFoundationApi::class)
+fun RoutePendingRow(t: TickRequest, modifier: Modifier = Modifier, onLongClick: (() -> Unit)? = null) {
+    val pressable = if (onLongClick == null) Modifier else Modifier.combinedClickable(onClick = {}, onLongClick = onLongClick)
+    Row(modifier.fillMaxWidth().then(pressable).padding(horizontal = 16.dp, vertical = 6.dp), verticalAlignment = Alignment.Top) {
         AscentBadge(t.tick, t.gearStyle, pending = true)
         Spacer(Modifier.width(12.dp))
         Column(Modifier.weight(1f)) {
             Text(
-                listOf(TickTypes.name(t.tick), t.date, t.gearStyle, stringResource(R.string.pending)).joinToString(" · "),
+                listOf(TickTypes.name(t.tick), t.date, t.gearStyle, stringResource(if (t.ascentId != null) R.string.pending_edit else R.string.pending)).joinToString(" · "),
                 style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.error,
             )
             (t.error ?: t.comment.ifBlank { null })?.let {

@@ -167,6 +167,16 @@ Not available anonymously: `/api/index/summary|detail` (bulk sync), `/api/facet/
   `/api/lookup/climber?search=…&mode=follow|history|you|karma|login|all` is the website's climber
   completion (`follow` = accounts you follow, `history` = past partners; items `{id, login, name}`);
   `/api/climber/update` with `{"data":{account, follow:[{account, status}]}}` toggles following.
+- **Editing an ascent (verified 2026-11-15, test ascents created, edited and deleted):** `POST
+  /api/ascent/update?cookieAuth=1` with `{"data":{"ascent":id, …}}` and any subset of the create
+  fields (`tick`, `date`, `climbedGearStyle`, `comment`, `numberAttempts`, `gradeSystem`/`grade`,
+  `altGradeSystem`/`altGrade`); only the fields sent change (202, data echoed). `ascent` is the
+  mandatory id key (`id` → `ascentError: mandatory field`; an unknown id → `not a valid ascent`).
+  Clearing: `null` removes a grade (`gradeAtom` disappears) and the comment, but leaves
+  `numberAttempts`; `""` clears `numberAttempts` and the grade and stores an empty comment. A bad
+  grade pair answers 400 with `error.gradeError`. Listing items carry `numberAttempts`,
+  `gradeSystem`, `grade` and `markdown` only when set, so a top-level `grade` beside `gradeSystem`
+  is the climber's own grade and a plain ascent has neither.
 - OAuth 1.0a: `/oauth/request_token` → `/oauth/authorize?oauth_token=` → `/oauth/access_token`; consumer key needs the partner agreement. A FOSS app cannot keep a consumer secret private anyway.
 
 ## 6. Terms and licensing summary

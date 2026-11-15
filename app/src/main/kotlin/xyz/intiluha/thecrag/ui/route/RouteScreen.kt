@@ -58,6 +58,10 @@ import xyz.intiluha.thecrag.ui.common.Breadcrumbs
 import xyz.intiluha.thecrag.ui.common.GradeChip
 import xyz.intiluha.thecrag.ui.common.SectionHeader
 import xyz.intiluha.thecrag.data.logbook.LogbookRepository
+import xyz.intiluha.thecrag.data.logbook.Ascent
+import xyz.intiluha.thecrag.data.logbook.TickRequest
+import xyz.intiluha.thecrag.data.logbook.TickTypes
+import xyz.intiluha.thecrag.ui.logbook.AscentActionsDialog
 import xyz.intiluha.thecrag.ui.logbook.RouteAscentRow
 import xyz.intiluha.thecrag.ui.logbook.RoutePendingRow
 import xyz.intiluha.thecrag.ui.common.OverflowMenu
@@ -118,6 +122,10 @@ fun RouteScreen(
     val myAscents by graph.logbook.ascents.collectAsState()
     val pending by graph.logbook.outbox.collectAsState()
     var showTick by remember { mutableStateOf(false) }
+    var selected by remember { mutableStateOf<Ascent?>(null) }
+    var editing by remember { mutableStateOf<Ascent?>(null) }
+    var selectedPending by remember { mutableStateOf<TickRequest?>(null) }
+    var editingPending by remember { mutableStateOf<TickRequest?>(null) }
     val snackbar = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
@@ -155,6 +163,44 @@ fun RouteScreen(
                 scope.launch { snackbar.showSnackbar(msg) }
             }
         }
+        selected?.let { a ->
+            AscentActionsDialog(
+                a.routeName, listOfNotNull(a.tickName, a.date, a.cragName).joinToString(" · "), stringResource(R.string.delete),
+                onEdit = { editing = a; selected = null },
+                onDelete = {
+                    selected = null
+                    scope.launch {
+                        val msg = try { graph.logbook.delete(a.id); "Ascent deleted." } catch (e: Exception) {
+                            if (e.needsLogin()) graph.auth.markExpired()
+                            e.describe()
+                        }
+                        snackbar.showSnackbar(msg)
+                    }
+                },
+                onDismiss = { selected = null },
+            )
+        }
+        if (editing != null && route != null) {
+            TickSheet(route, graph.logbook, existing = editing, onDismiss = { editing = null }) { msg ->
+                editing = null
+                scope.launch { snackbar.showSnackbar(msg) }
+            }
+        }
+        selectedPending?.let { p ->
+            AscentActionsDialog(
+                p.routeName, listOf(TickTypes.name(p.tick), p.date, stringResource(if (p.ascentId != null) R.string.pending_edit else R.string.pending)).joinToString(" · "),
+                stringResource(R.string.remove),
+                onEdit = { editingPending = p; selectedPending = null },
+                onDelete = { graph.logbook.removeFromOutbox(p); selectedPending = null },
+                onDismiss = { selectedPending = null },
+            )
+        }
+        if (editingPending != null && route != null) {
+            TickSheet(route, graph.logbook, pending = editingPending, onDismiss = { editingPending = null }) { msg ->
+                editingPending = null
+                scope.launch { snackbar.showSnackbar(msg) }
+            }
+        }
         StateBox(state, onRetry = vm::reload, onLogin = onAccount) { r ->
             LazyColumn(Modifier.fillMaxSize().padding(padding)) {
                 item { Breadcrumbs(r.ancestors, onOpenArea) }
@@ -184,8 +230,8 @@ fun RouteScreen(
                 val minePending = pending.filter { it.routeId == r.id }
                 if (mine.isNotEmpty() || minePending.isNotEmpty()) {
                     item { SectionHeader(stringResource(R.string.your_ascents)) }
-                    items(mine, key = { "a${it.id}" }) { RouteAscentRow(it) }
-                    items(minePending, key = { "p${it.createdAt}" }) { RoutePendingRow(it) }
+                    items(mine, key = { "a${it.id}" }) { a -> RouteAscentRow(a, onLongClick = { selected = a }) }
+                    items(minePending, key = { "p${it.createdAt}" }) { p -> RoutePendingRow(p, onLongClick = { selectedPending = p }) }
                     item { Spacer(Modifier.height(8.dp)) }
                 }
                 when (val t = topos) {

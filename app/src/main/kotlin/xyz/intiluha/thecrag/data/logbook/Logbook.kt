@@ -28,6 +28,8 @@ data class Ascent(
     val cragName: String?,
     /** `numberAttempts`: tries in the session, when recorded. */
     val attempts: Int? = null,
+    /** The grade the climber proposed, as text (`7a`, or `E1 5b` for a compound grade); null when none. */
+    val proposedGrade: String? = null,
 )
 
 /** A tick to send; kept in the outbox while the network is down. */
@@ -51,6 +53,8 @@ data class TickRequest(
     /** The route's grade context (`AU`, `FR`, …) and style (`Free`, `Boulder`), which disambiguate the typed grade. */
     val gradeContext: String? = null,
     val gradeStyle: String? = null,
+    /** When set, this is an edit of that ascent waiting to go out through `/api/ascent/update`, not a new tick. */
+    val ascentId: Long? = null,
 )
 
 /**
@@ -96,6 +100,8 @@ object AscentParser {
             comment = o.string("markdown") ?: o.string("comment"),
             cragName = crag,
             attempts = o.int("numberAttempts"),
+            // A top-level grade is the climber's own only when it comes with its system; a plain ascent has no `gradeSystem`.
+            proposedGrade = if (o.containsKey("gradeSystem")) listOfNotNull(o.string("grade"), o.string("altGrade")).joinToString(" ").ifBlank { null } else null,
         )
     }
 }

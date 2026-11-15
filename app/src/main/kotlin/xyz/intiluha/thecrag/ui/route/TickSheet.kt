@@ -31,6 +31,7 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,9 +43,11 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import xyz.intiluha.thecrag.R
+import xyz.intiluha.thecrag.data.logbook.Ascent
 import xyz.intiluha.thecrag.data.logbook.LogbookRepository
 import xyz.intiluha.thecrag.data.logbook.TickRequest
 import xyz.intiluha.thecrag.data.logbook.TickTypes
+import xyz.intiluha.thecrag.data.repo.NodeRepository
 import xyz.intiluha.thecrag.domain.RouteDetail
 import xyz.intiluha.thecrag.ui.common.describe
 import java.io.IOException
@@ -54,19 +57,32 @@ import java.time.ZoneOffset
 
 private val DATE = Regex("""\d{4}-\d{2}-\d{2}""")
 
-/** Bottom sheet to log an ascent of [route]. "Dry run" asks the server to validate without writing. */
+/**
+ * Bottom sheet to log an ascent of [route]; with [existing] it edits that ascent, with [pending] it
+ * edits a tick still waiting in the outbox (replaced in place, nothing sent). Either way the form
+ * opens filled in and the button reads Save. "Dry run" (new ticks only) asks
+ * the server to validate without writing.
+ */
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
-fun TickSheet(route: RouteDetail, logbook: LogbookRepository, onDismiss: () -> Unit, onDone: (String) -> Unit) {
+fun TickSheet(
+    route: RouteDetail, logbook: LogbookRepository, existing: Ascent? = null, pending: TickRequest? = null,
+    onDismiss: () -> Unit, onDone: (String) -> Unit,
+) {
+    val initial = existing?.let { Prefill(it.gearStyle, it.tick, it.date, it.comment, it.attempts, it.proposedGrade) }
+        ?: pending?.let { Prefill(it.gearStyle, it.tick, it.date, it.comment, it.attempts, it.proposedGrade) }
     val scope = rememberCoroutineScope()
-    val styles = remember(route.id) { (listOfNotNull(route.styleStub?.lowercase()) + TickTypes.gearStyles).distinct() }
+    val styles = remember(route.id) {
+        (listOfNotNull(initial?.gearStyle?.lowercase(), route.styleStub?.lowercase()) + TickTypes.gearStyles).distinct()
+    }
     var gearStyle by remember { mutableStateOf(styles.first()) }
-    val ticks = remember(gearStyle) { TickTypes.ticksFor(gearStyle) }
-    var tick by remember(gearStyle) { mutableStateOf(ticks.first()) }
-    var date by remember { mutableStateOf(LocalDate.now().toString()) }
-    var comment by remember { mutableStateOf("") }
-    var attempts by remember { mutableStateOf("") }
-    var proposedGrade by remember { mutableStateOf("") }
+    // The stored tick may be one the vocabulary table does not list for this gear style; keep it selectable.
+    val ticks = remember(gearStyle) { (TickTypes.ticksFor(gearStyle) + listOfNotNull(initial?.tick?.takeIf { gearStyle == styles.first() })).distinct() }
+    var tick by remember(gearStyle) { mutableStateOf(initial?.tick?.takeIf { it in ticks } ?: ticks.first()) }
+    var date by remember { mutableStateOf(initial?.date ?: LocalDate.now().toString()) }
+    var comment by remember { mutableStateOf(initial?.comment ?: "") }
+    var attempts by remember { mutableStateOf(initial?.attempts?.toString() ?: "") }
+    var proposedGrade by remember { mutableStateOf(initial?.proposedGrade ?: "") }
     var showPicker by remember { mutableStateOf(false) }
     var busy by remember { mutableStateOf(false) }
     var message by remember { mutableStateOf<String?>(null) }
@@ -83,10 +99,16 @@ fun TickSheet(route: RouteDetail, logbook: LogbookRepository, onDismiss: () -> U
         scope.launch {
             busy = true
             try {
-                val msg = logbook.tick(req, dryRun)
+                val msg = when {
+                    dryRun -> logbook.tick(req, dryRun = true)
+                    existing != null -> logbook.update(existing.id, req)
+                    pending != null -> { logbook.editPending(pending.createdAt, req); "Pending tick updated." }
+                    else -> logbook.tick(req)
+                }
                 if (dryRun) message = msg else onDone(msg)
             } catch (e: IOException) {
-                if (dryRun) message = e.describe() else onDone("Offline: the tick waits in the outbox (${e.describe()})")
+                // Both a new tick and an edit are parked in the outbox when the network is down.
+                if (dryRun) message = e.describe() else onDone("Offline: the ${if (existing != null) "edit" else "tick"} waits in the outbox (${e.describe()})")
             } catch (e: Exception) {
                 message = e.describe()
             } finally {
@@ -145,11 +167,33 @@ fun TickSheet(route: RouteDetail, logbook: LogbookRepository, onDismiss: () -> U
             OutlinedTextField(comment, { comment = it }, label = { Text("Comment") }, minLines = 2, modifier = Modifier.fillMaxWidth().padding(top = 8.dp))
             message?.let { Text(it, Modifier.padding(top = 8.dp), style = MaterialTheme.typography.bodyMedium) }
             Row(Modifier.padding(vertical = 16.dp)) {
-                TextButton(onClick = { submit(dryRun = true) }, enabled = !busy && valid) { Text(stringResource(R.string.dry_run)) }
-                Spacer(Modifier.width(8.dp))
-                Button(onClick = { submit(dryRun = false) }, enabled = !busy && valid) { Text(stringResource(R.string.log_ascent)) }
+                if (existing == null && pending?.ascentId == null) {
+                    TextButton(onClick = { submit(dryRun = true) }, enabled = !busy && valid) { Text(stringResource(R.string.dry_run)) }
+                    Spacer(Modifier.width(8.dp))
+                }
+                Button(onClick = { submit(dryRun = false) }, enabled = !busy && valid) {
+                    Text(stringResource(if (existing != null || pending != null) R.string.save else R.string.log_ascent))
+                }
             }
             Spacer(Modifier.height(24.dp))
         }
     }
+}
+
+/** What the sheet is filled in with when it edits something; from an [Ascent] or a pending [TickRequest]. */
+private data class Prefill(val gearStyle: String?, val tick: String?, val date: String?, val comment: String?, val attempts: Int?, val proposedGrade: String?)
+
+/**
+ * Loads the route for an edit started where no route is loaded (the Logbook): the form needs its
+ * gear style, grade context and style. [content] composes once the route is there; a failure, or
+ * a missing route id, is reported through [onFailed] instead.
+ */
+@Composable
+fun WithRoute(routeId: Long?, nodes: NodeRepository, onFailed: (String) -> Unit, content: @Composable (RouteDetail) -> Unit) {
+    var route by remember { mutableStateOf<RouteDetail?>(null) }
+    LaunchedEffect(routeId) {
+        if (routeId == null) return@LaunchedEffect onFailed("This entry has no route in the local copy; edit it on theCrag.")
+        try { route = nodes.route(routeId) } catch (e: Exception) { onFailed(e.describe()) }
+    }
+    route?.let { content(it) }
 }

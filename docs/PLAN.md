@@ -100,7 +100,11 @@ OkHttp 4, kotlinx.serialization, Room 2.7, Coil 3, MapLibre Native Android
 - A tick may carry `numberAttempts` and a proposed grade. The grade is typed as on the
   website; theCrag's own parser (`POST /api/grade`) reads it in the route's grade context
   and style and the create call sends the resulting `gradeSystem`/`grade` pair, so the app
-  never needs a grade-system table. "Climbed with" is not offered: the JSON create API
+  never needs a grade-system table. An ascent can be edited (long press in the Logbook or on the
+  route page): the same sheet opens filled in and `POST /api/ascent/update` with `{"ascent":id}`
+  changes the fields sent; empty fields clear the stored ones. A tick still in the outbox is edited
+  in place (nothing sent); an edit made offline is parked in the outbox as well, tagged with the
+  ascent id, and goes out as an update on retry. "Climbed with" is not offered: the JSON create API
   drops partners (verified 2026-11-15); only the website's form sets them.
 - Everything needed is at the `authweb` access level (session cookie + `cookieAuth=1`),
   and the live replies are saved as `api-samples/account_me*.json` and `ascent_*_reply.json`;
@@ -120,7 +124,7 @@ OkHttp 4, kotlinx.serialization, Room 2.7, Coil 3, MapLibre Native Android
   redpoint and variants, clean, send, repeat, plain tick; not hang dog, working, attempt, retreat,
   dab). A view, not a setting: nothing is persisted. See `TickTypes.SENDS`.
 - Open: whether `climbedGearStyle`
-  values beyond sport/trad/boulder are right, editing an ascent, paging of the ascents
+  values beyond sport/trad/boulder are right, paging of the ascents
   list beyond one page (no `query.page` seen in the reply), the
   partner-key OAuth path if theCrag ever grants one.
 
