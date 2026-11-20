@@ -31,6 +31,9 @@
     <string name="log_ascent">Log ascent</string>
     <string name="dry_run">Dry run</string>
     <string name="attempts">Attempts</string>
+    <string name="climbed_with">Climbed with</string>
+    <string name="with_partners">with %1$s</string>
+    <string name="climbed_with_hint">Names, comma separated; pick members from the list</string>
     <string name="proposed_grade">Your grade</string>
     <string name="proposed_grade_hint">Route grade %1$s</string>
     <plurals name="attempt_count">

@@ -320,6 +320,60 @@ class LogbookRepositoryTest {
         assertEquals("onsight", retry.ascentsOf(555).single().tick)
         later.shutdown()
     }
+
+    @Test
+    fun partnersGoOutAsWithAndComeBack() = runBlocking {
+        val server = MockWebServer().apply {
+            enqueue(ok("""{"data":{"node":555,"with":"@a_john, Dave"},"ok":{"ascentID":"790"}}"""))
+            enqueue(MockResponse().setResponseCode(202).setBody("""{"data":{"ascent":790}}""").addHeader("Content-Type", "application/json"))
+            start()
+        }
+        val repo = repo(server, Files.createTempDirectory("logbook").toFile())
+        repo.tick(req.copy(partners = "@a_john, Dave"))
+        val created = json.parseToJsonElement(server.takeRequest().body.readUtf8()).jsonObject["data"]!!.jsonObject
+        assertEquals("@a_john, Dave", created["with"]!!.jsonPrimitive.content)
+        assertEquals("@a_john, Dave", repo.ascentsOf(555).single().partners)
+
+        repo.update(790, req.copy(partners = ""))
+        val updated = json.parseToJsonElement(server.takeRequest().body.readUtf8()).jsonObject["data"]!!.jsonObject
+        assertEquals(JsonNull, updated["with"])
+        assertEquals(null, repo.ascentsOf(555).single().partners)
+        server.shutdown()
+    }
+
+    @Test
+    fun plainTickSendsNoWith() = runBlocking {
+        val server = MockWebServer().apply { enqueue(ok("""{"ok":{"ascentID":"791"}}""")); start() }
+        val repo = repo(server, Files.createTempDirectory("logbook").toFile())
+        repo.tick(req)
+        val data = json.parseToJsonElement(server.takeRequest().body.readUtf8()).jsonObject["data"]!!.jsonObject
+        assertEquals(null, data["with"])
+        assertEquals(null, repo.ascentsOf(555).single().partners)
+        server.shutdown()
+    }
+
+    @Test
+    fun partnerSuggestionsMergeFollowedAndPastPartnersOnce() = runBlocking {
+        val server = MockWebServer().apply {
+            enqueue(ok("""{"data":[{"id":"7994503","login":"a_john","name":"A John","grouplabel":"follow"}]}"""))
+            enqueue(ok("""{"data":[{"id":"7994503","login":"a_john","name":"A John"},{"id":"42","login":"dave","name":"Dave"}]}"""))
+            start()
+        }
+        val repo = repo(server, Files.createTempDirectory("logbook").toFile())
+        assertEquals(listOf("a_john", "dave"), repo.partnerSuggestions().map { it.login })
+        assertEquals(listOf("a_john", "dave"), repo.partnerSuggestions().map { it.login })
+        assertEquals(2, server.requestCount)
+        val first = server.takeRequest().path!!
+        assertTrue(first, first.startsWith("/api/lookup/climber?cookieAuth=1") && "mode=follow" in first && "search=" in first)
+        assertTrue("mode=history" in server.takeRequest().path!!)
+        server.shutdown()
+    }
+
+    @Test
+    fun listingItemCarriesPartners() {
+        val a = AscentParser.parse(json.parseToJsonElement("""{"id":1,"tick":{"label":"dog"},"route":{"id":5,"name":"R"},"with":"@a_john, Dave Smith"}""").jsonObject)!!
+        assertEquals("@a_john, Dave Smith", a.partners)
+    }
 }
 
 class LogbookLiveShapesTest {

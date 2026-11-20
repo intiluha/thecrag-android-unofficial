@@ -30,6 +30,8 @@ data class Ascent(
     val attempts: Int? = null,
     /** The grade the climber proposed, as text (`7a`, or `E1 5b` for a compound grade); null when none. */
     val proposedGrade: String? = null,
+    /** `with`: partners as the website stores them, one comma-separated string, members as `@login`. */
+    val partners: String? = null,
 )
 
 /** A tick to send; kept in the outbox while the network is down. */
@@ -55,6 +57,8 @@ data class TickRequest(
     val gradeStyle: String? = null,
     /** When set, this is an edit of that ascent waiting to go out through `/api/ascent/update`, not a new tick. */
     val ascentId: Long? = null,
+    /** Partners for `with`, comma separated, members as `@login`; empty for none. */
+    val partners: String = "",
 )
 
 /**
@@ -100,6 +104,7 @@ object AscentParser {
             comment = o.string("markdown") ?: o.string("comment"),
             cragName = crag,
             attempts = o.int("numberAttempts"),
+            partners = o.string("with")?.ifBlank { null },
             // A top-level grade is the climber's own only when it comes with its system; a plain ascent has no `gradeSystem`.
             proposedGrade = if (o.containsKey("gradeSystem")) listOfNotNull(o.string("grade"), o.string("altGrade")).joinToString(" ").ifBlank { null } else null,
         )
@@ -151,4 +156,17 @@ object TickTypes {
     )
 
     fun isSend(label: String): Boolean = label.lowercase() in SENDS
+}
+
+/** A theCrag account as the climber lookup returns it; `login` is what goes into `with` as `@login`. */
+@Serializable
+data class Climber(val id: Long, val login: String, val name: String)
+
+object ClimberParser {
+    /** `/api/lookup/climber` answers `{"data":[{id, login, name, grouplabel, …}]}`. */
+    fun parseList(root: JsonObject): List<Climber> = root.array("data").orEmpty().mapNotNull { e ->
+        val o = e as? JsonObject ?: return@mapNotNull null
+        val login = o.string("login") ?: return@mapNotNull null
+        Climber(o.long("id") ?: return@mapNotNull null, login, o.string("name") ?: login)
+    }
 }

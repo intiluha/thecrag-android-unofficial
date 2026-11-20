@@ -19,16 +19,16 @@ class LogbookCsvTest {
             ),
         )
         val lines = csv.split("\r\n")
-        assertEquals("date,route,grade,tick,tick_name,gear_style,crag,comment,route_id,ascent_id", lines[0])
-        assertEquals("2026-10-20,\"Say \"\"hi\"\", now\",6a+,RP,Red point,sport,\"Ohanavan, West\",\"two\nlines\",102,2", lines[1])
-        assertEquals("2026-10-01,Plain,6a+,RP,Red point,sport,\"Ohanavan, West\",,101,1", lines[2])
-        assertEquals(",No date,6a+,RP,Red point,sport,\"Ohanavan, West\",,103,3", lines[3])
+        assertEquals("date,route,grade,tick,tick_name,gear_style,crag,comment,climbed_with,route_id,ascent_id", lines[0])
+        assertEquals("2026-10-20,\"Say \"\"hi\"\", now\",6a+,RP,Red point,sport,\"Ohanavan, West\",\"two\nlines\",,102,2", lines[1])
+        assertEquals("2026-10-01,Plain,6a+,RP,Red point,sport,\"Ohanavan, West\",,,101,1", lines[2])
+        assertEquals(",No date,6a+,RP,Red point,sport,\"Ohanavan, West\",,,103,3", lines[3])
         assertEquals("ends with CRLF", "", lines[4])
         assertEquals(5, lines.size)
     }
 
     @Test
     fun emptyLogbookIsJustTheHeader() {
-        assertEquals("date,route,grade,tick,tick_name,gear_style,crag,comment,route_id,ascent_id\r\n", LogbookCsv.toString(emptyList()))
+        assertEquals("date,route,grade,tick,tick_name,gear_style,crag,comment,climbed_with,route_id,ascent_id\r\n", LogbookCsv.toString(emptyList()))
     }
 }

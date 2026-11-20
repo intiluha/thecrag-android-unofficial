@@ -53,6 +53,13 @@ interface AuthApi {
     @POST("api/ascent/update?cookieAuth=1")
     suspend fun updateAscent(@Body body: JsonObject): JsonObject
 
+    /**
+     * The website's climber completion: `mode=follow` lists the accounts you follow, `history` your past
+     * partners (both work with an empty search and filter by login or name prefix), `all` every member.
+     */
+    @GET("api/lookup/climber?cookieAuth=1")
+    suspend fun lookupClimber(@Query("search") search: String, @Query("mode") mode: String, @Query("page-size") pageSize: Int = 100): JsonObject
+
     /** Same checks as create without writing anything: the "dry run". Answers 202 with the data echoed. */
     @POST("api/ascent/create/validate?cookieAuth=1")
     suspend fun validateAscent(@Body body: JsonObject): JsonObject

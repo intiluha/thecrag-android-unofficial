@@ -163,6 +163,7 @@ fun RouteAscentRow(a: Ascent, modifier: Modifier = Modifier, onLongClick: (() ->
                 listOfNotNull(TickTypes.name(a.tick), a.date, a.gearStyle).joinToString(" · "),
                 style = MaterialTheme.typography.bodyMedium,
             )
+            a.partners?.let { Text(stringResource(R.string.with_partners, it), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.outline) }
             a.comment?.let { Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.outline) }
         }
     }

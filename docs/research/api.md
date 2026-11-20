@@ -159,11 +159,11 @@ Not available anonymously: `/api/index/summary|detail` (bulk sync), `/api/facet/
   `{"data":{"text","context","style"}}` is the website's grade parser (`api-samples/grade_parse_reply.json`):
   `components{<part>{systemLabel, grade, sequence, interpretations[]}}` plus top-level `grade`,
   `gradeInContext`, `systemText`; unknown text gives empty `components`; no `context` means `US`;
-  `E1 5b` in context `UK` comes back as `UK`/`E1` and `FR`/`5b`. **Partners cannot be set through
-  the JSON API:** listings expose them as `with`, one string like `"Dave,@gareth"` (`@login` for
-  members), but `ascent/create` and `ascent/update` silently drop `with` and every other key tried
-  (`partners`, `withClimbers`, `climbedWith`, `withAccounts`, …); the website sets them in its
-  server-rendered tick form (`…/route/<id>/tick`, a `cids.cgi` process, login required).
+  `E1 5b` in context `UK` comes back as `UK`/`E1` and `FR`/`5b`. **Partners** go as `with`, one string
+  as the website sends it (`"@a_john, Dave Smith"`: members as `@login`, anyone else as free text,
+  comma separated), on both `ascent/create` and `ascent/update`; `null` or `""` clears it. The listing
+  and `/api/ascent/id/N?full=1` return it as `with`; the plain `/api/ascent/id/N` leaves it out, which
+  is why an earlier probe (2026-11-15) wrongly concluded the field was dropped (corrected 2026-11-20).
   `/api/lookup/climber?search=…&mode=follow|history|you|karma|login|all` is the website's climber
   completion (`follow` = accounts you follow, `history` = past partners; items `{id, login, name}`);
   `/api/climber/update` with `{"data":{account, follow:[{account, status}]}}` toggles following.

@@ -102,6 +102,17 @@ class LogbookRepository(
         return sent
     }
 
+    private var partnerCache: List<Climber>? = null
+
+    /**
+     * Who to suggest for "climbed with": the accounts you follow and your past partners, as the
+     * website's completion lists them. Fetched once per process; a failure is the caller's to swallow.
+     */
+    suspend fun partnerSuggestions(): List<Climber> = partnerCache ?: listOf("follow", "history")
+        .flatMap { mode -> ClimberParser.parseList(api.lookupClimber("", mode)) }
+        .distinctBy { it.id }
+        .also { partnerCache = it }
+
     /** Deletes an ascent on theCrag and locally. */
     suspend fun delete(id: Long) {
         api.deleteAscent(buildJsonObject { put("data", buildJsonObject { put("ascent", id) }) })
@@ -131,7 +142,7 @@ class LogbookRepository(
             _ascents.value = _ascents.value.map { old ->
                 if (old.id != editOf) old else old.copy(
                     tick = req.tick, tickName = TickTypes.name(req.tick), gearStyle = req.gearStyle, date = req.date,
-                    comment = req.comment.trim().ifBlank { null }, attempts = req.attempts,
+                    comment = req.comment.trim().ifBlank { null }, attempts = req.attempts, partners = req.partners.trim().ifBlank { null },
                     proposedGrade = proposed, grade = proposed ?: req.grade,
                 )
             }
@@ -143,7 +154,7 @@ class LogbookRepository(
         val ascent = res.obj("data")?.let(AscentParser::parse)?.copy(id = id) ?: Ascent(
             id = id, routeId = req.routeId, routeName = req.routeName, grade = req.grade, gradeBand = req.gradeBand,
             tick = req.tick, tickName = TickTypes.name(req.tick), gearStyle = req.gearStyle, date = req.date,
-            comment = req.comment.ifBlank { null }, cragName = req.cragName,
+            comment = req.comment.ifBlank { null }, cragName = req.cragName, attempts = req.attempts, partners = req.partners.ifBlank { null },
         )
         _ascents.value = listOf(ascent) + _ascents.value.filterNot { it.id == ascent.id }
         save(logbookFile, Ascent.serializer(), _ascents.value)
@@ -160,6 +171,7 @@ class LogbookRepository(
                 put("version", 2)
                 putTickFields(req)
                 if (req.comment.isNotBlank()) put("comment", req.comment)
+                if (req.partners.isNotBlank()) put("with", req.partners.trim())
                 req.attempts?.let { put("numberAttempts", it) }
                 putGrade(grade, clear = false)
             })
@@ -199,6 +211,7 @@ class LogbookRepository(
                 put("ascent", id)
                 putTickFields(req)
                 put("comment", req.comment.trim().ifBlank { null })
+                put("with", req.partners.trim().ifBlank { null })
                 if (req.attempts != null) put("numberAttempts", req.attempts) else put("numberAttempts", "")
                 putGrade(grade, clear = true)
             })

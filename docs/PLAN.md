@@ -104,8 +104,11 @@ OkHttp 4, kotlinx.serialization, Room 2.7, Coil 3, MapLibre Native Android
   route page): the same sheet opens filled in and `POST /api/ascent/update` with `{"ascent":id}`
   changes the fields sent; empty fields clear the stored ones. A tick still in the outbox is edited
   in place (nothing sent); an edit made offline is parked in the outbox as well, tagged with the
-  ascent id, and goes out as an update on retry. "Climbed with" is not offered: the JSON create API
-  drops partners (verified 2026-11-15); only the website's form sets them.
+  ascent id, and goes out as an update on retry. "Climbed with" (2026-11-20) is free text sent as
+  `with`, comma separated, members as `@login`; the field suggests the accounts you follow and past
+  partners from `/api/lookup/climber` (`mode=follow`, `history`). An earlier probe had read ascents
+  back through `/api/ascent/id/N`, which omits `with`, and wrongly concluded the JSON create API
+  drops partners; it does not.
 - Everything needed is at the `authweb` access level (session cookie + `cookieAuth=1`),
   and the live replies are saved as `api-samples/account_me*.json` and `ascent_*_reply.json`;
   the ascent parser still reads fields defensively with fallbacks.

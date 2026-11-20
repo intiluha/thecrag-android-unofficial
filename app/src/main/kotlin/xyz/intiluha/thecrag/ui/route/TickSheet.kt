@@ -19,6 +19,9 @@ import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material3.Button
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
@@ -38,12 +41,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import xyz.intiluha.thecrag.R
 import xyz.intiluha.thecrag.data.logbook.Ascent
+import xyz.intiluha.thecrag.data.logbook.Climber
 import xyz.intiluha.thecrag.data.logbook.LogbookRepository
 import xyz.intiluha.thecrag.data.logbook.TickRequest
 import xyz.intiluha.thecrag.data.logbook.TickTypes
@@ -69,8 +74,8 @@ fun TickSheet(
     route: RouteDetail, logbook: LogbookRepository, existing: Ascent? = null, pending: TickRequest? = null,
     onDismiss: () -> Unit, onDone: (String) -> Unit,
 ) {
-    val initial = existing?.let { Prefill(it.gearStyle, it.tick, it.date, it.comment, it.attempts, it.proposedGrade) }
-        ?: pending?.let { Prefill(it.gearStyle, it.tick, it.date, it.comment, it.attempts, it.proposedGrade) }
+    val initial = existing?.let { Prefill(it.gearStyle, it.tick, it.date, it.comment, it.attempts, it.proposedGrade, it.partners) }
+        ?: pending?.let { Prefill(it.gearStyle, it.tick, it.date, it.comment, it.attempts, it.proposedGrade, it.partners) }
     val scope = rememberCoroutineScope()
     val styles = remember(route.id) {
         (listOfNotNull(initial?.gearStyle?.lowercase(), route.styleStub?.lowercase()) + TickTypes.gearStyles).distinct()
@@ -81,6 +86,12 @@ fun TickSheet(
     var tick by remember(gearStyle) { mutableStateOf(initial?.tick?.takeIf { it in ticks } ?: ticks.first()) }
     var date by remember { mutableStateOf(initial?.date ?: LocalDate.now().toString()) }
     var comment by remember { mutableStateOf(initial?.comment ?: "") }
+    var partners by remember { mutableStateOf(initial?.partners ?: "") }
+    var hidePartnerMenu by remember { mutableStateOf(false) }
+    var partnersFocused by remember { mutableStateOf(false) }
+    // Accounts you follow and past partners, for the "climbed with" suggestions; silently none when offline.
+    var suggestions by remember { mutableStateOf(emptyList<Climber>()) }
+    LaunchedEffect(logbook) { suggestions = try { logbook.partnerSuggestions() } catch (e: Exception) { emptyList() } }
     var attempts by remember { mutableStateOf(initial?.attempts?.toString() ?: "") }
     var proposedGrade by remember { mutableStateOf(initial?.proposedGrade ?: "") }
     var showPicker by remember { mutableStateOf(false) }
@@ -94,7 +105,7 @@ fun TickSheet(
             routeId = route.id, routeName = route.name, gearStyle = gearStyle, tick = tick, date = date, comment = comment.trim(),
             grade = route.grade, gradeBand = route.gradeBand, cragName = route.ancestors.lastOrNull()?.name, createdAt = System.currentTimeMillis(),
             attempts = attempts.trim().toIntOrNull(), proposedGrade = proposedGrade.trim().ifBlank { null },
-            gradeContext = route.gradeContext, gradeStyle = route.gradeStyle,
+            gradeContext = route.gradeContext, gradeStyle = route.gradeStyle, partners = partners.trim().trimEnd(',').trim(),
         )
         scope.launch {
             busy = true
@@ -164,6 +175,29 @@ fun TickSheet(
                     modifier = Modifier.weight(2f),
                 )
             }
+            // "Climbed with": free text, comma separated, members as @login. The menu offers the accounts you
+            // follow and past partners that match the name being typed (the text after the last comma).
+            val token = partners.substringAfterLast(',').trim()
+            val matches = remember(token, suggestions) {
+                suggestions.filter { token.isEmpty() || it.login.startsWith(token.removePrefix("@"), ignoreCase = true) || it.name.contains(token, ignoreCase = true) }
+            }
+            val menuOpen = partnersFocused && matches.isNotEmpty() && !hidePartnerMenu
+            ExposedDropdownMenuBox(expanded = menuOpen, onExpandedChange = { }) {
+                OutlinedTextField(
+                    partners, { partners = it; hidePartnerMenu = false }, label = { Text(stringResource(R.string.climbed_with)) }, singleLine = true,
+                    placeholder = { Text(stringResource(R.string.climbed_with_hint)) },
+                    modifier = Modifier.fillMaxWidth().padding(top = 8.dp).menuAnchor(MenuAnchorType.PrimaryEditable).onFocusChanged { partnersFocused = it.isFocused },
+                )
+                ExposedDropdownMenu(expanded = menuOpen, onDismissRequest = { hidePartnerMenu = true }) {
+                    matches.take(8).forEach { c ->
+                        DropdownMenuItem(text = { Text("${c.name} (@${c.login})") }, onClick = {
+                            val head = partners.substringBeforeLast(',', "").trim()
+                            partners = (if (head.isEmpty()) "" else "$head, ") + "@${c.login}, "
+                            hidePartnerMenu = true
+                        })
+                    }
+                }
+            }
             OutlinedTextField(comment, { comment = it }, label = { Text("Comment") }, minLines = 2, modifier = Modifier.fillMaxWidth().padding(top = 8.dp))
             message?.let { Text(it, Modifier.padding(top = 8.dp), style = MaterialTheme.typography.bodyMedium) }
             Row(Modifier.padding(vertical = 16.dp)) {
@@ -181,7 +215,9 @@ fun TickSheet(
 }
 
 /** What the sheet is filled in with when it edits something; from an [Ascent] or a pending [TickRequest]. */
-private data class Prefill(val gearStyle: String?, val tick: String?, val date: String?, val comment: String?, val attempts: Int?, val proposedGrade: String?)
+private data class Prefill(
+    val gearStyle: String?, val tick: String?, val date: String?, val comment: String?, val attempts: Int?, val proposedGrade: String?, val partners: String?,
+)
 
 /**
  * Loads the route for an edit started where no route is loaded (the Logbook): the form needs its

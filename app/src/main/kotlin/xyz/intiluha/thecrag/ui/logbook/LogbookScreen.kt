@@ -169,6 +169,7 @@ fun AscentRow(a: Ascent, onClick: () -> Unit, onLongClick: (() -> Unit)? = null)
                 listOfNotNull(a.tickName, a.attempts?.let { pluralStringResource(R.plurals.attempt_count, it, it) }, a.date, a.cragName).joinToString(" · "),
                 style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.outline,
             )
+            a.partners?.let { Text(stringResource(R.string.with_partners, it), style = MaterialTheme.typography.bodySmall, maxLines = 1) }
             a.comment?.let { Text(it, style = MaterialTheme.typography.bodySmall, maxLines = 2) }
         }
     }

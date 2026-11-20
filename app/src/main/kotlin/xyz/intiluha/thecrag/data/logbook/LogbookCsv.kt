@@ -6,14 +6,14 @@ package xyz.intiluha.thecrag.data.logbook
  * same fields the app stores; nothing is fetched for this.
  */
 object LogbookCsv {
-    val HEADER = listOf("date", "route", "grade", "tick", "tick_name", "gear_style", "crag", "comment", "route_id", "ascent_id")
+    val HEADER = listOf("date", "route", "grade", "tick", "tick_name", "gear_style", "crag", "comment", "climbed_with", "route_id", "ascent_id")
 
     fun write(ascents: List<Ascent>, out: Appendable) {
         out.row(HEADER)
         ascents.sortedWith(compareByDescending<Ascent> { it.date ?: "" }.thenByDescending { it.id }).forEach { a ->
             out.row(
                 listOf(
-                    a.date, a.routeName, a.grade, a.tick, a.tickName, a.gearStyle, a.cragName, a.comment,
+                    a.date, a.routeName, a.grade, a.tick, a.tickName, a.gearStyle, a.cragName, a.comment, a.partners,
                     a.routeId?.toString(), a.id.toString(),
                 ),
             )
