@@ -30,6 +30,8 @@
     <string name="tick">Tick</string>
     <string name="log_ascent">Log ascent</string>
     <string name="dry_run">Dry run</string>
+    <string name="pitches_climbed">Pitches climbed</string>
+    <string name="whole_route">Whole route</string>
     <string name="attempts">Attempts</string>
     <string name="climbed_with">Climbed with</string>
     <string name="with_partners">with %1$s</string>

@@ -47,6 +47,7 @@ import xyz.intiluha.thecrag.R
 import xyz.intiluha.thecrag.TheCragApp
 import xyz.intiluha.thecrag.data.logbook.Ascent
 import xyz.intiluha.thecrag.data.logbook.LogbookCsv
+import xyz.intiluha.thecrag.data.logbook.Pitches
 import xyz.intiluha.thecrag.data.logbook.TickRequest
 import xyz.intiluha.thecrag.data.logbook.TickTypes
 import xyz.intiluha.thecrag.ui.account.AccountViewModel
@@ -166,7 +167,10 @@ fun AscentRow(a: Ascent, onClick: () -> Unit, onLongClick: (() -> Unit)? = null)
         Column(Modifier.weight(1f)) {
             Text(a.routeName, style = MaterialTheme.typography.bodyLarge, maxLines = 1)
             Text(
-                listOfNotNull(a.tickName, a.attempts?.let { pluralStringResource(R.plurals.attempt_count, it, it) }, a.date, a.cragName).joinToString(" · "),
+                listOfNotNull(
+                    a.tickName, Pitches.label(a.pitchNumbers, a.routePitches),
+                    a.attempts?.let { pluralStringResource(R.plurals.attempt_count, it, it) }, a.date, a.cragName,
+                ).joinToString(" · "),
                 style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.outline,
             )
             a.partners?.let { Text(stringResource(R.string.with_partners, it), style = MaterialTheme.typography.bodySmall, maxLines = 1) }
@@ -189,7 +193,10 @@ fun PendingRow(t: TickRequest, onClick: () -> Unit, onLongClick: (() -> Unit)? =
         Column(Modifier.weight(1f)) {
             Text(t.routeName, style = MaterialTheme.typography.bodyLarge, maxLines = 1)
             Text(
-                listOfNotNull(TickTypes.name(t.tick), t.date, stringResource(if (t.ascentId != null) R.string.pending_edit else R.string.pending)).joinToString(" · "),
+                listOfNotNull(
+                    TickTypes.name(t.tick), Pitches.label(t.pitches, t.routePitches), t.date,
+                    stringResource(if (t.ascentId != null) R.string.pending_edit else R.string.pending),
+                ).joinToString(" · "),
                 style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error,
             )
             t.error?.let { Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error, maxLines = 2) }

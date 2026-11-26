@@ -4,6 +4,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 import xyz.intiluha.thecrag.data.logbook.Ascent
 import xyz.intiluha.thecrag.data.logbook.LogbookCsv
+import xyz.intiluha.thecrag.data.logbook.PitchTick
 
 class LogbookCsvTest {
     private fun ascent(id: Long, date: String?, name: String, comment: String?) =
@@ -19,16 +20,23 @@ class LogbookCsvTest {
             ),
         )
         val lines = csv.split("\r\n")
-        assertEquals("date,route,grade,tick,tick_name,gear_style,crag,comment,climbed_with,route_id,ascent_id", lines[0])
-        assertEquals("2026-10-20,\"Say \"\"hi\"\", now\",6a+,RP,Red point,sport,\"Ohanavan, West\",\"two\nlines\",,102,2", lines[1])
-        assertEquals("2026-10-01,Plain,6a+,RP,Red point,sport,\"Ohanavan, West\",,,101,1", lines[2])
-        assertEquals(",No date,6a+,RP,Red point,sport,\"Ohanavan, West\",,,103,3", lines[3])
+        assertEquals("date,route,grade,tick,tick_name,gear_style,crag,comment,climbed_with,route_id,ascent_id,pitches", lines[0])
+        assertEquals("2026-10-20,\"Say \"\"hi\"\", now\",6a+,RP,Red point,sport,\"Ohanavan, West\",\"two\nlines\",,102,2,", lines[1])
+        assertEquals("2026-10-01,Plain,6a+,RP,Red point,sport,\"Ohanavan, West\",,,101,1,", lines[2])
+        assertEquals(",No date,6a+,RP,Red point,sport,\"Ohanavan, West\",,,103,3,", lines[3])
         assertEquals("ends with CRLF", "", lines[4])
         assertEquals(5, lines.size)
     }
 
     @Test
+    fun pitchesColumnListsTheRecordedPitchNumbers() {
+        val partial = ascent(4, "2026-10-02", "Long one", null).copy(pitches = listOf(PitchTick(2), PitchTick(1, "onsight")))
+        val lines = LogbookCsv.toString(listOf(partial)).split("\r\n")
+        assertEquals("2026-10-02,Long one,6a+,RP,Red point,sport,\"Ohanavan, West\",,,104,4,1 2", lines[1])
+    }
+
+    @Test
     fun emptyLogbookIsJustTheHeader() {
-        assertEquals("date,route,grade,tick,tick_name,gear_style,crag,comment,climbed_with,route_id,ascent_id\r\n", LogbookCsv.toString(emptyList()))
+        assertEquals("date,route,grade,tick,tick_name,gear_style,crag,comment,climbed_with,route_id,ascent_id,pitches\r\n", LogbookCsv.toString(emptyList()))
     }
 }

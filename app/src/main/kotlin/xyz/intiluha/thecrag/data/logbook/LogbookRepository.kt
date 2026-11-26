@@ -8,6 +8,8 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonObjectBuilder
 import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.add
+import kotlinx.serialization.json.buildJsonArray
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.put
@@ -61,7 +63,9 @@ class LogbookRepository(
             if (batch.size < pageSize || all.size == before) break
             page++
         }
-        _ascents.value = all.values.toList()
+        // The listing's route stub is not known to carry the pitch count; keep the counts learnt from the tick sheet.
+        val counts = _ascents.value.mapNotNull { a -> a.routeId?.let { r -> a.routePitches?.let { r to it } } }.toMap()
+        _ascents.value = all.values.map { a -> if (a.routePitches == null && a.routeId in counts) a.copy(routePitches = counts[a.routeId]) else a }
         save(logbookFile, Ascent.serializer(), _ascents.value)
         refreshedAt.value = clock()
         return _ascents.value.size
@@ -144,6 +148,7 @@ class LogbookRepository(
                     tick = req.tick, tickName = TickTypes.name(req.tick), gearStyle = req.gearStyle, date = req.date,
                     comment = req.comment.trim().ifBlank { null }, attempts = req.attempts, partners = req.partners.trim().ifBlank { null },
                     proposedGrade = proposed, grade = proposed ?: req.grade,
+                    pitches = pitchTicks(req, old), routePitches = req.routePitches ?: old.routePitches,
                 )
             }
             save(logbookFile, Ascent.serializer(), _ascents.value)
@@ -151,10 +156,14 @@ class LogbookRepository(
         }
         val res = api.createAscent(body(req))
         val id = res.obj("ok")?.long("ascentID") ?: res.obj("data")?.long("id") ?: res.obj("data")?.long("ascentID") ?: clock()
-        val ascent = res.obj("data")?.let(AscentParser::parse)?.copy(id = id) ?: Ascent(
+        // An echoed `data` may spell the pitches in a way the parser does not read; what was sent is what the ascent has.
+        val ascent = res.obj("data")?.let(AscentParser::parse)?.let {
+            it.copy(id = id, pitches = it.pitches.ifEmpty { pitchTicks(req, null) }, routePitches = req.routePitches ?: it.routePitches)
+        } ?: Ascent(
             id = id, routeId = req.routeId, routeName = req.routeName, grade = req.grade, gradeBand = req.gradeBand,
             tick = req.tick, tickName = TickTypes.name(req.tick), gearStyle = req.gearStyle, date = req.date,
             comment = req.comment.ifBlank { null }, cragName = req.cragName, attempts = req.attempts, partners = req.partners.ifBlank { null },
+            pitches = pitchTicks(req, null), routePitches = req.routePitches,
         )
         _ascents.value = listOf(ascent) + _ascents.value.filterNot { it.id == ascent.id }
         save(logbookFile, Ascent.serializer(), _ascents.value)
@@ -173,6 +182,7 @@ class LogbookRepository(
                 if (req.comment.isNotBlank()) put("comment", req.comment)
                 if (req.partners.isNotBlank()) put("with", req.partners.trim())
                 req.attempts?.let { put("numberAttempts", it) }
+                if (req.pitches.isNotEmpty()) putPitches(req, null)
                 putGrade(grade, clear = false)
             })
         }
@@ -213,9 +223,37 @@ class LogbookRepository(
                 put("comment", req.comment.trim().ifBlank { null })
                 put("with", req.partners.trim().ifBlank { null })
                 if (req.attempts != null) put("numberAttempts", req.attempts) else put("numberAttempts", "")
+                // Only when the choice of pitches changed: an untouched ascent keeps whatever pitch
+                // details (grades, leaders, comments) it has on theCrag, which the app does not hold.
+                val old = _ascents.value.firstOrNull { it.id == id }
+                if ((old?.pitchNumbers?.sorted() ?: emptyList()) != pitchNumbers(req)) putPitches(req, old)
                 putGrade(grade, clear = true)
             })
         }
+    }
+
+    private fun pitchNumbers(req: TickRequest): List<Int> = req.pitches.filter { it > 0 }.distinct().sorted()
+
+    /** The pitches of [req] as the local copy keeps them; a pitch [old] already had keeps its recorded tick and leader. */
+    private fun pitchTicks(req: TickRequest, old: Ascent?): List<PitchTick> =
+        pitchNumbers(req).map { n -> old?.pitches?.firstOrNull { it.number == n } ?: PitchTick(n) }
+
+    /**
+     * `pitch`: one object per pitch climbed, as the create documentation describes it. Only the
+     * mandatory `number` is sent for a new pitch (per-pitch tick, gear style, grade and `leadby` are
+     * optional, and their accepted values are not verified); a pitch the ascent already had goes back
+     * with the tick theCrag reported for it. An empty array asks for the pitch details to be dropped
+     * (whole route again): inferred, like the rest of the update semantics for `pitch`.
+     */
+    private fun JsonObjectBuilder.putPitches(req: TickRequest, old: Ascent?) {
+        put("pitch", buildJsonArray {
+            pitchTicks(req, old).forEach { p ->
+                add(buildJsonObject {
+                    put("number", p.number)
+                    p.tick?.let { put("tick", it) }
+                })
+            }
+        })
     }
 
     private fun JsonObjectBuilder.putTickFields(req: TickRequest) {
@@ -291,9 +329,16 @@ class LogbookRepository(
     companion object {
         private const val MAX_PAGES = 40
 
-        /** Routes with at least one clean ascent ([TickTypes.isSend]); what the area screen can hide. */
-        fun sentRouteIds(ascents: List<Ascent>): Set<Long> =
-            ascents.asSequence().filter { TickTypes.isSend(it.tick) }.mapNotNull { it.routeId }.toSet()
+        /**
+         * Routes with at least one clean ascent ([TickTypes.isSend]); what the area screen can hide.
+         * A clean ascent of only some pitches does not count: the route stays unclimbed until an
+         * ascent covers all of it. [routePitches] gives the pitch count of the routes on screen;
+         * without a count (there or on the ascent) a pitch list cannot be judged and the ascent counts.
+         */
+        fun sentRouteIds(ascents: List<Ascent>, routePitches: Map<Long, Int> = emptyMap()): Set<Long> =
+            ascents.asSequence()
+                .filter { TickTypes.isSend(it.tick) && !Pitches.isPartial(it.pitchNumbers, routePitches[it.routeId] ?: it.routePitches) }
+                .mapNotNull { it.routeId }.toSet()
 
         /** Oldest first; ascents without a date last; ties broken by id so the order is stable. */
         val CHRONOLOGICAL: Comparator<Ascent> = compareBy<Ascent>({ it.date == null }, { it.date ?: "" }, { it.id })
