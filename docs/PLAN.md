@@ -126,8 +126,11 @@ OkHttp 4, kotlinx.serialization, Room 2.7, Coil 3, MapLibre Native Android
   views of the list, All and Unclimbed; the latter drops routes with a clean ascent (onsight, flash,
   redpoint and variants, clean, send, repeat, plain tick; not hang dog, working, attempt, retreat,
   dab). A view, not a setting: nothing is persisted. See `TickTypes.SENDS`.
-- Open: whether `climbedGearStyle`
-  values beyond sport/trad/boulder are right, paging of the ascents
+- Gear style values (2026-11-26): `climbedGearStyle` takes theCrag's gear style stubs, so top rope is
+  `top-rope` and via ferrata `via-ferrata`; the app sent `toprope`/`ferrata` and every such tick came
+  back HTTP 400. `TickTypes.apiGearStyle` maps the old spellings when sending. See research/api.md §5.
+- Open: whether the `climbedGearStyle` values `second` and `solo` (not route styles, so no stub
+  to copy) are right, paging of the ascents
   list beyond one page (no `query.page` seen in the reply), the
   partner-key OAuth path if theCrag ever grants one.
 

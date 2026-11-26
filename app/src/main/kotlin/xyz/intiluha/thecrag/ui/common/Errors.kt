@@ -2,7 +2,8 @@ package xyz.intiluha.thecrag.ui.common
 
 import xyz.intiluha.thecrag.data.auth.AuthRepository
 import xyz.intiluha.thecrag.data.remote.ApiFactory
-import xyz.intiluha.thecrag.data.remote.dto.ApiError
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
 import retrofit2.HttpException
 import java.io.IOException
 import java.net.ConnectException
@@ -34,13 +35,20 @@ fun Throwable.describe(): String = when (this) {
 }
 
 /**
- * theCrag's API errors are JSON `{"error": "...", "errorLabel": "..."}` with HTTP 400.
- * Peeks at the body instead of consuming it: [describe] and [needsLogin] both read it.
+ * theCrag's API errors are JSON with HTTP 400: `{"error": "...", "errorLabel": "..."}`, or, when a
+ * write is rejected for its fields, `{"error": {"tickError": "reason", ...}}`; the latter reads as
+ * `tick: reason`. Peeks at the body instead of consuming it: [describe] and [needsLogin] both read it.
  */
 private fun HttpException.apiError(): String? = try {
-    response()?.errorBody()?.source()?.peek()?.readUtf8()
-        ?.let { ApiFactory.json.decodeFromString(ApiError.serializer(), it) }
-        ?.error?.takeIf { it.isNotBlank() }
+    val error = response()?.errorBody()?.source()?.peek()?.readUtf8()
+        ?.let { ApiFactory.json.parseToJsonElement(it) as? JsonObject }?.get("error")
+    when (error) {
+        is JsonObject -> error.entries.joinToString("; ") { (field, reason) ->
+            "${field.removeSuffix("Error")}: ${(reason as? JsonPrimitive)?.content ?: reason}"
+        }
+        is JsonPrimitive -> error.content
+        else -> null
+    }?.takeIf { it.isNotBlank() }
 } catch (e: Exception) {
     null
 }

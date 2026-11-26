@@ -18,6 +18,7 @@ import xyz.intiluha.thecrag.data.auth.AuthRepository
 import xyz.intiluha.thecrag.data.logbook.AscentParser
 import xyz.intiluha.thecrag.data.logbook.LogbookRepository
 import xyz.intiluha.thecrag.data.logbook.TickRequest
+import xyz.intiluha.thecrag.data.logbook.TickTypes
 import xyz.intiluha.thecrag.data.remote.ApiFactory
 import xyz.intiluha.thecrag.data.remote.InMemoryStore
 import xyz.intiluha.thecrag.data.remote.PersistentCookieJar
@@ -42,6 +43,23 @@ class LogbookRepositoryTest {
     }
 
     private fun ok(body: String) = MockResponse().setBody(body).addHeader("Content-Type", "application/json")
+
+    @Test
+    fun topRopeGoesOutAsTheStubTheCragAccepts() = runBlocking {
+        assertTrue("top-rope" in TickTypes.gearStyles)
+        assertTrue("flash" in TickTypes.ticksFor("top-rope") && "dog" in TickTypes.ticksFor("top-rope"))
+        // An entry parked in the outbox by an older version still says "toprope".
+        for (style in listOf("top-rope", "toprope")) {
+            val server = MockWebServer().apply { enqueue(ok("""{"ok":{"ascentID":"778"}}""")); start() }
+            repo(server, Files.createTempDirectory("logbook").toFile()).tick(req.copy(gearStyle = style, tick = "flash"))
+            val data = json.parseToJsonElement(server.takeRequest().body.readUtf8()).jsonObject["data"]!!.jsonObject
+            assertEquals("top-rope", data["climbedGearStyle"]!!.jsonPrimitive.content)
+            assertEquals("flash", data["tick"]!!.jsonPrimitive.content)
+            server.shutdown()
+        }
+        assertEquals("via-ferrata", TickTypes.apiGearStyle("ferrata"))
+        assertEquals("sport", TickTypes.apiGearStyle("Sport"))
+    }
 
     @Test
     fun tickPostsOfficialSchemaAndKeepsTheAscent() = runBlocking {
