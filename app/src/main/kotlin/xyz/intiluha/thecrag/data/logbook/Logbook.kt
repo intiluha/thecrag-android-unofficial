@@ -113,8 +113,19 @@ object AscentParser {
 
 /** Tick vocabulary per gear style, from the official create-ascent documentation. */
 object TickTypes {
-    /** Gear styles as `climbedGearStyle` values; the route's own `styleStub` always comes first in the UI. */
-    val gearStyles = listOf("sport", "trad", "boulder", "toprope", "second", "solo", "dws", "aid", "ice", "alpine", "ferrata")
+    /**
+     * Gear styles as `climbedGearStyle` values; the route's own `styleStub` always comes first in the UI.
+     * These are theCrag's gear style stubs, the ones a route carries as `styleStub` and the map lists under
+     * `gearStyles`: top rope is `top-rope` and via ferrata `via-ferrata`; `toprope` is refused with HTTP 400.
+     */
+    val gearStyles = listOf("sport", "trad", "boulder", "top-rope", "second", "solo", "dws", "aid", "ice", "alpine", "via-ferrata")
+
+    /** The stub theCrag accepts for [gearStyle]; maps the spellings this app used to send and store. */
+    fun apiGearStyle(gearStyle: String): String = when (val s = gearStyle.trim().lowercase()) {
+        "toprope", "top rope" -> "top-rope"
+        "ferrata", "viaferrata", "via ferrata" -> "via-ferrata"
+        else -> s
+    }
 
     private val LEAD = listOf("onsight", "flash", "redpoint", "pinkpoint", "dog", "allfreewithrest", "groundupredpoint", "leadsolo", "working", "attempt", "retreat", "tick")
 

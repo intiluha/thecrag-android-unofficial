@@ -177,6 +177,16 @@ Not available anonymously: `/api/index/summary|detail` (bulk sync), `/api/facet/
   grade pair answers 400 with `error.gradeError`. Listing items carry `numberAttempts`,
   `gradeSystem`, `grade` and `markdown` only when set, so a top-level `grade` beside `gradeSystem`
   is the climber's own grade and a plain ascent has neither.
+- **Gear style values (2026-11-26, not posted: no test account at hand):** top-rope ticks sent as
+  `climbedGearStyle: "toprope"` were refused with HTTP 400 whatever the tick. theCrag's gear style
+  stubs, as `/api/map/bbox/heirachy?f=gearStyles` lists them, are `alpine, boulder, dws, ice, sport,
+  top-rope, trad, via-ferrata`; a route's `styleStub` uses the same set and is what the app has always
+  sent for sport, trad and boulder. The app now sends `top-rope` and `via-ferrata`. The ticks the
+  create documentation lists for top rope (`onsight, flash, clean, dog, ropedsolo, attempt, tick`) are
+  unchanged; `/api/config/ascent/ticktypes` (needs the anonymous session cookie now) names the stored
+  forms `topropeonsight, topropeflash, topropeclean, toproperest`, so the listing may return those.
+  A field rejection is `{"error": {"<field>Error": "<reason>"}}`: `error` is an object there, not
+  the string the permission errors carry.
 - OAuth 1.0a: `/oauth/request_token` → `/oauth/authorize?oauth_token=` → `/oauth/access_token`; consumer key needs the partner agreement. A FOSS app cannot keep a consumer secret private anyway.
 
 ## 6. Terms and licensing summary

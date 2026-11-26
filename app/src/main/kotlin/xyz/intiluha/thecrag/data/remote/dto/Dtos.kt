@@ -9,9 +9,6 @@ data class DataObj<T>(val data: T)
 @Serializable
 data class DataList<T>(val data: List<T> = emptyList())
 
-@Serializable
-data class ApiError(val error: String = "", val errorLabel: String = "")
-
 /** One DTO for both areas and routes; `type` is "area" or "route". */
 @Serializable
 data class NodeDto(

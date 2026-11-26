@@ -30,4 +30,11 @@ class ErrorsTest {
         assertEquals("theCrag: Node not found", e.describe())
         assertFalse(e.needsLogin())
     }
+
+    @Test
+    fun fieldRejectionsAreSpelledOut() {
+        val e = apiError("""{"data":{"tick":"flash"},"error":{"climbedGearStyleError":"invalid gear style","gradeError":"invalid grade"}}""")
+        assertEquals("theCrag: climbedGearStyle: invalid gear style; grade: invalid grade", e.describe())
+        assertFalse(e.needsLogin())
+    }
 }

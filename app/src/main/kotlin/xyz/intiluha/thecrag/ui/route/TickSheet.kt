@@ -78,7 +78,7 @@ fun TickSheet(
         ?: pending?.let { Prefill(it.gearStyle, it.tick, it.date, it.comment, it.attempts, it.proposedGrade, it.partners) }
     val scope = rememberCoroutineScope()
     val styles = remember(route.id) {
-        (listOfNotNull(initial?.gearStyle?.lowercase(), route.styleStub?.lowercase()) + TickTypes.gearStyles).distinct()
+        (listOfNotNull(initial?.gearStyle, route.styleStub).map(TickTypes::apiGearStyle) + TickTypes.gearStyles).distinct()
     }
     var gearStyle by remember { mutableStateOf(styles.first()) }
     // The stored tick may be one the vocabulary table does not list for this gear style; keep it selectable.

@@ -219,7 +219,7 @@ class LogbookRepository(
     }
 
     private fun JsonObjectBuilder.putTickFields(req: TickRequest) {
-        put("climbedGearStyle", req.gearStyle)
+        put("climbedGearStyle", TickTypes.apiGearStyle(req.gearStyle))
         put("tick", req.tick)
         put("date", req.date)
     }
