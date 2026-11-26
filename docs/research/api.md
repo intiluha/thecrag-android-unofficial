@@ -187,6 +187,28 @@ Not available anonymously: `/api/index/summary|detail` (bulk sync), `/api/facet/
   forms `topropeonsight, topropeflash, topropeclean, toproperest`, so the listing may return those.
   A field rejection is `{"error": {"<field>Error": "<reason>"}}`: `error` is an object there, not
   the string the permission errors carry.
+- **Pitches of an ascent (2026-11-27; documentation only, nothing below was tried live: no account
+  was available).** *Documented:* create takes an optional `pitch` array, each entry `{number
+  (mandatory), climbedGearStyle, tick, heightText, gradeSystem, grade, altGradeSystem, altGrade,
+  leadby, comment}` (API article, "Create Ascent"; the WADL words it as a list of hashes
+  `{number, linkup, leadby, gradeSystem, grade, altGradeSystem, altGrade}` and lists the same
+  `pitch` parameter for `ascent/update`). On the reading side the personal-key logbook
+  (`/en/article/logbookreadapi`) lists `pitch`: "(trad / multi-pitch only) Array of pitch-level tick
+  results", without showing an entry; the facet API returns `Pitch` as arrays `[number, leadby,
+  rating system, grade, alt rating system, alt grade, linkup]`. The route JSON carries the count
+  only (`pitches`, 1 for a single pitch; `height` is one number; nothing per pitch in
+  `route_12873151_show_all.json` or the topo samples). The site's `common-1.1.78.js` has no pitch
+  code: the website's tick form is rendered by the server. *Inferred, to be checked with a real
+  multi-pitch ascent:* that `/api/climber/id/me/ascents` and `/api/ascent/id/N?full=1` return the
+  list under `pitch` as objects with `number` (the parser also accepts `pitches`, the facet arrays,
+  bare numbers, `tick` as label or `{label, name}`, `leadby` as text or an account object); that an
+  ascent with no `pitch` is the whole route and one with `pitch:[{number:1}]` is shown by theCrag as
+  the first pitch only; that a pitch with only `number` is accepted (no per-pitch `tick` is sent);
+  that `ascent/update` replaces the whole list with the one sent and `pitch: []` clears it; whether
+  the ascent's route stub ever carries `pitches` (the single-pitch samples do not, so the app
+  remembers the count from the tick sheet). The values `leadby` takes are unknown, so the app
+  shows it when present and never sends it. The "trad" in the logbook article suggests single-pitch
+  trad ascents may come with a one-entry `pitch`; the app treats that as the whole route.
 - OAuth 1.0a: `/oauth/request_token` → `/oauth/authorize?oauth_token=` → `/oauth/access_token`; consumer key needs the partner agreement. A FOSS app cannot keep a consumer secret private anyway.
 
 ## 6. Terms and licensing summary

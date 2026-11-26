@@ -117,11 +117,14 @@ fun AreaScreen(
     val online by graph.connectivity.online.collectAsState()
     var available by remember { mutableStateOf<Set<Long>?>(null) }
     LaunchedEffect(online, areaId) { available = if (online) null else graph.availability.availableNodeIds() }
-    val sentIds = remember(ascents) { LogbookRepository.sentRouteIds(ascents) }
     val ascentsByRoute = remember(ascents) { LogbookRepository.ascentsByRoute(ascents) }
     // A view of the list, not a setting: nothing stored, survives rotation only.
     var unclimbedOnly by rememberSaveable { mutableStateOf(false) }
     val area = (state as? UiState.Ready)?.value
+    // The routes' pitch counts tell a first-pitch-only send from one of the whole route.
+    val sentIds = remember(ascents, area) {
+        LogbookRepository.sentRouteIds(ascents, area?.routes.orEmpty().mapNotNull { r -> r.pitches?.let { r.id to it } }.toMap())
+    }
     val title = area?.name ?: stringResource(R.string.world)
     val starred = favourites.any { it.id == areaId }
     val snackbar = remember { SnackbarHostState() }

@@ -243,7 +243,7 @@ fun RouteScreen(
                     val minePending = pending.filter { it.routeId == r.id }
                     if (mine.isNotEmpty() || minePending.isNotEmpty()) {
                         item { SectionHeader(stringResource(R.string.your_ascents)) }
-                        items(mine, key = { "a${it.id}" }) { a -> RouteAscentRow(a, onLongClick = { selected = a }) }
+                        items(mine, key = { "a${it.id}" }) { a -> RouteAscentRow(a, routePitches = r.pitches, onLongClick = { selected = a }) }
                         items(minePending, key = { "p${it.createdAt}" }) { p -> RoutePendingRow(p, onLongClick = { selectedPending = p }) }
                         item { Spacer(Modifier.height(8.dp)) }
                     }

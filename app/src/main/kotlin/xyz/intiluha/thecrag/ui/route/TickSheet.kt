@@ -74,8 +74,8 @@ fun TickSheet(
     route: RouteDetail, logbook: LogbookRepository, existing: Ascent? = null, pending: TickRequest? = null,
     onDismiss: () -> Unit, onDone: (String) -> Unit,
 ) {
-    val initial = existing?.let { Prefill(it.gearStyle, it.tick, it.date, it.comment, it.attempts, it.proposedGrade, it.partners) }
-        ?: pending?.let { Prefill(it.gearStyle, it.tick, it.date, it.comment, it.attempts, it.proposedGrade, it.partners) }
+    val initial = existing?.let { Prefill(it.gearStyle, it.tick, it.date, it.comment, it.attempts, it.proposedGrade, it.partners, it.pitchNumbers) }
+        ?: pending?.let { Prefill(it.gearStyle, it.tick, it.date, it.comment, it.attempts, it.proposedGrade, it.partners, it.pitches) }
     val scope = rememberCoroutineScope()
     val styles = remember(route.id) {
         (listOfNotNull(initial?.gearStyle, route.styleStub).map(TickTypes::apiGearStyle) + TickTypes.gearStyles).distinct()
@@ -94,6 +94,10 @@ fun TickSheet(
     LaunchedEffect(logbook) { suggestions = try { logbook.partnerSuggestions() } catch (e: Exception) { emptyList() } }
     var attempts by remember { mutableStateOf(initial?.attempts?.toString() ?: "") }
     var proposedGrade by remember { mutableStateOf(initial?.proposedGrade ?: "") }
+    // Pitches climbed; empty means the whole route, which sends no pitch details. Offered on multi-pitch
+    // routes, and for an ascent that already lists pitches whatever the route says about itself.
+    val pitchCount = maxOf(route.pitches ?: 1, initial?.pitches?.maxOrNull() ?: 0)
+    var pitches by remember { mutableStateOf(initial?.pitches.orEmpty().toSet()) }
     var showPicker by remember { mutableStateOf(false) }
     var busy by remember { mutableStateOf(false) }
     var message by remember { mutableStateOf<String?>(null) }
@@ -106,6 +110,7 @@ fun TickSheet(
             grade = route.grade, gradeBand = route.gradeBand, cragName = route.ancestors.lastOrNull()?.name, createdAt = System.currentTimeMillis(),
             attempts = attempts.trim().toIntOrNull(), proposedGrade = proposedGrade.trim().ifBlank { null },
             gradeContext = route.gradeContext, gradeStyle = route.gradeStyle, partners = partners.trim().trimEnd(',').trim(),
+            pitches = pitches.sorted(), routePitches = route.pitches,
         )
         scope.launch {
             busy = true
@@ -158,6 +163,15 @@ fun TickSheet(
             Text(stringResource(R.string.tick), Modifier.padding(top = 8.dp), style = MaterialTheme.typography.labelMedium)
             FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                 ticks.forEach { t -> FilterChip(selected = t == tick, onClick = { tick = t }, label = { Text(TickTypes.name(t)) }) }
+            }
+            if (pitchCount > 1) {
+                Text(stringResource(R.string.pitches_climbed), Modifier.padding(top = 8.dp), style = MaterialTheme.typography.labelMedium)
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    FilterChip(selected = pitches.isEmpty(), onClick = { pitches = emptySet() }, label = { Text(stringResource(R.string.whole_route)) })
+                    (1..pitchCount).forEach { n ->
+                        FilterChip(selected = n in pitches, onClick = { pitches = if (n in pitches) pitches - n else pitches + n }, label = { Text("$n") })
+                    }
+                }
             }
             OutlinedTextField(
                 date, { date = it }, label = { Text("Date (YYYY-MM-DD)") }, singleLine = true, isError = !valid,
@@ -217,6 +231,7 @@ fun TickSheet(
 /** What the sheet is filled in with when it edits something; from an [Ascent] or a pending [TickRequest]. */
 private data class Prefill(
     val gearStyle: String?, val tick: String?, val date: String?, val comment: String?, val attempts: Int?, val proposedGrade: String?, val partners: String?,
+    val pitches: List<Int>,
 )
 
 /**

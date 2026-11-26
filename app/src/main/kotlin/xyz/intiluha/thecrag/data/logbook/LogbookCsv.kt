@@ -3,10 +3,12 @@ package xyz.intiluha.thecrag.data.logbook
 /**
  * The downloaded logbook as RFC 4180 CSV (comma separated, quotes doubled,
  * CRLF line ends, UTF-8 with no BOM). One row per ascent, newest first, the
- * same fields the app stores; nothing is fetched for this.
+ * same fields the app stores; nothing is fetched for this. `pitches` lists the
+ * pitch numbers the ascent records, space separated (`1`, `1 2 3`), and is
+ * empty for an ascent without pitch details, i.e. of the whole route.
  */
 object LogbookCsv {
-    val HEADER = listOf("date", "route", "grade", "tick", "tick_name", "gear_style", "crag", "comment", "climbed_with", "route_id", "ascent_id")
+    val HEADER = listOf("date", "route", "grade", "tick", "tick_name", "gear_style", "crag", "comment", "climbed_with", "route_id", "ascent_id", "pitches")
 
     fun write(ascents: List<Ascent>, out: Appendable) {
         out.row(HEADER)
@@ -14,7 +16,7 @@ object LogbookCsv {
             out.row(
                 listOf(
                     a.date, a.routeName, a.grade, a.tick, a.tickName, a.gearStyle, a.cragName, a.comment, a.partners,
-                    a.routeId?.toString(), a.id.toString(),
+                    a.routeId?.toString(), a.id.toString(), a.pitchNumbers.sorted().joinToString(" "),
                 ),
             )
         }

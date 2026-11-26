@@ -129,8 +129,20 @@ OkHttp 4, kotlinx.serialization, Room 2.7, Coil 3, MapLibre Native Android
 - Gear style values (2026-11-26): `climbedGearStyle` takes theCrag's gear style stubs, so top rope is
   `top-rope` and via ferrata `via-ferrata`; the app sent `toprope`/`ferrata` and every such tick came
   back HTTP 400. `TickTypes.apiGearStyle` maps the old spellings when sending. See research/api.md §5.
-- Open: whether the `climbedGearStyle` values `second` and `solo` (not route styles, so no stub
-  to copy) are right, paging of the ascents
+- Multi-pitch (2026-11-27, **not yet tried against the live site**: no account in the dev VM): on a
+  route with more than one pitch the tick sheet asks "Pitches climbed", Whole route (default) or any
+  set of pitch numbers. Whole route sends nothing extra; a set goes out as `pitch:[{"number":N},…]`,
+  the documented create field, with only the mandatory `number`. An edit sends `pitch` only when the
+  set changed (`[]` to go back to the whole route), so pitch details entered on the website survive
+  an edit of anything else. Ascents read from theCrag keep their pitch list (`AscentParser` tries the
+  documented spellings); the route page says "whole route", "pitch 1 of 3" or "all 3 pitches" per
+  ascent, the Logbook "pitch 1" (plus "of N" when the count is known), the CSV has a `pitches`
+  column. Unclimbed view: a clean ascent of only some pitches does not make the route climbed; an
+  ascent without pitch details, or listing every pitch, does (`Pitches`, `sentRouteIds`). The route
+  JSON gives only the pitch count, no per-pitch grades or heights, so the sheet offers numbers only.
+- Open: the multi-pitch items of `research/api.md` §5 (reply shape of `pitch`, whether update
+  replaces the list, per-pitch `tick`/`leadby` values); whether the `climbedGearStyle` values
+  `second` and `solo` (not route styles, so no stub to copy) are right, paging of the ascents
   list beyond one page (no `query.page` seen in the reply), the
   partner-key OAuth path if theCrag ever grants one.
 

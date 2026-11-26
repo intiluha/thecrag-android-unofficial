@@ -2,6 +2,8 @@ package xyz.intiluha.thecrag.data.logbook
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import xyz.intiluha.thecrag.data.remote.dto.array
@@ -32,7 +34,20 @@ data class Ascent(
     val proposedGrade: String? = null,
     /** `with`: partners as the website stores them, one comma-separated string, members as `@login`. */
     val partners: String? = null,
-)
+    /**
+     * The pitches this ascent records, by number. Empty when theCrag holds no pitch details, which is
+     * a tick of the route as a whole. See [Pitches] for what a non-empty list means against the route.
+     */
+    val pitches: List<PitchTick> = emptyList(),
+    /** How many pitches the route has, when known: from the tick sheet for ascents logged here, from the listing if it says. */
+    val routePitches: Int? = null,
+) {
+    val pitchNumbers: List<Int> get() = pitches.map { it.number }
+}
+
+/** One pitch of an ascent: its number on the route and, when theCrag recorded them, the tick of that pitch and who led it. */
+@Serializable
+data class PitchTick(val number: Int, val tick: String? = null, val leadBy: String? = null)
 
 /** A tick to send; kept in the outbox while the network is down. */
 @Serializable
@@ -59,7 +74,58 @@ data class TickRequest(
     val ascentId: Long? = null,
     /** Partners for `with`, comma separated, members as `@login`; empty for none. */
     val partners: String = "",
+    /** Pitch numbers climbed, for `pitch[]`; empty for the whole route (no pitch details sent). */
+    val pitches: List<Int> = emptyList(),
+    /** The route's pitch count, so the logged ascent can be told apart from a full one without the route at hand. */
+    val routePitches: Int? = null,
 )
+
+/**
+ * What an ascent's pitch list means against the route's pitch count. An ascent without pitch
+ * details is of the whole route; one that lists pitches covers just those, and is partial when
+ * they fall short of `1..routePitches`. Without the count a listed ascent cannot be judged, so
+ * it is only described ("pitch 1"), never called partial.
+ */
+object Pitches {
+    /** True when [numbers] are known to leave out part of a route of [routePitches] pitches. */
+    fun isPartial(numbers: List<Int>, routePitches: Int?): Boolean =
+        numbers.isNotEmpty() && routePitches != null && routePitches > 1 && !numbers.containsAll((1..routePitches).toList())
+
+    /** `1`, `1–3`, `1, 3–4`: sorted, runs collapsed. */
+    fun ranges(numbers: List<Int>): String {
+        val runs = mutableListOf<IntRange>()
+        for (n in numbers.distinct().sorted()) {
+            val last = runs.lastOrNull()
+            if (last != null && n == last.last + 1) runs[runs.size - 1] = last.first..n else runs.add(n..n)
+        }
+        return runs.joinToString(", ") { if (it.first == it.last) "${it.first}" else "${it.first}–${it.last}" }
+    }
+
+    /**
+     * How a row says what was climbed: `pitch 1 of 3`, `pitches 1–2 of 3`, `all 3 pitches`; `whole route`
+     * for an ascent without pitch details on a route known to be multi-pitch; `pitch 1` when the count is
+     * unknown. Null when there is nothing to say (single-pitch route, or no details and no count).
+     */
+    fun label(numbers: List<Int>, routePitches: Int?): String? {
+        val multi = routePitches != null && routePitches > 1
+        if (numbers.isEmpty()) return if (multi) "whole route" else null
+        if (routePitches == 1 && numbers.all { it == 1 }) return null
+        val distinct = numbers.distinct()
+        val what = (if (distinct.size == 1) "pitch " else "pitches ") + ranges(distinct)
+        return when {
+            !multi -> what
+            isPartial(distinct, routePitches) -> "$what of $routePitches"
+            else -> "all $routePitches pitches"
+        }
+    }
+
+    /** Per-pitch ticks and leaders, when theCrag recorded any: `P1 Onsight (led by Ann) · P2 Hang dog`; null otherwise. */
+    fun details(pitches: List<PitchTick>): String? =
+        if (pitches.none { it.tick != null || it.leadBy != null }) null
+        else pitches.sortedBy { it.number }.joinToString(" · ") { p ->
+            listOfNotNull("P${p.number}", p.tick?.let(TickTypes::name), p.leadBy?.let { "(led by $it)" }).joinToString(" ")
+        }
+}
 
 /**
  * Reads ascents out of theCrag's JSON defensively: the authenticated listing is
@@ -105,9 +171,40 @@ object AscentParser {
             cragName = crag,
             attempts = o.int("numberAttempts"),
             partners = o.string("with")?.ifBlank { null },
+            pitches = pitches(o),
+            routePitches = route?.int("pitches") ?: route?.int("numberPitches"),
             // A top-level grade is the climber's own only when it comes with its system; a plain ascent has no `gradeSystem`.
             proposedGrade = if (o.containsKey("gradeSystem")) listOfNotNull(o.string("grade"), o.string("altGrade")).joinToString(" ").ifBlank { null } else null,
         )
+    }
+
+    /**
+     * The ascent's pitch list. How the listing spells it has not been seen live (no multi-pitch ascent
+     * in the samples), so this reads what the documentation suggests: the key `pitch` (create schema,
+     * personal-key logbook) or `pitches`, holding objects as create takes them (`number`, `tick` as a
+     * label or a `{label, name}` object, `leadby`), the facet API's arrays (`[number, leadby, …]`) or
+     * bare numbers. Entries without a positive number are dropped.
+     */
+    private fun pitches(o: JsonObject): List<PitchTick> {
+        val items = o.array("pitch") ?: o.array("pitches") ?: return emptyList()
+        return items.mapNotNull { e ->
+            when (e) {
+                is JsonObject -> (e.int("number") ?: e.int("pitch") ?: e.int("pitchNumber"))?.let { n ->
+                    PitchTick(n, e.obj("tick")?.string("label") ?: e.string("tick"), leader(e["leadby"] ?: e["leadBy"]))
+                }
+                is JsonArray -> (e.getOrNull(0) as? JsonPrimitive)?.content?.toIntOrNull()?.let { n -> PitchTick(n, leadBy = leader(e.getOrNull(1))) }
+                is JsonPrimitive -> e.content.toIntOrNull()?.let { PitchTick(it) }
+                else -> null
+            }
+        }.filter { it.number > 0 }.distinctBy { it.number }.sortedBy { it.number }
+    }
+
+    /** Who led a pitch: free text, or an account object by its name or login. */
+    private fun leader(e: JsonElement?): String? = when (e) {
+        is JsonObject -> e.string("name") ?: e.string("login")?.let { "@$it" }
+        is JsonNull -> null
+        is JsonPrimitive -> e.content.takeIf { it.isNotBlank() }
+        else -> null
     }
 }
 

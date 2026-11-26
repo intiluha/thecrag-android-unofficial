@@ -47,6 +47,7 @@ import androidx.compose.ui.unit.dp
 import xyz.intiluha.thecrag.R
 import xyz.intiluha.thecrag.data.logbook.Ascent
 import xyz.intiluha.thecrag.data.logbook.LogbookRepository
+import xyz.intiluha.thecrag.data.logbook.Pitches
 import xyz.intiluha.thecrag.data.logbook.TickRequest
 import xyz.intiluha.thecrag.data.logbook.TickTypes
 
@@ -150,19 +151,23 @@ private fun MoreBadge(modifier: Modifier = Modifier) {
     }
 }
 
-/** One of the user's ascents on the route's own page: picture, tick name, date and gear style, comment. The route name is in the header already. */
+/**
+ * One of the user's ascents on the route's own page: picture, tick name, date and gear style, comment. The route name is in the header already.
+ * On a multi-pitch route ([routePitches] > 1) the line also says what was climbed: the whole route or which pitches.
+ */
 @Composable
 @OptIn(ExperimentalFoundationApi::class)
-fun RouteAscentRow(a: Ascent, modifier: Modifier = Modifier, onLongClick: (() -> Unit)? = null) {
+fun RouteAscentRow(a: Ascent, modifier: Modifier = Modifier, routePitches: Int? = null, onLongClick: (() -> Unit)? = null) {
     val pressable = if (onLongClick == null) Modifier else Modifier.combinedClickable(onClick = {}, onLongClick = onLongClick)
     Row(modifier.fillMaxWidth().then(pressable).padding(horizontal = 16.dp, vertical = 6.dp), verticalAlignment = Alignment.Top) {
         AscentBadge(a.tick, a.gearStyle)
         Spacer(Modifier.width(12.dp))
         Column(Modifier.weight(1f)) {
             Text(
-                listOfNotNull(TickTypes.name(a.tick), a.date, a.gearStyle).joinToString(" · "),
+                listOfNotNull(TickTypes.name(a.tick), a.date, a.gearStyle, Pitches.label(a.pitchNumbers, routePitches ?: a.routePitches)).joinToString(" · "),
                 style = MaterialTheme.typography.bodyMedium,
             )
+            Pitches.details(a.pitches)?.let { Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.outline) }
             a.partners?.let { Text(stringResource(R.string.with_partners, it), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.outline) }
             a.comment?.let { Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.outline) }
         }
@@ -179,7 +184,10 @@ fun RoutePendingRow(t: TickRequest, modifier: Modifier = Modifier, onLongClick: 
         Spacer(Modifier.width(12.dp))
         Column(Modifier.weight(1f)) {
             Text(
-                listOf(TickTypes.name(t.tick), t.date, t.gearStyle, stringResource(if (t.ascentId != null) R.string.pending_edit else R.string.pending)).joinToString(" · "),
+                listOfNotNull(
+                    TickTypes.name(t.tick), t.date, t.gearStyle, Pitches.label(t.pitches, t.routePitches),
+                    stringResource(if (t.ascentId != null) R.string.pending_edit else R.string.pending),
+                ).joinToString(" · "),
                 style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.error,
             )
             (t.error ?: t.comment.ifBlank { null })?.let {
